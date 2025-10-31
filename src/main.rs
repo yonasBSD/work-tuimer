@@ -68,7 +68,7 @@ fn handle_key_event(app: &mut AppState, key: KeyEvent, storage: &storage::Storag
             KeyCode::Down | KeyCode::Char('j') => app.move_selection_down(),
             KeyCode::Left | KeyCode::Char('h') => app.move_field_left(),
             KeyCode::Right | KeyCode::Char('l') => app.move_field_right(),
-            KeyCode::Enter => app.enter_edit_mode(),
+            KeyCode::Enter | KeyCode::Char('i') => app.enter_edit_mode(),
             KeyCode::Char('n') => app.add_new_record(),
             KeyCode::Char('b') => app.add_break(),
             KeyCode::Char('d') => app.delete_selected_record(),
