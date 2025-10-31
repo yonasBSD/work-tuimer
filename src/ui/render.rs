@@ -58,7 +58,7 @@ fn render_records(frame: &mut Frame, area: Rect, app: &AppState) {
             let style = if is_in_visual {
                 Style::default().bg(Color::Blue).fg(Color::White)
             } else if is_selected {
-                Style::default().bg(Color::DarkGray).fg(Color::White)
+                Style::default().fg(Color::Gray)
             } else {
                 Style::default()
             };
