@@ -10,7 +10,7 @@ A terminal user interface (TUI) for tracking work time entries with inline editi
 - **Smart Breaks**: Add break entries that calculate duration automatically
 - **Auto-save**: Automatically saves changes on quit
 - **Manual Save**: Press `s` to save anytime
-- **Persistent Storage**: JSON file per day in `~/.local/share/worktimer/` (or `./data/` fallback)
+- **Persistent Storage**: JSON file per day in `~/.local/share/work-tuimer/` (or `./data/` fallback)
 
 ## Installation
 
@@ -77,7 +77,7 @@ Data is stored per day in JSON format:
 ```
 
 Storage locations (checked in order):
-1. `~/.local/share/worktimer/YYYY-MM-DD.json`
+1. `~/.local/share/work-tuimer/YYYY-MM-DD.json`
 2. `./data/YYYY-MM-DD.json` (fallback)
 
 ## Project Structure

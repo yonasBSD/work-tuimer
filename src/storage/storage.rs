@@ -19,7 +19,7 @@ impl Storage {
 
     fn get_data_directory() -> Result<PathBuf> {
         if let Some(data_dir) = dirs::data_local_dir() {
-            let app_dir = data_dir.join("worktimer");
+            let app_dir = data_dir.join("work-tuimer");
             if fs::create_dir_all(&app_dir).is_ok() {
                 return Ok(app_dir);
             }
