@@ -206,7 +206,7 @@ impl AppState {
         let id = self.day_data.next_id();
         let default_start = TimePoint::new(12, 0).unwrap();
         let default_end = TimePoint::new(12, 15).unwrap();
-        let record = WorkRecord::new(id, "PRZERWA".to_string(), default_start, default_end);
+        let record = WorkRecord::new(id, "Break".to_string(), default_start, default_end);
         
         self.day_data.add_record(record);
         self.selected_index = self.day_data.work_records.len().saturating_sub(1);

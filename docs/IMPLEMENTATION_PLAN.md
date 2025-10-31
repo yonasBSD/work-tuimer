@@ -12,7 +12,7 @@ Port of the worktimer2 web application to a terminal user interface (TUI) using 
    - Add/delete work records
    - Edit task name, start/end times (inline editing)
    - Auto-calculate duration
-   - Add breaks ("PRZERWA")
+   - Add breaks ("Break")
    - Set current time for focused field
 
 2. **Display Views**
@@ -126,11 +126,11 @@ enum FieldType {
 │ ├───┼──────────────┼───────────┼───────────┼──────────────┤   │
 │ │ 1 │ Coding       │ 10 : 00   │ 12 : 30   │ 2h 30m       │   │
 │ │►2 │[Meeting___]  │ 13 : 00   │ 14 : 00   │ 1h 00m  [DEL]│   │
-│ │ 3 │ PRZERWA      │ 14 : 00   │ 14 : 15   │ 15m          │   │
+│ │ 3 │ Break        │ 14 : 00   │ 14 : 15   │ 15m          │   │
 │ └───┴──────────────┴───────────┴───────────┴──────────────┘   │
 ├─────────────────────────────────────────────────────────────────┤
 │ GROUPED BY TASK                                                 │
-│ Coding:     5h 30m    Meeting:   2h 00m    PRZERWA:   1h 00m  │
+│ Coding:     5h 30m    Meeting:   2h 00m    Break:     1h 00m  │
 ├─────────────────────────────────────────────────────────────────┤
 │ Editing: Task Name                                              │
 │ [Type to edit] [Tab] Next field  [Enter] Done  [Esc] Cancel   │
@@ -298,4 +298,4 @@ Use **per-day JSON files** to match the web app's localStorage pattern where eac
 - No complex modal dialogs needed - everything is inline editing like the web version
 - Duration is always calculated automatically, never edited directly
 - Auto-save prevents data loss on unexpected quit
-- Polish language labels ("PRZERWA") preserved from original
+- English language labels ("Break") for breaks

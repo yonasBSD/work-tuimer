@@ -18,7 +18,7 @@
     },
     "3": {
       "id": 3,
-      "name": "PRZERWA",
+      "name": "Break",
       "start": { "hour": 12, "minute": 30 },
       "end": { "hour": 13, "minute": 0 },
       "total_minutes": 30
