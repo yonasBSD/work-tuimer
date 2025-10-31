@@ -17,6 +17,7 @@ pub struct AppState {
     pub selected_index: usize,
     pub edit_field: EditField,
     pub input_buffer: String,
+    pub time_cursor: usize,
     pub should_quit: bool,
 }
 
@@ -28,6 +29,7 @@ impl AppState {
             selected_index: 0,
             edit_field: EditField::Name,
             input_buffer: String::new(),
+            time_cursor: 0,
             should_quit: false,
         }
     }
@@ -52,10 +54,14 @@ impl AppState {
 
     pub fn enter_edit_mode(&mut self) {
         if let Some(record) = self.get_selected_record() {
-            let name = record.name.clone();
+            let input_value = match self.edit_field {
+                EditField::Name => record.name.clone(),
+                EditField::Start => record.start.to_string(),
+                EditField::End => record.end.to_string(),
+            };
             self.mode = AppMode::Edit;
-            self.edit_field = EditField::Name;
-            self.input_buffer = name;
+            self.input_buffer = input_value;
+            self.time_cursor = 0;
         }
     }
 
@@ -63,6 +69,7 @@ impl AppState {
         self.mode = AppMode::Browse;
         self.input_buffer.clear();
         self.edit_field = EditField::Name;
+        self.time_cursor = 0;
     }
 
     pub fn next_field(&mut self) {
@@ -70,14 +77,17 @@ impl AppState {
             self.edit_field = match self.edit_field {
                 EditField::Name => {
                     self.input_buffer = record.start.to_string();
+                    self.time_cursor = 0;
                     EditField::Start
                 }
                 EditField::Start => {
                     self.input_buffer = record.end.to_string();
+                    self.time_cursor = 0;
                     EditField::End
                 }
                 EditField::End => {
                     self.input_buffer = record.name.clone();
+                    self.time_cursor = 0;
                     EditField::Name
                 }
             };
@@ -85,14 +95,54 @@ impl AppState {
     }
 
     pub fn handle_char_input(&mut self, c: char) {
-        self.input_buffer.push(c);
+        match self.edit_field {
+            EditField::Name => {
+                self.input_buffer.push(c);
+            }
+            EditField::Start | EditField::End => {
+                if !c.is_ascii_digit() {
+                    return;
+                }
+                
+                if self.input_buffer.len() != 5 {
+                    return;
+                }
+                
+                let positions = [0, 1, 3, 4];
+                if self.time_cursor >= positions.len() {
+                    return;
+                }
+                
+                let pos = positions[self.time_cursor];
+                let mut chars: Vec<char> = self.input_buffer.chars().collect();
+                chars[pos] = c;
+                self.input_buffer = chars.into_iter().collect();
+                
+                self.time_cursor += 1;
+                
+                if self.time_cursor >= positions.len() {
+                    if self.save_current_field().is_ok() {
+                        self.exit_edit_mode();
+                    }
+                }
+            }
+        }
     }
 
     pub fn handle_backspace(&mut self) {
-        self.input_buffer.pop();
+        match self.edit_field {
+            EditField::Name => {
+                self.input_buffer.pop();
+            }
+            EditField::Start | EditField::End => {
+                if self.time_cursor > 0 {
+                    self.time_cursor -= 1;
+                }
+            }
+        }
     }
 
-    pub fn save_edit(&mut self) -> Result<(), String> {
+    fn save_current_field(&mut self) -> Result<(), String> {
         let records = self.day_data.get_sorted_records();
         if let Some(&record) = records.get(self.selected_index) {
             let id = record.id;
@@ -118,7 +168,11 @@ impl AppState {
                 }
             }
         }
-        
+        Ok(())
+    }
+
+    pub fn save_edit(&mut self) -> Result<(), String> {
+        self.save_current_field()?;
         self.exit_edit_mode();
         Ok(())
     }

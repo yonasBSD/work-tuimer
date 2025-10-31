@@ -67,16 +67,40 @@ fn render_records(frame: &mut Frame, area: Rect, app: &AppState) {
                         record.start.to_string(),
                         record.end.to_string(),
                     ),
-                    crate::ui::EditField::Start => (
-                        record.name.clone(),
-                        format!("[{}]", app.input_buffer),
-                        record.end.to_string(),
-                    ),
-                    crate::ui::EditField::End => (
-                        record.name.clone(),
-                        record.start.to_string(),
-                        format!("[{}]", app.input_buffer),
-                    ),
+                    crate::ui::EditField::Start | crate::ui::EditField::End => {
+                        let time_str = &app.input_buffer;
+                        let positions = [0, 1, 3, 4];
+                        let cursor_pos = if app.time_cursor < positions.len() {
+                            positions[app.time_cursor]
+                        } else {
+                            positions[positions.len() - 1]
+                        };
+                        
+                        let mut display = String::new();
+                        for (i, ch) in time_str.chars().enumerate() {
+                            if i == cursor_pos {
+                                display.push('[');
+                                display.push(ch);
+                                display.push(']');
+                            } else {
+                                display.push(ch);
+                            }
+                        }
+                        
+                        match app.edit_field {
+                            crate::ui::EditField::Start => (
+                                record.name.clone(),
+                                display,
+                                record.end.to_string(),
+                            ),
+                            crate::ui::EditField::End => (
+                                record.name.clone(),
+                                record.start.to_string(),
+                                display,
+                            ),
+                            _ => unreachable!(),
+                        }
+                    }
                 }
             } else if is_selected {
                 match app.edit_field {
