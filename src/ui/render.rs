@@ -16,14 +16,26 @@ pub fn render(frame: &mut Frame, app: &AppState) {
         ])
         .split(frame.size());
 
-    // Split the middle section horizontally for records and summary
-    let middle_chunks = Layout::default()
-        .direction(Direction::Horizontal)
-        .constraints([
-            Constraint::Percentage(70),
-            Constraint::Percentage(30),
-        ])
-        .split(chunks[1]);
+    // Split the middle section horizontally for records and summary on wide screens,
+    // vertically on narrow screens
+    let is_wide = frame.size().width >= 100;
+    let middle_chunks = if is_wide {
+        Layout::default()
+            .direction(Direction::Horizontal)
+            .constraints([
+                Constraint::Percentage(70),
+                Constraint::Percentage(30),
+            ])
+            .split(chunks[1])
+    } else {
+        Layout::default()
+            .direction(Direction::Vertical)
+            .constraints([
+                Constraint::Min(10),
+                Constraint::Length(15),
+            ])
+            .split(chunks[1])
+    };
 
     render_header(frame, chunks[0], app);
     render_records(frame, middle_chunks[0], app);
