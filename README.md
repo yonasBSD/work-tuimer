@@ -1,10 +1,13 @@
 # WorkTimer TUI
 
+![WorkTimer TUI Example](work_tuimer_example.png)
+
 A terminal user interface (TUI) for tracking work time entries with inline editing capabilities. Built with Rust and ratatui for efficient time management.
 
 ## Features
 
 - **Browse Mode**: View all work entries with Vi-style navigation
+- **Calendar View**: Visual month calendar for quick date navigation with `Shift+C`
 - **Day Navigation**: Navigate between days with `[` (previous) and `]` (next)
 - **Edit Mode**: Inline editing of task names and time fields
 - **Visual Mode**: Select and delete multiple records at once
@@ -33,6 +36,7 @@ cargo run
 | `→/l` | Move field right (Name → Start → End) |
 | `[` | Navigate to previous day (auto-saves) |
 | `]` | Navigate to next day (auto-saves) |
+| `Shift+C` | Open calendar view for date navigation |
 | `Enter/i` | Enter edit mode on selected field |
 | `c` | Change task name (quick edit) |
 | `n` | Add new work record |
@@ -63,6 +67,19 @@ cargo run
 | `↓/j` | Extend selection down |
 | `d` | Delete selected records |
 | `Esc` | Exit visual mode |
+
+### Calendar View
+
+| Key | Action |
+|-----|--------|
+| `↑/k` | Move selection up (1 week) |
+| `↓/j` | Move selection down (1 week) |
+| `←/h` | Move selection left (1 day) |
+| `→/l` | Move selection right (1 day) |
+| `</,` | Previous month |
+| `>/.` | Next month |
+| `Enter` | Jump to selected date |
+| `Esc` | Close calendar view |
 
 ## Data Format
 
