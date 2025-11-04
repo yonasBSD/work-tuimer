@@ -19,9 +19,33 @@ A terminal user interface (TUI) for tracking work time entries with inline editi
 
 ## Installation
 
+### Pre-built Binaries
+
+Download the latest pre-built binary for your platform from [GitHub Releases](https://github.com/sst/work-tuimer/releases):
+
+- **Linux (x86_64)**: `work-tuimer-linux-x86_64`
+- **macOS (Intel)**: `work-tuimer-macos-x86_64`
+- **macOS (Apple Silicon)**: `work-tuimer-macos-aarch64`
+- **Windows**: `work-tuimer-windows-x86_64.exe`
+
+After downloading, make the binary executable and run it:
+
+```bash
+# Linux / macOS
+chmod +x work-tuimer-linux-x86_64
+./work-tuimer-linux-x86_64
+
+# Windows
+work-tuimer-windows-x86_64.exe
+```
+
+### Build from Source
+
+If you prefer to build from source or don't see a binary for your platform:
+
 ```bash
 cargo build --release
-cargo run
+./target/release/work-tuimer
 ```
 
 ## Usage
@@ -127,6 +151,22 @@ cargo build
 cargo test
 cargo clippy
 ```
+
+### Creating a Release
+
+This project uses GitHub Actions to automatically build and publish pre-built binaries. To create a new release:
+
+```bash
+just release v0.2.0
+```
+
+This will:
+1. Create a git tag for the version
+2. Push the tag to GitHub
+3. Trigger GitHub Actions to build binaries for all platforms
+4. Automatically upload the binaries to a GitHub Release
+
+You can track the build progress in the [Actions tab](https://github.com/sst/work-tuimer/actions).
 
 ## License
 
