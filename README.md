@@ -10,12 +10,12 @@ A terminal user interface (TUI) for tracking work time entries with inline editi
 - **Calendar View**: Visual month calendar for quick date navigation with `Shift+C`
 - **Day Navigation**: Navigate between days with `[` (previous) and `]` (next)
 - **Edit Mode**: Inline editing of task names and time fields
-- **Visual Mode**: Select and delete multiple records at once
-- **Smart Breaks**: Add break entries that calculate duration automatically
-- **Undo/Redo**: Recover from mistakes with unlimited undo (max 50 levels)
+- **Visual Mode**: Select and delete multiple records at once with `v` keybind
+- **Smart Breaks**: Add break entries that calculate duration automatically with `b` keybind
+- **Undo/Redo**: Recover from mistakes with `u` / `r` keybinds (max 50 levels)
 - **Auto-save**: Automatically saves changes on quit and when switching days
-- **Manual Save**: Press `s` to save anytime
 - **Persistent Storage**: JSON file per day in `~/.local/share/work-tuimer/` (or `./data/` fallback)
+- **Switch days and even whole months** via `[` and `]` keybind (+ "C" (capital c) for running calendar)
 
 ## Installation
 
