@@ -1,0 +1,5 @@
+{
+  "rules": [
+    "GitHub CLI is READ-ONLY: Only use 'gh issue list', 'gh issue view', 'gh pr list', 'gh pr view' for reading. DO NOT comment on, close, or modify GitHub issues/PRs. After implementing fixes, inform the user so they can manage issues themselves."
+  ]
+}

@@ -1,5 +1,13 @@
 # Agent Guidelines for WorkTimer TUI
 
+## GitHub Issues Management
+
+**IMPORTANT: GitHub CLI is READ-ONLY**
+- **DO NOT** comment on, close, or modify GitHub issues
+- **DO NOT** use commands like `gh issue comment`, `gh issue close`, `gh pr comment`, etc.
+- **ONLY** use `gh issue list`, `gh issue view`, `gh pr list`, `gh pr view` for reading
+- After implementing fixes, inform the user so they can manage the issue themselves
+
 ## Task Management
 
 ### TASKS.md Usage
@@ -31,7 +39,7 @@ When working on any feature or bug fix:
 - **Clippy**: `cargo clippy` (linting)
 
 ## Code Style
-- **Language**: Rust 2021 edition
+- **Language**: Rust 2024 edition
 - **Error Handling**: Use `anyhow::Result` for functions, `anyhow::Context` for error context
 - **Imports**: Group by std → external crates → internal modules, separated by blank lines
 - **Types**: Prefer explicit types on public APIs; use `pub` fields for simple data structs
