@@ -12,16 +12,6 @@ This file tracks active development tasks for the WorkTimer project. Tasks are m
 
 ## Current Sprint
 
-### Bug Fixes
-
-#### Issue #2: Double Key Events on WezTerm/Windows
-- [x] Update Cargo.toml to use Rust edition 2024
-- [x] Import KeyEventKind from crossterm::event
-- [x] Filter key events to only handle KeyEventKind::Press
-- [ ] Test fix on multiple terminals
-- **Context**: On WezTerm/Windows, key events fire for both Press and Release, causing doubled actions
-- **Solution**: Filter events using `if let` with `&& key.kind == KeyEventKind::Press` pattern
-
 ### High Priority Features (Quick Wins)
 
 #### Daily Summary
@@ -130,6 +120,15 @@ This file tracks active development tasks for the WorkTimer project. Tasks are m
 ---
 
 ## Completed Tasks
+
+### Issue #2: Double Key Events on WezTerm/Windows (2025-11-05)
+- [x] Update Cargo.toml to use Rust edition 2024
+- [x] Import KeyEventKind from crossterm::event
+- [x] Filter key events to only handle KeyEventKind::Press
+- **Context**: On WezTerm/Windows, key events fire for both Press and Release, causing doubled actions
+- **Solution**: Filter events using `if let` with `&& key.kind == KeyEventKind::Press` pattern
+- **Commit**: 0e49371 - "Fix doubled keyboard actions on WezTerm/Windows by filtering for Press events only"
+- **Issue**: https://github.com/Kamyil/work-tuimer/issues/2
 
 ### New Task Default Times (2025-11-04)
 - [x] Update `add_new_record()` to use current time as start time
