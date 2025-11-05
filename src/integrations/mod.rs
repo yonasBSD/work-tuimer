@@ -155,23 +155,44 @@ mod tests {
 
     #[test]
     fn test_build_url_jira_browse() {
-        let config = Config::default();
+        // Config with enabled JIRA integration
+        let toml_str = r#"
+[integrations]
+default_tracker = "jira"
+
+[integrations.jira]
+enabled = true
+base_url = "https://test.atlassian.net"
+ticket_patterns = ["^[A-Z]+-\\d+$"]
+browse_url = "{base_url}/browse/{ticket}"
+worklog_url = "{base_url}/browse/{ticket}?focusedWorklogId=-1"
+        "#;
+        let config: Config = toml::from_str(toml_str).unwrap();
         let url = build_url("WL-1", TrackerType::Jira, &config, false);
         assert!(url.is_ok());
-        assert_eq!(
-            url.unwrap(),
-            "https://your-company.atlassian.net/browse/WL-1"
-        );
+        assert_eq!(url.unwrap(), "https://test.atlassian.net/browse/WL-1");
     }
 
     #[test]
     fn test_build_url_jira_worklog() {
-        let config = Config::default();
+        // Config with enabled JIRA integration
+        let toml_str = r#"
+[integrations]
+default_tracker = "jira"
+
+[integrations.jira]
+enabled = true
+base_url = "https://test.atlassian.net"
+ticket_patterns = ["^[A-Z]+-\\d+$"]
+browse_url = "{base_url}/browse/{ticket}"
+worklog_url = "{base_url}/browse/{ticket}?focusedWorklogId=-1"
+        "#;
+        let config: Config = toml::from_str(toml_str).unwrap();
         let url = build_url("WL-1", TrackerType::Jira, &config, true);
         assert!(url.is_ok());
         assert_eq!(
             url.unwrap(),
-            "https://your-company.atlassian.net/browse/WL-1?focusedWorklogId=-1"
+            "https://test.atlassian.net/browse/WL-1?focusedWorklogId=-1"
         );
     }
 

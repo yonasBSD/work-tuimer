@@ -70,7 +70,7 @@ cargo build --release
 | `d` | Delete selected record |
 | `v` | Enter visual mode (multi-select) |
 | `t` | Set current time on selected field |
-| `T` | Open ticket in browser (if detected in task name) |
+| `T` | Open ticket in browser (only visible if config exists) |
 | `u` | Undo last change |
 | `r` | Redo undone change |
 | `s` | Save to file |
@@ -108,13 +108,15 @@ cargo build --release
 | `Enter` | Jump to selected date |
 | `Esc` | Close calendar view |
 
-## JIRA/Linear Integration
+## JIRA/Linear Integration (Optional)
 
-WorkTimer automatically detects issue tracker tickets in task names and allows you to open them in your browser.
+WorkTimer supports automatic ticket detection from task names and browser integration for JIRA and Linear issue trackers. **This feature is completely optional** - the application works perfectly without any configuration.
 
 ### Setup
 
-Create a configuration file at `~/.config/work-tuimer/config.toml`:
+**Note**: If you don't create a config file, the integration feature will be hidden (no `T` keybinding, no ticket badges). The app works perfectly without it.
+
+To enable the integration, create a configuration file at `~/.config/work-tuimer/config.toml`:
 
 **For JIRA:**
 

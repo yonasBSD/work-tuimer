@@ -46,13 +46,7 @@ impl Default for IntegrationConfig {
     fn default() -> Self {
         Self {
             default_tracker: "jira".to_string(),
-            jira: TrackerConfig {
-                enabled: true,
-                base_url: "https://your-company.atlassian.net".to_string(),
-                ticket_patterns: vec!["^[A-Z]+-\\d+$".to_string()],
-                browse_url: "{base_url}/browse/{ticket}".to_string(),
-                worklog_url: "{base_url}/browse/{ticket}?focusedWorklogId=-1".to_string(),
-            },
+            jira: TrackerConfig::default(),
             linear: TrackerConfig::default(),
         }
     }
@@ -86,6 +80,12 @@ impl Config {
             PathBuf::from("./config.toml")
         }
     }
+
+    /// Check if any tracker integration is properly configured
+    pub fn has_integrations(&self) -> bool {
+        (self.integrations.jira.enabled && !self.integrations.jira.base_url.is_empty())
+            || (self.integrations.linear.enabled && !self.integrations.linear.base_url.is_empty())
+    }
 }
 
 #[cfg(test)]
@@ -96,11 +96,8 @@ mod tests {
     fn test_default_config() {
         let config = Config::default();
         assert_eq!(config.integrations.default_tracker, "jira");
-        assert!(config.integrations.jira.enabled);
-        assert_eq!(
-            config.integrations.jira.base_url,
-            "https://your-company.atlassian.net"
-        );
+        assert!(!config.integrations.jira.enabled);
+        assert_eq!(config.integrations.jira.base_url, "");
     }
 
     #[test]
@@ -108,7 +105,6 @@ mod tests {
         let config = Config::default();
         let toml_str = toml::to_string_pretty(&config).expect("Failed to serialize");
         assert!(toml_str.contains("jira"));
-        assert!(toml_str.contains("your-company.atlassian.net"));
     }
 
     #[test]

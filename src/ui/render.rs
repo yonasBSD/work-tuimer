@@ -165,11 +165,15 @@ fn render_records(frame: &mut Frame, area: Rect, app: &AppState) {
             let (name_display, start_display, end_display, description_display) = if is_editing {
                 match app.edit_field {
                     crate::ui::EditField::Name => {
-                        // Extract and display ticket badge if present
-                        let display = if let Some(ticket) =
-                            crate::integrations::extract_ticket_from_name(&app.input_buffer)
-                        {
-                            format!("{} {} [{}]", icon, app.input_buffer, ticket)
+                        // Extract and display ticket badge if present and config exists
+                        let display = if app.config.has_integrations() {
+                            if let Some(ticket) =
+                                crate::integrations::extract_ticket_from_name(&app.input_buffer)
+                            {
+                                format!("{} {} [{}]", icon, app.input_buffer, ticket)
+                            } else {
+                                format!("{} {}", icon, app.input_buffer)
+                            }
                         } else {
                             format!("{} {}", icon, app.input_buffer)
                         };
@@ -181,11 +185,15 @@ fn render_records(frame: &mut Frame, area: Rect, app: &AppState) {
                         )
                     }
                     crate::ui::EditField::Description => {
-                        // Extract and display ticket badge if present
-                        let display = if let Some(ticket) =
-                            crate::integrations::extract_ticket_from_name(&record.name)
-                        {
-                            format!("{} {} [{}]", icon, record.name, ticket)
+                        // Extract and display ticket badge if present and config exists
+                        let display = if app.config.has_integrations() {
+                            if let Some(ticket) =
+                                crate::integrations::extract_ticket_from_name(&record.name)
+                            {
+                                format!("{} {} [{}]", icon, record.name, ticket)
+                            } else {
+                                format!("{} {}", icon, record.name)
+                            }
                         } else {
                             format!("{} {}", icon, record.name)
                         };
@@ -217,11 +225,15 @@ fn render_records(frame: &mut Frame, area: Rect, app: &AppState) {
                             }
                         }
 
-                        // Extract and display ticket badge if present
-                        let name_with_badge = if let Some(ticket) =
-                            crate::integrations::extract_ticket_from_name(&record.name)
-                        {
-                            format!("{} {} [{}]", icon, record.name, ticket)
+                        // Extract and display ticket badge if present and config exists
+                        let name_with_badge = if app.config.has_integrations() {
+                            if let Some(ticket) =
+                                crate::integrations::extract_ticket_from_name(&record.name)
+                            {
+                                format!("{} {} [{}]", icon, record.name, ticket)
+                            } else {
+                                format!("{} {}", icon, record.name)
+                            }
                         } else {
                             format!("{} {}", icon, record.name)
                         };
@@ -244,11 +256,15 @@ fn render_records(frame: &mut Frame, area: Rect, app: &AppState) {
                     }
                 }
             } else {
-                // Extract and display ticket badge if present (non-editing mode)
-                let name_with_badge = if let Some(ticket) =
-                    crate::integrations::extract_ticket_from_name(&record.name)
-                {
-                    format!("{} {} [{}]", icon, record.name, ticket)
+                // Extract and display ticket badge if present and config exists (non-editing mode)
+                let name_with_badge = if app.config.has_integrations() {
+                    if let Some(ticket) =
+                        crate::integrations::extract_ticket_from_name(&record.name)
+                    {
+                        format!("{} {} [{}]", icon, record.name, ticket)
+                    } else {
+                        format!("{} {}", icon, record.name)
+                    }
                 } else {
                     format!("{} {}", icon, record.name)
                 };
@@ -463,12 +479,15 @@ fn render_grouped_totals(frame: &mut Frame, area: Rect, app: &AppState) {
 }
 
 fn render_footer(frame: &mut Frame, area: Rect, app: &AppState) {
+    // Build help text for Browse mode conditionally
+    let browse_help = if app.config.has_integrations() {
+        "↑/↓: Row | ←/→: Field | [/]: Day | C: Calendar | Enter: Edit | c: Change | n: New | b: Break | d: Delete | v: Visual | t: Now | T: Ticket | ?: Help | q: Quit"
+    } else {
+        "↑/↓: Row | ←/→: Field | [/]: Day | C: Calendar | Enter: Edit | c: Change | n: New | b: Break | d: Delete | v: Visual | t: Now | ?: Help | q: Quit"
+    };
+
     let (help_text, mode_color, mode_label) = match app.mode {
-        crate::ui::AppMode::Browse => (
-            "↑/↓: Row | ←/→: Field | [/]: Day | C: Calendar | Enter: Edit | c: Change | n: New | b: Break | d: Delete | v: Visual | t: Now | T: Ticket | ?: Help | q: Quit",
-            Color::Cyan,
-            "BROWSE",
-        ),
+        crate::ui::AppMode::Browse => (browse_help, Color::Cyan, "BROWSE"),
         crate::ui::AppMode::Edit => (
             "Tab: Next field | Enter: Save | Esc: Cancel",
             Color::Yellow,
