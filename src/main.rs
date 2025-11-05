@@ -4,7 +4,7 @@ mod ui;
 
 use anyhow::Result;
 use crossterm::{
-    event::{self, Event, KeyCode, KeyEvent},
+    event::{self, Event, KeyCode, KeyEvent, KeyEventKind},
     execute,
     terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
 };
@@ -59,7 +59,9 @@ fn run_app<B: ratatui::backend::Backend>(
             continue; // Force redraw with new data before waiting for next event
         }
 
-        if let Event::Key(key) = event::read()? {
+        if let Event::Key(key) = event::read()?
+            && key.kind == KeyEventKind::Press
+        {
             handle_key_event(app, key, storage);
         }
     }
