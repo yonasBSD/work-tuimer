@@ -16,8 +16,8 @@ A terminal user interface (TUI) for tracking work time entries with inline editi
 - **Undo/Redo**: Recover from mistakes with `u` / `r` keybinds (max 50 levels)
 - **Auto-save**: Automatically saves changes on quit and when switching days
 - **Persistent Storage**: JSON file per day in `~/.local/share/work-tuimer/` (or `./data/` fallback)
-- **JIRA/Linear Integration**: Open issue tracker links directly from tasks with `Shift+J` keybind
 - **Switch days and even whole months** via `[` and `]` keybind (+ "C" (capital c) for running calendar)
+- **Issue Tracker Integration**: Automatic ticket detection (JIRA/Linear) from task names with browser shortcuts
 
 ## Installation
 
@@ -68,8 +68,9 @@ cargo build --release
 | `n` | Add new work record |
 | `b` | Add break (uses selected record's end time as start) |
 | `d` | Delete selected record |
-| `v` | Enter visual (select) mode |
+| `v` | Enter visual mode (multi-select) |
 | `t` | Set current time on selected field |
+| `T` | Open ticket in browser (if detected in task name) |
 | `u` | Undo last change |
 | `r` | Redo undone change |
 | `s` | Save to file |
@@ -79,7 +80,7 @@ cargo build --release
 
 | Key | Action |
 |-----|--------|
-| `Tab` | Next field (Name → Start → End → Ticket → Name) |
+| `Tab` | Next field (Name → Start → End → Description → Name) |
 | `Enter` | Save changes and exit edit mode |
 | `Esc` | Cancel and exit edit mode |
 | `Backspace` | Delete character |
@@ -109,38 +110,84 @@ cargo build --release
 
 ## JIRA/Linear Integration
 
-WorkTimer can open issue tracker tickets directly in your browser using the `Shift+J` keybind. This feature supports both JIRA and Linear issue trackers.
+WorkTimer automatically detects issue tracker tickets in task names and allows you to open them in your browser.
 
-### Configuration
+### Setup
 
-Create or edit `~/.config/work-tuimer/config.toml` to configure your trackers:
+Create a configuration file at `~/.config/work-tuimer/config.toml`:
+
+**For JIRA:**
 
 ```toml
-[jira]
-base_url = "https://your-company.atlassian.net"
-project_prefix = "YOUR"
+[integrations]
+default_tracker = "jira"  # Default when pattern is ambiguous
 
-[linear]
-base_url = "https://linear.app"
-team_key = "YOUR"
+[integrations.jira]
+enabled = true
+base_url = "https://your-company.atlassian.net"
+ticket_patterns = ["^[A-Z]+-\\d+$"]  # Regex to match your tickets
+browse_url = "{base_url}/browse/{ticket}"
+worklog_url = "{base_url}/browse/{ticket}?focusedWorklogId=-1"
 ```
 
-### Default Configuration
+**For Linear:**
 
-By default, the configuration points to a JIRA instance at `your-company.atlassian.net` as an example. Replace this with your actual JIRA URL and project prefix to start using the feature.
+```toml
+[integrations]
+default_tracker = "linear"
+
+[integrations.linear]
+enabled = true
+base_url = "https://linear.app/your-team"
+ticket_patterns = ["^[A-Z]+-\\d+$"]  # Regex to match your tickets  
+browse_url = "{base_url}/issue/{ticket}"
+worklog_url = ""  # Linear doesn't have worklogs
+```
+
+**For Both (JIRA + Linear):**
+
+```toml
+[integrations]
+default_tracker = "jira"  # Fallback when patterns overlap
+
+[integrations.jira]
+enabled = true
+base_url = "https://your-company.atlassian.net"
+ticket_patterns = ["^PROJ-\\d+$", "^WORK-\\d+$"]  # Specific project patterns
+browse_url = "{base_url}/browse/{ticket}"
+worklog_url = "{base_url}/browse/{ticket}?focusedWorklogId=-1"
+
+[integrations.linear]
+enabled = true
+base_url = "https://linear.app/your-team"
+ticket_patterns = ["^ENG-\\d+$", "^DESIGN-\\d+$"]  # Your Linear team patterns
+browse_url = "{base_url}/issue/{ticket}"
+worklog_url = ""
+```
+
+The app will automatically detect which tracker to use based on the `ticket_patterns` regex. If a ticket matches multiple patterns, it uses the `default_tracker`.
 
 ### Usage
 
-1. **Add a ticket to a task**: While editing a task (press `Enter` to enter edit mode), press `Tab` to cycle to the Ticket field and enter your ticket ID (e.g., `PROJ-123` or `LIN-456`).
+1. **Include ticket IDs in task names**: When creating or editing tasks, include the ticket ID in the name:
+   - JIRA: `"PROJ-123: Fix login bug"`
+   - Linear: `"ENG-456: Add dark mode"`
 
-2. **Open in browser**: Select a task with a ticket and press `Shift+J`. The ticket will open in your default browser.
+2. **Visual indicator**: Tasks with detected tickets show a badge: `📋 Task Name [PROJ-123]`
 
-3. **Automatic ticket detection**: WorkTimer automatically detects whether a ticket is from JIRA (e.g., `WL-1`) or Linear (e.g., `LIN-123`) based on the ticket pattern.
+3. **Open in browser**: Press `T` (capital T) while a task is selected to open the ticket in your default browser
 
-### Supported Formats
+### Ticket Detection
 
-- **JIRA**: `PROJECT-123` (e.g., `WL-1`, `PROJ-456`)
-- **Linear**: `LIN-123`, `TEAM-123` (e.g., `LIN-1`, `ENG-99`)
+- **JIRA pattern**: 2-10 uppercase letters + hyphen + numbers (e.g., `PROJ-123`, `WL-42`)
+- **Linear pattern**: Same format (e.g., `ENG-456`, `DESIGN-12`)
+- Tickets are detected automatically from task names at runtime (no data model changes)
+
+### Supported Platforms
+
+- **macOS**: Uses `open` command
+- **Linux**: Uses `xdg-open` command  
+- **Windows**: Uses `cmd /C start` command
 
 ## Data Format
 
@@ -155,7 +202,8 @@ Data is stored per day in JSON format:
       "name": "Task name",
       "start": "09:00",
       "end": "12:00",
-      "ticket": "WL-1"
+      "total_minutes": 180,
+      "description": "Optional description"
     }
   ]
 }

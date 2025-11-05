@@ -10,8 +10,6 @@ pub struct WorkRecord {
     pub total_minutes: u32,
     #[serde(default)]
     pub description: String,
-    #[serde(default)]
-    pub ticket: Option<String>,
 }
 
 impl WorkRecord {
@@ -24,7 +22,6 @@ impl WorkRecord {
             end,
             total_minutes,
             description: String::new(),
-            ticket: None,
         }
     }
 

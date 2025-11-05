@@ -121,6 +121,52 @@ This file tracks active development tasks for the WorkTimer project. Tasks are m
 
 ## Completed Tasks
 
+### Bug Fix: Error Modal and Keybinding Fix (2025-11-05)
+- [x] Add error modal rendering with red theme and centered display
+- [x] Integrate error modal into main render pipeline (shows on top of everything)
+- [x] Add `clear_error()` method to AppState for auto-dismissing errors
+- [x] Change keybinding from `Shift+J` to `T` (capital T) for better reliability
+- [x] Update help text in footer from "Shift+J: Ticket" to "T: Ticket"
+- [x] Update README.md with new `T` keybinding
+- **Context**: Fixed issue where `Shift+J` keybinding wasn't working - modifier key detection was unreliable across terminals. Changed to simple `T` key which works perfectly. Also added prominent error modal (red, centered overlay) to make debugging easier.
+- **Root Cause**: Crossterm's `KeyModifiers::SHIFT` detection with `Char('j')` wasn't reliable on macOS/terminal combinations
+- **Solution**: Use `KeyCode::Char('T')` which naturally requires Shift to type, avoiding modifier detection issues
+- **Testing**: Manually tested - `T` key successfully opens tickets in browser, error modal displays for invalid cases
+- **Files Modified**: src/ui/render.rs (error modal), src/main.rs (keybinding), README.md
+
+### Feature: JIRA/Linear Integration - Phase 1 Auto-detection (2025-11-05)
+- [x] Restore JIRA/Linear ticket functionality with auto-detection from task names
+- [x] Add `open_ticket_in_browser()` method to AppState with platform-specific browser commands
+- [x] Add Shift+J keybinding to open tickets in browser from Browse mode
+- [x] Update UI to display ticket badges (`📋 Task Name [PROJ-123]`) in all edit states
+- [x] Update footer help text to show "Shift+J: Ticket" in Browse mode
+- [x] Extract ticket IDs using regex pattern `[A-Z]{2,10}-\d+` from task names
+- [x] Detect tracker type (JIRA/Linear) using existing config patterns
+- [x] Build URLs and open browser using `std::process::Command` (macOS: `open`, Windows: `cmd /C start`, Linux: `xdg-open`)
+- [x] Update README.md with ticket detection documentation
+- [x] Update TASKS.md to document Phase 1 completion
+- **Context**: Implemented Phase 1 (Auto-detection MVP) of JIRA/Linear integration. Tickets are detected automatically from task names at runtime without data model changes. Users can include ticket IDs like "WL-1: Task" or "PROJ-123: Feature" and press Shift+J to open in browser.
+- **Design**: Task-name level detection (not per-record), no persistent storage, config-based JIRA vs Linear detection
+- **Testing**: All 19 tests pass via `cargo test` in nix-shell
+- **Future**: Phase 2 (manual mapping via `T` key), Phase 3 (JIRA worklog export via `W` command)
+- **Files Modified**: src/ui/app_state.rs, src/main.rs, src/ui/render.rs, README.md, TASKS.md
+
+### Feature: JIRA/Linear Integration Refactoring (2025-11-05)
+- [x] Revert ticket field from per-record to design for task-level association
+- [x] Remove `ticket: Option<String>` field from WorkRecord struct
+- [x] Update EditField enum to use Description instead of Ticket
+- [x] Fix save_current_field() to save description instead of ticket
+- [x] Remove open_ticket_in_browser() method from AppState
+- [x] Remove Shift+J keybinding from main.rs
+- [x] Update render.rs: Replace ticket display with description display
+- [x] Update table header from "🎫 Ticket" to "📄 Description"
+- [x] Update footer help text to remove Shift+J reference
+- [x] Run cargo check and cargo test - all 19 tests pass
+- **Context**: Completed refactoring of the JIRA/Linear integration. The initial design incorrectly placed ticket tracking at the per-record level, but users need to associate tickets with task names instead (since the same ticket is worked on multiple times per day). Design decision: Move ticket association to task-name/summary level for future implementation.
+- **Testing**: All 19 unit tests pass (config serialization, URL building, ticket pattern matching)
+- **Build**: Successfully compiles via `nix-shell --run 'cargo build'`
+- **Files Modified**: src/models/work_record.rs, src/ui/app_state.rs, src/ui/render.rs, src/main.rs
+
 ### Feature: JIRA/Linear Integration (2025-11-05)
 - [x] Add dependencies: `toml`, `regex` crates (removed `open` crate, using `std::process::Command` instead)
 - [x] Create config system (`src/config/mod.rs`) with TOML support

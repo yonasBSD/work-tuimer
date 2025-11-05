@@ -15,7 +15,7 @@ pub enum EditField {
     Name,
     Start,
     End,
-    Ticket,
+    Description,
 }
 
 pub struct Command {
@@ -201,7 +201,7 @@ impl AppState {
                 EditField::Name => record.name.clone(),
                 EditField::Start => record.start.to_string(),
                 EditField::End => record.end.to_string(),
-                EditField::Ticket => record.ticket.clone().unwrap_or_default(),
+                EditField::Description => record.description.clone(),
             };
             self.mode = AppMode::Edit;
             self.input_buffer = input_value;
@@ -238,11 +238,11 @@ impl AppState {
                     EditField::End
                 }
                 EditField::End => {
-                    self.input_buffer = record.ticket.clone().unwrap_or_default();
+                    self.input_buffer = record.description.clone();
                     self.time_cursor = 0;
-                    EditField::Ticket
+                    EditField::Description
                 }
-                EditField::Ticket => {
+                EditField::Description => {
                     self.input_buffer = record.name.clone();
                     self.time_cursor = 0;
                     EditField::Name
@@ -253,7 +253,7 @@ impl AppState {
 
     pub fn handle_char_input(&mut self, c: char) {
         match self.edit_field {
-            EditField::Name | EditField::Ticket => {
+            EditField::Name | EditField::Description => {
                 self.input_buffer.push(c);
             }
             EditField::Start | EditField::End => {
@@ -286,7 +286,7 @@ impl AppState {
 
     pub fn handle_backspace(&mut self) {
         match self.edit_field {
-            EditField::Name | EditField::Ticket => {
+            EditField::Name | EditField::Description => {
                 self.input_buffer.pop();
             }
             EditField::Start | EditField::End => {
@@ -324,13 +324,8 @@ impl AppState {
                             .map_err(|_| "Invalid end time format (use HH:MM)".to_string())?;
                         record_mut.update_duration();
                     }
-                    EditField::Ticket => {
-                        let ticket_input = self.input_buffer.trim().to_string();
-                        record_mut.ticket = if ticket_input.is_empty() {
-                            None
-                        } else {
-                            Some(ticket_input)
-                        };
+                    EditField::Description => {
+                        record_mut.description = self.input_buffer.trim().to_string();
                     }
                 }
             }
@@ -420,10 +415,10 @@ impl AppState {
 
     pub fn move_field_left(&mut self) {
         self.edit_field = match self.edit_field {
-            EditField::Name => EditField::Ticket,
+            EditField::Name => EditField::Description,
             EditField::Start => EditField::Name,
             EditField::End => EditField::Start,
-            EditField::Ticket => EditField::End,
+            EditField::Description => EditField::End,
         };
     }
 
@@ -431,8 +426,8 @@ impl AppState {
         self.edit_field = match self.edit_field {
             EditField::Name => EditField::Start,
             EditField::Start => EditField::End,
-            EditField::End => EditField::Ticket,
-            EditField::Ticket => EditField::Name,
+            EditField::End => EditField::Description,
+            EditField::Description => EditField::Name,
         };
     }
 
@@ -755,38 +750,27 @@ impl AppState {
     }
 
     pub fn open_ticket_in_browser(&mut self) {
-        use crate::integrations::{build_url, detect_tracker_type};
-        use std::process::Command;
+        use crate::integrations::{build_url, detect_tracker_type, extract_ticket_from_name};
 
         if let Some(record) = self.get_selected_record() {
-            if let Some(ref ticket) = record.ticket {
-                if let Some(tracker) = detect_tracker_type(ticket, &self.config) {
-                    match build_url(ticket, tracker, &self.config, false) {
+            if let Some(ticket_id) = extract_ticket_from_name(&record.name) {
+                if let Some(tracker) = detect_tracker_type(&ticket_id, &self.config) {
+                    match build_url(&ticket_id, tracker, &self.config, false) {
                         Ok(url) => {
-                            // Use open command on macOS/Linux or start on Windows
-                            let result = if cfg!(target_os = "windows") {
-                                Command::new("cmd")
-                                    .args(&["/C", "start", &url])
-                                    .output()
-                            } else if cfg!(target_os = "macos") {
-                                Command::new("open")
-                                    .arg(&url)
-                                    .output()
+                            // Open browser using platform-specific command
+                            let result = if cfg!(target_os = "macos") {
+                                std::process::Command::new("open").arg(&url).spawn()
+                            } else if cfg!(target_os = "windows") {
+                                std::process::Command::new("cmd")
+                                    .args(["/C", "start", &url])
+                                    .spawn()
                             } else {
                                 // Linux/Unix
-                                Command::new("xdg-open")
-                                    .arg(&url)
-                                    .output()
+                                std::process::Command::new("xdg-open").arg(&url).spawn()
                             };
 
-                            match result {
-                                Ok(_) => {
-                                    self.last_error_message = None;
-                                }
-                                Err(e) => {
-                                    self.last_error_message =
-                                        Some(format!("Failed to open browser: {}", e));
-                                }
+                            if let Err(e) = result {
+                                self.last_error_message = Some(format!("Failed to open browser: {}", e));
                             }
                         }
                         Err(e) => {
@@ -794,16 +778,18 @@ impl AppState {
                         }
                     }
                 } else {
-                    self.last_error_message =
-                        Some("Could not detect tracker type for this ticket".to_string());
+                    self.last_error_message = Some("Could not detect tracker type for ticket".to_string());
                 }
             } else {
-                self.last_error_message = Some("No ticket assigned to this task".to_string());
+                self.last_error_message = Some("No ticket found in task name".to_string());
             }
-        } else {
-            self.last_error_message = Some("No task selected".to_string());
         }
     }
+
+    pub fn clear_error(&mut self) {
+        self.last_error_message = None;
+    }
+
 }
 
 fn days_in_month(month: time::Month, year: i32) -> u8 {
