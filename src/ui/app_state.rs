@@ -334,21 +334,21 @@ impl AppState {
 
     pub fn add_new_record(&mut self) {
         use crate::models::{TimePoint, WorkRecord};
-        use time::{OffsetDateTime, UtcOffset};
         
         self.save_snapshot();
         
         let id = self.day_data.next_id();
         
-        // Get current time
-        let local_offset = UtcOffset::current_local_offset().unwrap_or(UtcOffset::UTC);
-        let now = OffsetDateTime::now_utc().to_offset(local_offset);
-        let current_minutes = (now.hour() as u32) * 60 + (now.minute() as u32);
-        
-        // Set start time to current time, end time to one hour later
-        let default_start = TimePoint::from_minutes_since_midnight(current_minutes).unwrap();
-        let end_minutes = (current_minutes + 60).min(24 * 60 - 1);
-        let default_end = TimePoint::from_minutes_since_midnight(end_minutes).unwrap();
+        let (default_start, default_end) = if let Some(current_record) = self.get_selected_record() {
+            let start_minutes = current_record.end.to_minutes_since_midnight();
+            let end_minutes = (start_minutes + 60).min(24 * 60 - 1);
+            (
+                current_record.end,
+                TimePoint::from_minutes_since_midnight(end_minutes).unwrap()
+            )
+        } else {
+            (TimePoint::new(9, 0).unwrap(), TimePoint::new(10, 0).unwrap())
+        };
         
         let record = WorkRecord::new(id, "New Task".to_string(), default_start, default_end);
         

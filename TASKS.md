@@ -121,6 +121,12 @@ This file tracks active development tasks for the WorkTimer project. Tasks are m
 
 ## Completed Tasks
 
+### Bug Fix: New Task Placement (2025-11-05)
+- [x] Fix `add_new_record()` to place new tasks after selected record instead of at current time
+- **Context**: The "n" keybind was creating tasks at random positions (wherever current time fell in the sorted list), while "b" for breaks worked correctly
+- **Solution**: Changed `add_new_record()` to use the same logic as `add_break()` - start time is set to the selected record's end time, with 1 hour duration
+- **File**: src/ui/app_state.rs:335-359
+
 ### Issue #2: Double Key Events on WezTerm/Windows (2025-11-05)
 - [x] Update Cargo.toml to use Rust edition 2024
 - [x] Import KeyEventKind from crossterm::event
