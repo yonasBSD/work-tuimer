@@ -1,7 +1,7 @@
 # WorkTimer TUI
 
 ![WorkTimer TUI Example](work_tuimer_example.png)
-Live demo: https://x.com/i/status/1985423210859368716v
+Live demo: https://x.com/KsenKamil/status/1985423210859368716
 
 A terminal user interface (TUI) for tracking work time entries with inline editing capabilities. Built with Rust and ratatui for efficient time management.
 
