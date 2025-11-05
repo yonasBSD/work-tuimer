@@ -121,6 +121,20 @@ This file tracks active development tasks for the WorkTimer project. Tasks are m
 
 ## Completed Tasks
 
+### Bug Fix: Remove Hardcoded Config Defaults (2025-11-05)
+- [x] Remove hardcoded JIRA URL (`mccomprojects.atlassian.net`) from `IntegrationConfig::default()`
+- [x] Add `has_integrations()` method to Config to check if any tracker is properly configured
+- [x] Hide `T` keybinding in main.rs when `!app.config.has_integrations()`
+- [x] Hide ticket badges `[PROJ-123]` in render.rs when no config exists (4 locations)
+- [x] Update README.md to clarify integration feature is completely optional
+- [x] Fix integration tests to use explicit TOML config instead of relying on defaults
+- [x] All 19 tests pass, no clippy warnings
+- **Context**: User discovered hardcoded default JIRA URL would cause first-time users to hit wrong instance. Decision: Remove all defaults and hide feature completely when not configured for clean UX.
+- **Design Philosophy**: Feature should be invisible until configured. No hardcoded URLs, no visible keybinds, no badges.
+- **Testing**: Verified with `cargo test`, `cargo clippy`, and `cargo fmt --check` in nix-shell
+- **Commit**: 93d23e4 - "Remove hardcoded config defaults and hide feature when not configured"
+- **Files Modified**: src/config/mod.rs, src/main.rs, src/ui/render.rs, src/integrations/mod.rs (tests), README.md
+
 ### Bug Fix: Error Modal and Keybinding Fix (2025-11-05)
 - [x] Add error modal rendering with red theme and centered display
 - [x] Integrate error modal into main render pipeline (shows on top of everything)
