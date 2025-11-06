@@ -67,8 +67,8 @@ cargo build --release
 | `n` | Add new work record |
 | `b` | Add break (uses selected record's end time as start) |
 | `d` | Delete selected record |
-| `v` | Enter visual mode (multi-select) |
-| `T` | Set current time on selected field |
+| `v` | Enter visual (select) mode |
+| `t` | Set current time on selected field |
 | `u` | Undo last change |
 | `r` | Redo undone change |
 | `s` | Save to file |
