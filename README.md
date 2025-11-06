@@ -3,7 +3,8 @@
 ![WorkTimer TUI Example](work_tuimer_example.png)
 Live demo: https://x.com/KsenKamil/status/1985423210859368716
 
-A terminal user interface (TUI) for tracking work time entries with inline editing capabilities. Built with Rust and ratatui for efficient time management.
+Simple, keyboard-driven TUI for time-tracking that allows you to quickly add time blocks and automatically group time if same task was done in different sessions
+Built with Rust and ratatui for efficient time management.
 
 ## Features
 
