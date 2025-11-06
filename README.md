@@ -7,18 +7,14 @@ A terminal user interface (TUI) for tracking work time entries with inline editi
 
 ## Features
 
-- **Browse Mode**: View all work entries with Vi-style navigation
-- **Calendar View**: Visual month calendar for quick date navigation with `Shift+C`
-- **Day Navigation**: Navigate between days with `[` (previous) and `]` (next)
-- **Edit Mode**: Inline editing of task names and time fields
-- **Visual Mode**: Select and delete multiple records at once with `v` keybind
-- **Smart Breaks**: Add break entries that calculate duration automatically with `b` keybind
-- **Task Picker**: Quick select from existing task names or create new ones with `c` keybind
-- **Undo/Redo**: Recover from mistakes with `u` / `r` keybinds (max 50 levels)
-- **Auto-save**: Automatically saves changes on quit and when switching days
-- **Persistent Storage**: JSON file per day in `~/.local/share/work-tuimer/` (or `./data/` fallback)
-- **Switch days and even whole months** via `[` and `]` keybind (+ "C" (capital c) for running calendar)
-- **Issue Tracker Integration**: Automatic ticket detection from task names with browser shortcuts (supports JIRA, Linear, GitHub, GitLab, and any custom tracker)
+- **Fully keyboard-driven**: No mouse required - everything accessible via keybinds
+- **Log tasks and breaks, get totals automatically**: Add work entries with start/end times - durations are calculated and summed
+- **Task picker with history**: Quickly select from previously used task names or create new ones
+- **Calendar navigation**: Jump between days, weeks, and months
+- **Arrow keys or Vim motions**: Navigate with arrow keys + Enter, or use h/j/k/l + i for Vim-style workflow
+- **Inline editing with undo/redo**: Fix mistakes in place, up to 50 levels of history
+- **Auto-saves locally per day**: Data stored as JSON files, for each day, on your machine (`~/.local/share/work-tuimer/`)
+- **Optional ticket integration**: Detect and link to JIRA, Linear, GitHub issues from task names - open ticket URLs directly in your browser from the app
 
 ## Installation
 
