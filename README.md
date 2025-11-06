@@ -65,7 +65,7 @@ cargo build --release
 | `]` | Navigate to next day (auto-saves) |
 | `Shift+C` | Open calendar view for date navigation |
 | `Enter/i` | Enter edit mode on selected field |
-| `c` | Change task name (opens picker or allows typing) |
+| `c` | Change task name (opens picker to select/filter/create) |
 | `n` | Add new work record |
 | `b` | Add break (uses selected record's end time as start) |
 | `d` | Delete selected record |
@@ -90,10 +90,10 @@ cargo build --release
 
 ### Task Picker (accessed via `c` in Browse mode)
 
-The task picker provides an intelligent way to change task names. Press `c` when on the Name field to:
-- **Select from existing tasks**: Shows all unique task names from the current day
-- **Filter by typing**: Start typing to filter the list
-- **Create new tasks**: Type a name that doesn't exist and press Enter
+Press `c` on the Name field to open the task picker:
+- Shows all unique task names from the current day
+- Type to filter the list
+- Press Enter to select a task or create a new one
 
 | Key | Action |
 |-----|--------|
