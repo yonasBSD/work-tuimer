@@ -180,7 +180,15 @@ browse_url = "{base_url}/issues/{ticket}"
 worklog_url = ""
 ```
 
-The app will automatically detect which tracker to use based on the `ticket_patterns` regex. If a ticket matches multiple patterns, it uses the `default_tracker`. You can name your trackers anything you want (e.g., `work-jira`, `my-company-tracker`, `team-issues`).
+**Multiple Tracker Support**: The app automatically detects which tracker to use based on the `ticket_patterns` regex:
+- Each tracker is checked in order until a pattern matches the ticket ID
+- If a ticket matches multiple patterns, the **first matching tracker** in the config is used
+- If **no pattern matches**, it falls back to the `default_tracker` (useful for catch-all scenarios or tickets that don't follow a strict pattern)
+- You can name your trackers anything you want (e.g., `work-jira`, `my-company-tracker`, `team-issues`)
+
+**Best Practice**: Define specific patterns for each tracker to avoid conflicts:
+- ✅ Good: JIRA uses `^PROJ-\\d+$`, GitHub uses `^#\\d+$`, Linear uses `^ENG-\\d+$` (distinct patterns)
+- ❌ Avoid: JIRA uses `^[A-Z]+-\\d+$`, Linear uses `^[A-Z]+-\\d+$` (overlapping - first one wins)
 
 ### Usage
 

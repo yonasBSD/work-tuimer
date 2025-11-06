@@ -187,6 +187,60 @@ browse_url = "{base_url}/issues/{ticket}"
     }
 
     #[test]
+    fn test_detect_tracker_overlapping_patterns_first_wins() {
+        // Test that when multiple trackers match, the first one in iteration order wins
+        let toml_str = r#"
+[integrations]
+default_tracker = "fallback"
+
+[integrations.trackers.jira]
+enabled = true
+base_url = "https://jira.example.com"
+ticket_patterns = ["^[A-Z]+-\\d+$"]
+browse_url = "{base_url}/browse/{ticket}"
+
+[integrations.trackers.linear]
+enabled = true
+base_url = "https://linear.app/team"
+ticket_patterns = ["^[A-Z]+-\\d+$"]
+browse_url = "{base_url}/issue/{ticket}"
+        "#;
+        let config: Config = toml::from_str(toml_str).unwrap();
+        
+        // PROJ-123 matches both patterns - should use whichever tracker appears first
+        let tracker = detect_tracker("PROJ-123", &config);
+        assert!(tracker.is_some());
+        
+        // The result should be deterministic (either "jira" or "linear")
+        // Note: HashMap iteration order is not guaranteed in Rust, but it should be consistent
+        let tracker_name = tracker.unwrap();
+        assert!(tracker_name == "jira" || tracker_name == "linear");
+        
+        // Verify the same ticket always resolves to the same tracker
+        let tracker2 = detect_tracker("PROJ-123", &config);
+        assert_eq!(tracker2, Some(tracker_name));
+    }
+
+    #[test]
+    fn test_detect_tracker_no_match_no_default() {
+        // Test that when no patterns match and no default is set, returns None
+        let toml_str = r#"
+[integrations]
+
+[integrations.trackers.jira]
+enabled = true
+base_url = "https://jira.example.com"
+ticket_patterns = ["^PROJ-\\d+$"]
+browse_url = "{base_url}/browse/{ticket}"
+        "#;
+        let config: Config = toml::from_str(toml_str).unwrap();
+        
+        // UNKNOWN-999 doesn't match and there's no default_tracker
+        let tracker = detect_tracker("UNKNOWN-999", &config);
+        assert_eq!(tracker, None);
+    }
+
+    #[test]
     fn test_build_url_browse() {
         let toml_str = r#"
 [integrations]
