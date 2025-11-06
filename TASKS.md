@@ -62,9 +62,9 @@ This file tracks active development tasks for the WorkTimer project. Tasks are m
 ### Low Priority Features (Nice to Have)
 
 #### Auto-complete
+- [x] Add quick-select for recent tasks (Task Picker - Issue #14)
 - [ ] Track frequency of task names
 - [ ] Implement task name suggestions during typing
-- [ ] Add quick-select for recent tasks
 - [ ] Store task history across sessions
 
 #### Configuration File
@@ -120,6 +120,25 @@ This file tracks active development tasks for the WorkTimer project. Tasks are m
 ---
 
 ## Completed Tasks
+
+### Feature: Task Picker (Issue #14) (2025-11-06)
+- [x] Add `TaskPicker` mode to AppMode enum
+- [x] Implement `open_task_picker()` and `close_task_picker()` methods
+- [x] Add `get_unique_task_names()` to extract unique tasks from current day
+- [x] Add navigation methods: `move_task_picker_up()`, `move_task_picker_down()`
+- [x] Implement `select_task_from_picker()` to apply selected task to input buffer
+- [x] Add `/` keybind in Edit mode (when editing Name field) to open picker
+- [x] Add TaskPicker keyboard handling (↑/↓/k/j for navigation, Enter to select, Esc to cancel)
+- [x] Create `render_task_picker()` with centered modal display
+- [x] Add task type icons (☕ break, 👥 meeting, 💻 code, 📋 other)
+- [x] Update footer help text to show `/: Task Picker` in Edit mode
+- [x] All 21 tests passing, no clippy warnings
+- [x] Update README.md with Task Picker documentation
+- **Context**: Implemented quick task picker feature requested in GitHub Issue #14. When editing a task name, users can press `/` to open a popup showing all unique task names from the current day, allowing quick reuse without retyping.
+- **Design**: Mini-picker style (centered popup), day-scoped (current day only), context-aware (only in Name edit field)
+- **Files Modified**: src/ui/app_state.rs, src/main.rs, src/ui/render.rs, README.md, TASKS.md
+- **Branch**: feature/task-picker
+- **Issue**: https://github.com/Kamyil/work-tuimer/issues/14
 
 ### Bug Fix: Remove Hardcoded Config Defaults (2025-11-05)
 - [x] Remove hardcoded JIRA URL (`mccomprojects.atlassian.net`) from `IntegrationConfig::default()`

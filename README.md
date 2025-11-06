@@ -13,6 +13,7 @@ A terminal user interface (TUI) for tracking work time entries with inline editi
 - **Edit Mode**: Inline editing of task names and time fields
 - **Visual Mode**: Select and delete multiple records at once with `v` keybind
 - **Smart Breaks**: Add break entries that calculate duration automatically with `b` keybind
+- **Task Picker**: Quick select from existing task names with `/` keybind while editing
 - **Undo/Redo**: Recover from mistakes with `u` / `r` keybinds (max 50 levels)
 - **Auto-save**: Automatically saves changes on quit and when switching days
 - **Persistent Storage**: JSON file per day in `~/.local/share/work-tuimer/` (or `./data/` fallback)
@@ -82,10 +83,22 @@ cargo build --release
 | Key | Action |
 |-----|--------|
 | `Tab` | Next field (Name → Start → End → Description → Name) |
+| `/` | Open task picker (quick select from existing tasks) |
 | `Enter` | Save changes and exit edit mode |
 | `Esc` | Cancel and exit edit mode |
 | `Backspace` | Delete character |
 | Any char | Insert character |
+
+### Task Picker
+
+When editing a task name, press `/` to open a quick picker showing all unique task names from the current day. This helps you quickly reuse task names without retyping.
+
+| Key | Action |
+|-----|--------|
+| `↑/k` | Move selection up |
+| `↓/j` | Move selection down |
+| `Enter` | Select task name |
+| `Esc` | Cancel and return to editing |
 
 ### Visual Mode
 

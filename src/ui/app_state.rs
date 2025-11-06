@@ -9,6 +9,7 @@ pub enum AppMode {
     Visual,
     CommandPalette,
     Calendar,
+    TaskPicker,
 }
 
 pub enum EditField {
@@ -63,6 +64,8 @@ pub struct AppState {
     pub calendar_view_year: i32,
     pub config: Config,
     pub last_error_message: Option<String>,
+    pub task_picker_selected: usize,
+    pub task_picker_buffer: String,
     history: History,
 }
 
@@ -167,6 +170,8 @@ impl AppState {
             date_changed: false,
             config: Config::load().unwrap_or_default(),
             last_error_message: None,
+            task_picker_selected: 0,
+            task_picker_buffer: String::new(),
             history: History::new(),
         }
     }
@@ -829,6 +834,56 @@ impl AppState {
 
     pub fn clear_error(&mut self) {
         self.last_error_message = None;
+    }
+
+    pub fn open_task_picker(&mut self) {
+        // Save the current input buffer
+        self.task_picker_buffer = self.input_buffer.clone();
+        self.task_picker_selected = 0;
+        self.mode = AppMode::TaskPicker;
+    }
+
+    pub fn close_task_picker(&mut self) {
+        // Restore the input buffer
+        self.input_buffer = self.task_picker_buffer.clone();
+        self.mode = AppMode::Edit;
+    }
+
+    pub fn get_unique_task_names(&self) -> Vec<String> {
+        use std::collections::HashSet;
+
+        let mut seen = HashSet::new();
+        let mut task_names = Vec::new();
+
+        for record in self.day_data.work_records.values() {
+            let name = record.name.trim().to_string();
+            if !name.is_empty() && seen.insert(name.clone()) {
+                task_names.push(name);
+            }
+        }
+
+        task_names.sort();
+        task_names
+    }
+
+    pub fn move_task_picker_up(&mut self) {
+        if self.task_picker_selected > 0 {
+            self.task_picker_selected -= 1;
+        }
+    }
+
+    pub fn move_task_picker_down(&mut self, task_count: usize) {
+        if self.task_picker_selected < task_count.saturating_sub(1) {
+            self.task_picker_selected += 1;
+        }
+    }
+
+    pub fn select_task_from_picker(&mut self) {
+        let task_names = self.get_unique_task_names();
+        if let Some(selected_name) = task_names.get(self.task_picker_selected) {
+            self.input_buffer = selected_name.clone();
+        }
+        self.mode = AppMode::Edit;
     }
 }
 

@@ -46,6 +46,11 @@ pub fn render(frame: &mut Frame, app: &AppState) {
         render_calendar(frame, app);
     }
 
+    // Render task picker modal if active
+    if matches!(app.mode, crate::ui::AppMode::TaskPicker) {
+        render_task_picker(frame, app);
+    }
+
     // Render error modal if there's an error
     if app.last_error_message.is_some() {
         render_error_modal(frame, app);
@@ -484,11 +489,14 @@ fn render_footer(frame: &mut Frame, area: Rect, app: &AppState) {
 
     let (help_text, mode_color, mode_label) = match app.mode {
         crate::ui::AppMode::Browse => (browse_help, Color::Cyan, "BROWSE"),
-        crate::ui::AppMode::Edit => (
-            "Tab: Next field | Enter: Save | Esc: Cancel",
-            Color::Yellow,
-            "EDIT",
-        ),
+        crate::ui::AppMode::Edit => {
+            let edit_help = if matches!(app.edit_field, crate::ui::EditField::Name) {
+                "Tab: Next field | Enter: Save | /: Task Picker | Esc: Cancel"
+            } else {
+                "Tab: Next field | Enter: Save | Esc: Cancel"
+            };
+            (edit_help, Color::Yellow, "EDIT")
+        }
         crate::ui::AppMode::Visual => (
             "↑/↓: Extend selection | d: Delete | Esc: Exit visual",
             Color::Magenta,
@@ -503,6 +511,11 @@ fn render_footer(frame: &mut Frame, area: Rect, app: &AppState) {
             "hjkl/arrows: Navigate | </>: Month | Enter: Select | Esc: Cancel",
             Color::Magenta,
             "CALENDAR",
+        ),
+        crate::ui::AppMode::TaskPicker => (
+            "↑/↓: Navigate | Enter: Select | Esc: Cancel",
+            Color::LightCyan,
+            "TASK PICKER",
         ),
     };
 
@@ -994,4 +1007,123 @@ fn render_error_modal(frame: &mut Frame, app: &AppState) {
         .style(Style::default().fg(Color::DarkGray));
 
     frame.render_widget(help, chunks[1]);
+}
+
+fn render_task_picker(frame: &mut Frame, app: &AppState) {
+    use ratatui::widgets::Clear;
+
+    let task_names = app.get_unique_task_names();
+
+    // Create a smaller centered modal (mini-picker style)
+    let area = frame.size();
+    let width = area.width.min(60);
+    let height = (task_names.len() as u16 + 5).min(15); // Dynamic height based on task count
+    let x = (area.width.saturating_sub(width)) / 2;
+    let y = (area.height.saturating_sub(height)) / 2;
+
+    let modal_area = Rect {
+        x,
+        y,
+        width,
+        height,
+    };
+
+    // Clear the background
+    frame.render_widget(Clear, modal_area);
+
+    // Add a background block for the entire modal
+    let bg_block = Block::default().style(Style::default().bg(Color::Rgb(20, 20, 30)));
+    frame.render_widget(bg_block, modal_area);
+
+    // Split modal into header and list
+    let chunks = Layout::default()
+        .direction(Direction::Vertical)
+        .constraints([Constraint::Length(3), Constraint::Min(5)])
+        .split(modal_area);
+
+    // Render header with help text
+    let header = Paragraph::new("Select a previous task name")
+        .style(Style::default().fg(Color::White))
+        .alignment(Alignment::Center)
+        .block(
+            Block::default()
+                .borders(Borders::ALL)
+                .border_type(BorderType::Rounded)
+                .border_style(Style::default().fg(Color::LightCyan))
+                .title("📋 Task Picker")
+                .title_style(
+                    Style::default()
+                        .fg(Color::LightCyan)
+                        .add_modifier(Modifier::BOLD),
+                )
+                .style(Style::default().bg(Color::Rgb(30, 30, 45))),
+        );
+
+    frame.render_widget(header, chunks[0]);
+
+    // Render task list
+    if task_names.is_empty() {
+        let empty_msg = Paragraph::new("No tasks found for today")
+            .style(Style::default().fg(Color::DarkGray))
+            .alignment(Alignment::Center)
+            .block(
+                Block::default()
+                    .borders(Borders::ALL)
+                    .border_type(BorderType::Rounded)
+                    .border_style(Style::default().fg(Color::LightCyan))
+                    .style(Style::default().bg(Color::Rgb(25, 25, 38))),
+            );
+        frame.render_widget(empty_msg, chunks[1]);
+    } else {
+        let rows: Vec<Row> = task_names
+            .iter()
+            .enumerate()
+            .map(|(i, name)| {
+                let is_selected = i == app.task_picker_selected;
+
+                let style = if is_selected {
+                    Style::default()
+                        .bg(Color::Rgb(70, 130, 180))
+                        .fg(Color::White)
+                        .add_modifier(Modifier::BOLD)
+                } else {
+                    Style::default().bg(Color::Rgb(25, 25, 38))
+                };
+
+                // Add icon based on task type
+                let icon = if name.to_lowercase().contains("break") {
+                    "☕"
+                } else if name.to_lowercase().contains("meeting") {
+                    "👥"
+                } else if name.to_lowercase().contains("code")
+                    || name.to_lowercase().contains("dev")
+                {
+                    "💻"
+                } else {
+                    "📋"
+                };
+
+                let display_name = format!("{} {}", icon, name);
+
+                Row::new(vec![Cell::from(display_name).style(Style::default().fg(Color::White))])
+                    .style(style)
+            })
+            .collect();
+
+        let task_table = Table::new(rows, [Constraint::Percentage(100)]).block(
+            Block::default()
+                .borders(Borders::ALL)
+                .border_type(BorderType::Rounded)
+                .border_style(Style::default().fg(Color::LightCyan))
+                .title(format!("Tasks ({} available)", task_names.len()))
+                .title_style(
+                    Style::default()
+                        .fg(Color::LightCyan)
+                        .add_modifier(Modifier::BOLD),
+                )
+                .style(Style::default().bg(Color::Rgb(25, 25, 38))),
+        );
+
+        frame.render_widget(task_table, chunks[1]);
+    }
 }

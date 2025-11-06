@@ -109,6 +109,9 @@ fn handle_key_event(app: &mut AppState, key: KeyEvent, storage: &storage::Storag
                 let _ = app.save_edit();
             }
             KeyCode::Backspace => app.handle_backspace(),
+            KeyCode::Char('/') if matches!(app.edit_field, ui::EditField::Name) => {
+                app.open_task_picker();
+            }
             KeyCode::Char(c) => app.handle_char_input(c),
             _ => {}
         },
@@ -148,6 +151,16 @@ fn handle_key_event(app: &mut AppState, key: KeyEvent, storage: &storage::Storag
             KeyCode::Char('>') | KeyCode::Char('.') | KeyCode::Char(']') => {
                 app.calendar_next_month()
             }
+            _ => {}
+        },
+        ui::AppMode::TaskPicker => match key.code {
+            KeyCode::Esc => app.close_task_picker(),
+            KeyCode::Up | KeyCode::Char('k') => app.move_task_picker_up(),
+            KeyCode::Down | KeyCode::Char('j') => {
+                let task_count = app.get_unique_task_names().len();
+                app.move_task_picker_down(task_count);
+            }
+            KeyCode::Enter => app.select_task_from_picker(),
             _ => {}
         },
     }
