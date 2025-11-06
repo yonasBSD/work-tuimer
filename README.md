@@ -71,6 +71,7 @@ cargo build --release
 | `v` | Enter visual mode (multi-select) |
 | `t` | Set current time on selected field |
 | `T` | Open ticket in browser (only visible if config exists) |
+| `L` | Open worklog URL in browser (only visible if config exists) |
 | `u` | Undo last change |
 | `r` | Redo undone change |
 | `s` | Save to file |
@@ -114,9 +115,14 @@ WorkTimer supports automatic ticket detection from task names and browser integr
 
 ### Setup
 
-**Note**: If you don't create a config file, the integration feature will be hidden (no `T` keybinding, no ticket badges). The app works perfectly without it.
+**Note**: If you don't create a config file, the integration feature will be hidden (no `T`/`L` keybindings, no ticket badges). The app works perfectly without it.
 
-To enable the integration, create a configuration file at `~/.config/work-tuimer/config.toml`. You can configure multiple trackers with custom names:
+To enable the integration, create a configuration file at the appropriate location for your platform:
+
+- **Linux/macOS**: `~/.config/work-tuimer/config.toml` (or `$XDG_CONFIG_HOME/work-tuimer/config.toml` if set)
+- **Windows**: `%APPDATA%\work-tuimer\config.toml`
+
+You can configure multiple trackers with custom names:
 
 **Example: JIRA tracker**
 
@@ -183,9 +189,15 @@ The app will automatically detect which tracker to use based on the `ticket_patt
    - Linear: `"ENG-456: Add dark mode"`
    - GitHub: `"#789: Update documentation"`
 
-2. **Visual indicator**: Tasks with detected tickets show a badge: `📋 Task Name [PROJ-123]`
+2. **Visual indicator**: Tasks with detected tickets show a badge with a ticket icon: `🎫 Task Name [PROJ-123]`
 
-3. **Open in browser**: Press `T` (capital T) while a task is selected to open the ticket in your default browser
+3. **Open ticket in browser**: Press `T` (capital T) while a task with a detected ticket (🎫 icon visible) is selected to open the ticket in your default browser
+
+4. **Open worklog URL**: Press `L` (capital L) while a task with a detected ticket (🎫 icon visible) is selected to open the worklog URL (if configured). Useful for JIRA users to quickly jump to the worklog entry form for a ticket
+
+**Note**: The `T` and `L` keybindings only appear in the footer and only work when:
+- Integrations are configured in `config.toml`
+- The selected task has a ticket ID that matches one of your `ticket_patterns` (indicated by the 🎫 icon)
 
 ### Ticket Detection
 
