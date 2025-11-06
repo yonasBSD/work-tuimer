@@ -19,6 +19,8 @@ Built with Rust and ratatui for efficient time management.
 
 ## Installation
 
+No package managers support yet, will be done soon :(
+
 ### Pre-built Binaries
 
 Download the latest pre-built binary for your platform from [GitHub Releases](https://github.com/Kamyil/work-tuimer/releases):
