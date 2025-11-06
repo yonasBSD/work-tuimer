@@ -178,7 +178,7 @@ mod tests {
         let start = TimePoint::new(9, 0).unwrap();
         let end = TimePoint::new(10, 0).unwrap();
         let mut record = WorkRecord::new(1, "Task".to_string(), start, end);
-        
+
         assert_eq!(record.description, "");
         record.description = "Important meeting notes".to_string();
         assert_eq!(record.description, "Important meeting notes");

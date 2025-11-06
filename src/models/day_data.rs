@@ -94,7 +94,7 @@ mod tests {
     #[test]
     fn test_add_multiple_records() {
         let mut day = DayData::new(create_test_date());
-        
+
         day.add_record(create_test_record(1, "Coding", 9, 12));
         day.add_record(create_test_record(2, "Meeting", 13, 14));
         day.add_record(create_test_record(3, "Code Review", 14, 16));
@@ -106,13 +106,13 @@ mod tests {
     #[test]
     fn test_add_record_updates_last_id() {
         let mut day = DayData::new(create_test_date());
-        
+
         day.add_record(create_test_record(5, "Task", 9, 10));
         assert_eq!(day.last_id, 5);
-        
+
         day.add_record(create_test_record(2, "Task2", 10, 11));
         assert_eq!(day.last_id, 5); // Should not decrease
-        
+
         day.add_record(create_test_record(10, "Task3", 11, 12));
         assert_eq!(day.last_id, 10);
     }
@@ -141,7 +141,7 @@ mod tests {
     #[test]
     fn test_next_id() {
         let mut day = DayData::new(create_test_date());
-        
+
         assert_eq!(day.next_id(), 1);
         assert_eq!(day.next_id(), 2);
         assert_eq!(day.next_id(), 3);
@@ -152,7 +152,7 @@ mod tests {
     fn test_next_id_after_add_record() {
         let mut day = DayData::new(create_test_date());
         day.add_record(create_test_record(5, "Task", 9, 10));
-        
+
         assert_eq!(day.last_id, 5);
         assert_eq!(day.next_id(), 6);
         assert_eq!(day.next_id(), 7);
@@ -207,7 +207,7 @@ mod tests {
         let start = TimePoint::new(9, 0).unwrap();
         let end1 = TimePoint::new(10, 0).unwrap();
         let end2 = TimePoint::new(11, 0).unwrap();
-        
+
         day.add_record(WorkRecord::new(1, "Task1".to_string(), start, end1));
         day.add_record(WorkRecord::new(2, "Task2".to_string(), start, end2));
 
@@ -245,7 +245,7 @@ mod tests {
 
         let totals = day.get_grouped_totals();
         assert_eq!(totals.len(), 3);
-        
+
         // Should be sorted by duration (descending)
         assert_eq!(totals[0].0, "Coding");
         assert_eq!(totals[0].1, 180);
@@ -265,7 +265,7 @@ mod tests {
 
         let totals = day.get_grouped_totals();
         assert_eq!(totals.len(), 2);
-        
+
         // Coding should be grouped: 2 + 3 + 1 = 6 hours
         assert_eq!(totals[0].0, "Coding");
         assert_eq!(totals[0].1, 360);
@@ -281,7 +281,7 @@ mod tests {
         day.add_record(create_test_record(3, "Medium", 15, 17)); // 2 hours
 
         let totals = day.get_grouped_totals();
-        
+
         // Should be sorted by duration descending
         assert_eq!(totals[0].0, "Long");
         assert_eq!(totals[1].0, "Medium");
@@ -292,9 +292,9 @@ mod tests {
     fn test_clone() {
         let mut day1 = DayData::new(create_test_date());
         day1.add_record(create_test_record(1, "Coding", 9, 17));
-        
+
         let day2 = day1.clone();
-        
+
         assert_eq!(day1.date, day2.date);
         assert_eq!(day1.last_id, day2.last_id);
         assert_eq!(day1.work_records.len(), day2.work_records.len());

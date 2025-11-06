@@ -132,9 +132,18 @@ mod tests {
     #[test]
     fn test_to_minutes_since_midnight() {
         assert_eq!(TimePoint::new(0, 0).unwrap().to_minutes_since_midnight(), 0);
-        assert_eq!(TimePoint::new(1, 0).unwrap().to_minutes_since_midnight(), 60);
-        assert_eq!(TimePoint::new(14, 30).unwrap().to_minutes_since_midnight(), 870);
-        assert_eq!(TimePoint::new(23, 59).unwrap().to_minutes_since_midnight(), 1439);
+        assert_eq!(
+            TimePoint::new(1, 0).unwrap().to_minutes_since_midnight(),
+            60
+        );
+        assert_eq!(
+            TimePoint::new(14, 30).unwrap().to_minutes_since_midnight(),
+            870
+        );
+        assert_eq!(
+            TimePoint::new(23, 59).unwrap().to_minutes_since_midnight(),
+            1439
+        );
     }
 
     #[test]

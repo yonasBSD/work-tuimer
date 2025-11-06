@@ -91,7 +91,7 @@ mod tests {
     fn test_new_storage_with_temp_dir() {
         let temp_dir = TempDir::new().unwrap();
         let storage = Storage::new_with_dir(temp_dir.path().to_path_buf());
-        
+
         assert!(storage.is_ok());
         assert!(temp_dir.path().exists());
     }
@@ -101,9 +101,9 @@ mod tests {
         let temp_dir = TempDir::new().unwrap();
         let storage = Storage::new_with_dir(temp_dir.path().to_path_buf()).unwrap();
         let date = create_test_date();
-        
+
         let file_path = storage.get_file_path(&date);
-        
+
         assert_eq!(file_path.file_name().unwrap(), "2025-11-06.json");
     }
 
@@ -112,9 +112,9 @@ mod tests {
         let temp_dir = TempDir::new().unwrap();
         let storage = Storage::new_with_dir(temp_dir.path().to_path_buf()).unwrap();
         let date = create_test_date();
-        
+
         let result = storage.load(&date);
-        
+
         assert!(result.is_ok());
         let day_data = result.unwrap();
         assert_eq!(day_data.date, date);
@@ -128,16 +128,16 @@ mod tests {
         let storage = Storage::new_with_dir(temp_dir.path().to_path_buf()).unwrap();
         let date = create_test_date();
         let day_data = DayData::new(date);
-        
+
         // Save
         let save_result = storage.save(&day_data);
         assert!(save_result.is_ok());
-        
+
         // Load
         let load_result = storage.load(&date);
         assert!(load_result.is_ok());
         let loaded_data = load_result.unwrap();
-        
+
         assert_eq!(loaded_data.date, date);
         assert_eq!(loaded_data.work_records.len(), 0);
     }
@@ -147,17 +147,17 @@ mod tests {
         let temp_dir = TempDir::new().unwrap();
         let storage = Storage::new_with_dir(temp_dir.path().to_path_buf()).unwrap();
         let date = create_test_date();
-        
+
         let mut day_data = DayData::new(date);
         day_data.add_record(create_test_record(1, "Coding"));
         day_data.add_record(create_test_record(2, "Meeting"));
-        
+
         // Save
         storage.save(&day_data).unwrap();
-        
+
         // Load
         let loaded_data = storage.load(&date).unwrap();
-        
+
         assert_eq!(loaded_data.date, date);
         assert_eq!(loaded_data.work_records.len(), 2);
         assert_eq!(loaded_data.last_id, 2);
@@ -170,17 +170,17 @@ mod tests {
         let temp_dir = TempDir::new().unwrap();
         let storage = Storage::new_with_dir(temp_dir.path().to_path_buf()).unwrap();
         let date = create_test_date();
-        
+
         // Save first version
         let mut day_data1 = DayData::new(date);
         day_data1.add_record(create_test_record(1, "Task1"));
         storage.save(&day_data1).unwrap();
-        
+
         // Save second version (overwrite)
         let mut day_data2 = DayData::new(date);
         day_data2.add_record(create_test_record(2, "Task2"));
         storage.save(&day_data2).unwrap();
-        
+
         // Load should return second version
         let loaded_data = storage.load(&date).unwrap();
         assert_eq!(loaded_data.work_records.len(), 1);
@@ -194,12 +194,12 @@ mod tests {
         let storage = Storage::new_with_dir(temp_dir.path().to_path_buf()).unwrap();
         let date = create_test_date();
         let day_data = DayData::new(date);
-        
+
         let file_path = storage.get_file_path(&date);
         assert!(!file_path.exists());
-        
+
         storage.save(&day_data).unwrap();
-        
+
         assert!(file_path.exists());
     }
 
@@ -208,15 +208,15 @@ mod tests {
         let temp_dir = TempDir::new().unwrap();
         let storage = Storage::new_with_dir(temp_dir.path().to_path_buf()).unwrap();
         let date = create_test_date();
-        
+
         let mut day_data = DayData::new(date);
         let mut record = create_test_record(1, "Important Task");
         record.description = "This is a description".to_string();
         day_data.add_record(record);
-        
+
         storage.save(&day_data).unwrap();
         let loaded_data = storage.load(&date).unwrap();
-        
+
         let loaded_record = loaded_data.work_records.get(&1).unwrap();
         assert_eq!(loaded_record.name, "Important Task");
         assert_eq!(loaded_record.description, "This is a description");
@@ -227,22 +227,22 @@ mod tests {
     fn test_multiple_dates() {
         let temp_dir = TempDir::new().unwrap();
         let storage = Storage::new_with_dir(temp_dir.path().to_path_buf()).unwrap();
-        
+
         let date1 = Date::from_calendar_date(2025, time::Month::November, 5).unwrap();
         let date2 = Date::from_calendar_date(2025, time::Month::November, 6).unwrap();
-        
+
         let mut day1 = DayData::new(date1);
         day1.add_record(create_test_record(1, "Day1Task"));
-        
+
         let mut day2 = DayData::new(date2);
         day2.add_record(create_test_record(1, "Day2Task"));
-        
+
         storage.save(&day1).unwrap();
         storage.save(&day2).unwrap();
-        
+
         let loaded_day1 = storage.load(&date1).unwrap();
         let loaded_day2 = storage.load(&date2).unwrap();
-        
+
         assert_eq!(loaded_day1.work_records.get(&1).unwrap().name, "Day1Task");
         assert_eq!(loaded_day2.work_records.get(&1).unwrap().name, "Day2Task");
     }
@@ -252,15 +252,15 @@ mod tests {
         let temp_dir = TempDir::new().unwrap();
         let storage = Storage::new_with_dir(temp_dir.path().to_path_buf()).unwrap();
         let date = create_test_date();
-        
+
         let mut day_data = DayData::new(date);
         day_data.add_record(create_test_record(1, "Task"));
-        
+
         storage.save(&day_data).unwrap();
-        
+
         let file_path = storage.get_file_path(&date);
         let contents = fs::read_to_string(file_path).unwrap();
-        
+
         // Pretty JSON should have newlines
         assert!(contents.contains('\n'));
         assert!(contents.contains("  ")); // Indentation
