@@ -1,6 +1,8 @@
 # WorkTimer TUI
 
 ![WorkTimer TUI Example](work_tuimer_example.png)
+<img width="2984" height="1744" alt="image" src="https://github.com/user-attachments/assets/ce8becf0-ff3d-45cc-bde0-ba2d9ffc08d3" />
+
 Live demo: https://x.com/KsenKamil/status/1985423210859368716
 
 Simple, keyboard-driven TUI for time-tracking that allows you to quickly add time blocks and automatically group time if same task was done in different sessions
