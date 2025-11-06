@@ -13,6 +13,7 @@ A terminal user interface (TUI) for tracking work time entries with inline editi
 - **Edit Mode**: Inline editing of task names and time fields
 - **Visual Mode**: Select and delete multiple records at once with `v` keybind
 - **Smart Breaks**: Add break entries that calculate duration automatically with `b` keybind
+- **Task Picker**: Quick select from existing task names or create new ones with `c` keybind
 - **Undo/Redo**: Recover from mistakes with `u` / `r` keybinds (max 50 levels)
 - **Auto-save**: Automatically saves changes on quit and when switching days
 - **Persistent Storage**: JSON file per day in `~/.local/share/work-tuimer/` (or `./data/` fallback)
@@ -64,7 +65,7 @@ cargo build --release
 | `]` | Navigate to next day (auto-saves) |
 | `Shift+C` | Open calendar view for date navigation |
 | `Enter/i` | Enter edit mode on selected field |
-| `c` | Change task name (quick edit) |
+| `c` | Change task name (opens picker to select/filter/create) |
 | `n` | Add new work record |
 | `b` | Add break (uses selected record's end time as start) |
 | `d` | Delete selected record |
@@ -86,6 +87,22 @@ cargo build --release
 | `Esc` | Cancel and exit edit mode |
 | `Backspace` | Delete character |
 | Any char | Insert character |
+
+### Task Picker (accessed via `c` in Browse mode)
+
+Press `c` on the Name field to open the task picker:
+- Shows all unique task names from the current day
+- Type to filter the list
+- Press Enter to select a task or create a new one
+
+| Key | Action |
+|-----|--------|
+| Any char | Type to filter tasks or create new name (including h/j/k/l) |
+| `↑` | Move selection up in filtered list |
+| `↓` | Move selection down in filtered list |
+| `Enter` | Select highlighted task or create typed name |
+| `Backspace` | Delete character from filter |
+| `Esc` | Cancel and return to browse mode |
 
 ### Visual Mode
 

@@ -150,6 +150,18 @@ fn handle_key_event(app: &mut AppState, key: KeyEvent, storage: &storage::Storag
             }
             _ => {}
         },
+        ui::AppMode::TaskPicker => match key.code {
+            KeyCode::Esc => app.close_task_picker(),
+            KeyCode::Up => app.move_task_picker_up(),
+            KeyCode::Down => {
+                let filtered_tasks = app.get_filtered_task_names();
+                app.move_task_picker_down(filtered_tasks.len());
+            }
+            KeyCode::Enter => app.select_task_from_picker(),
+            KeyCode::Backspace => app.handle_task_picker_backspace(),
+            KeyCode::Char(c) => app.handle_task_picker_char(c),
+            _ => {}
+        },
     }
 }
 

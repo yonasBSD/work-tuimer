@@ -46,6 +46,11 @@ pub fn render(frame: &mut Frame, app: &AppState) {
         render_calendar(frame, app);
     }
 
+    // Render task picker modal if active
+    if matches!(app.mode, crate::ui::AppMode::TaskPicker) {
+        render_task_picker(frame, app);
+    }
+
     // Render error modal if there's an error
     if app.last_error_message.is_some() {
         render_error_modal(frame, app);
@@ -503,6 +508,11 @@ fn render_footer(frame: &mut Frame, area: Rect, app: &AppState) {
             "hjkl/arrows: Navigate | </>: Month | Enter: Select | Esc: Cancel",
             Color::Magenta,
             "CALENDAR",
+        ),
+        crate::ui::AppMode::TaskPicker => (
+            "Type: Filter/Create | ↑/↓: Navigate | Enter: Select | Esc: Cancel",
+            Color::LightCyan,
+            "TASK PICKER",
         ),
     };
 
@@ -994,4 +1004,193 @@ fn render_error_modal(frame: &mut Frame, app: &AppState) {
         .style(Style::default().fg(Color::DarkGray));
 
     frame.render_widget(help, chunks[1]);
+}
+
+fn render_task_picker(frame: &mut Frame, app: &AppState) {
+    use ratatui::widgets::Clear;
+
+    let filtered_tasks = app.get_filtered_task_names();
+    let all_tasks = app.get_unique_task_names();
+
+    // Create a smaller centered modal (mini-picker style)
+    let area = frame.size();
+    let width = area.width.min(60);
+    let height = (filtered_tasks.len() as u16 + 8).clamp(12, 20); // Ensure minimum height for visibility
+    let x = (area.width.saturating_sub(width)) / 2;
+    let y = (area.height.saturating_sub(height)) / 2;
+
+    let modal_area = Rect {
+        x,
+        y,
+        width,
+        height,
+    };
+
+    // Clear the background
+    frame.render_widget(Clear, modal_area);
+
+    // Add a background block for the entire modal
+    let bg_block = Block::default().style(Style::default().bg(Color::Rgb(20, 20, 30)));
+    frame.render_widget(bg_block, modal_area);
+
+    // Split modal into header, input, and list
+    let chunks = Layout::default()
+        .direction(Direction::Vertical)
+        .constraints([
+            Constraint::Length(3), // Header
+            Constraint::Length(4), // Input field (increased for better visibility)
+            Constraint::Min(5),    // List
+        ])
+        .split(modal_area);
+
+    // Render header with help text
+    let header_text = if app.input_buffer.is_empty() {
+        "Select existing task or type new name"
+    } else {
+        "Type to filter, or create new task"
+    };
+
+    let header = Paragraph::new(header_text)
+        .style(Style::default().fg(Color::White))
+        .alignment(Alignment::Center)
+        .block(
+            Block::default()
+                .borders(Borders::ALL)
+                .border_type(BorderType::Rounded)
+                .border_style(Style::default().fg(Color::LightCyan))
+                .title("📋 Task Picker")
+                .title_style(
+                    Style::default()
+                        .fg(Color::LightCyan)
+                        .add_modifier(Modifier::BOLD),
+                )
+                .style(Style::default().bg(Color::Rgb(30, 30, 45))),
+        );
+
+    frame.render_widget(header, chunks[0]);
+
+    // Render input field
+    let input_display = if app.input_buffer.is_empty() {
+        "Start typing...".to_string()
+    } else {
+        app.input_buffer.clone()
+    };
+
+    let input = Paragraph::new(input_display)
+        .style(if app.input_buffer.is_empty() {
+            Style::default().fg(Color::DarkGray)
+        } else {
+            Style::default()
+                .fg(Color::White)
+                .add_modifier(Modifier::BOLD)
+        })
+        .block(
+            Block::default()
+                .borders(Borders::ALL)
+                .border_type(BorderType::Rounded)
+                .border_style(Style::default().fg(Color::Yellow))
+                .title("Filter / New Task")
+                .title_style(Style::default().fg(Color::Yellow))
+                .style(Style::default().bg(Color::Rgb(35, 35, 50)))
+                .padding(ratatui::widgets::Padding::horizontal(1)),
+        );
+
+    frame.render_widget(input, chunks[1]);
+
+    // Render task list
+    if all_tasks.is_empty() {
+        let empty_msg = Paragraph::new("No existing tasks. Type to create new one.")
+            .style(Style::default().fg(Color::DarkGray))
+            .alignment(Alignment::Center)
+            .block(
+                Block::default()
+                    .borders(Borders::ALL)
+                    .border_type(BorderType::Rounded)
+                    .border_style(Style::default().fg(Color::LightCyan))
+                    .style(Style::default().bg(Color::Rgb(25, 25, 38))),
+            );
+        frame.render_widget(empty_msg, chunks[2]);
+    } else if filtered_tasks.is_empty() && !app.input_buffer.is_empty() {
+        let new_task_msg =
+            Paragraph::new(format!("Press Enter to create: \"{}\"", app.input_buffer))
+                .style(
+                    Style::default()
+                        .fg(Color::Green)
+                        .add_modifier(Modifier::BOLD),
+                )
+                .alignment(Alignment::Center)
+                .block(
+                    Block::default()
+                        .borders(Borders::ALL)
+                        .border_type(BorderType::Rounded)
+                        .border_style(Style::default().fg(Color::Green))
+                        .title("New Task")
+                        .title_style(
+                            Style::default()
+                                .fg(Color::Green)
+                                .add_modifier(Modifier::BOLD),
+                        )
+                        .style(Style::default().bg(Color::Rgb(25, 38, 25))),
+                );
+        frame.render_widget(new_task_msg, chunks[2]);
+    } else {
+        let rows: Vec<Row> = filtered_tasks
+            .iter()
+            .enumerate()
+            .map(|(i, name)| {
+                let is_selected = i == app.task_picker_selected;
+
+                let style = if is_selected {
+                    Style::default()
+                        .bg(Color::Rgb(70, 130, 180))
+                        .fg(Color::White)
+                        .add_modifier(Modifier::BOLD)
+                } else {
+                    Style::default().bg(Color::Rgb(25, 25, 38))
+                };
+
+                // Add icon based on task type
+                let icon = if name.to_lowercase().contains("break") {
+                    "☕"
+                } else if name.to_lowercase().contains("meeting") {
+                    "👥"
+                } else if name.to_lowercase().contains("code")
+                    || name.to_lowercase().contains("dev")
+                {
+                    "💻"
+                } else {
+                    "📋"
+                };
+
+                let display_name = format!("{} {}", icon, name);
+
+                Row::new(vec![
+                    Cell::from(display_name).style(Style::default().fg(Color::White)),
+                ])
+                .style(style)
+            })
+            .collect();
+
+        let title = if app.input_buffer.is_empty() {
+            format!("Tasks ({} available)", filtered_tasks.len())
+        } else {
+            format!("Filtered ({}/{})", filtered_tasks.len(), all_tasks.len())
+        };
+
+        let task_table = Table::new(rows, [Constraint::Percentage(100)]).block(
+            Block::default()
+                .borders(Borders::ALL)
+                .border_type(BorderType::Rounded)
+                .border_style(Style::default().fg(Color::LightCyan))
+                .title(title)
+                .title_style(
+                    Style::default()
+                        .fg(Color::LightCyan)
+                        .add_modifier(Modifier::BOLD),
+                )
+                .style(Style::default().bg(Color::Rgb(25, 25, 38))),
+        );
+
+        frame.render_widget(task_table, chunks[2]);
+    }
 }

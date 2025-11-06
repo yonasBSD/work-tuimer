@@ -9,6 +9,7 @@ pub enum AppMode {
     Visual,
     CommandPalette,
     Calendar,
+    TaskPicker,
 }
 
 pub enum EditField {
@@ -63,6 +64,7 @@ pub struct AppState {
     pub calendar_view_year: i32,
     pub config: Config,
     pub last_error_message: Option<String>,
+    pub task_picker_selected: usize,
     history: History,
 }
 
@@ -167,6 +169,7 @@ impl AppState {
             date_changed: false,
             config: Config::load().unwrap_or_default(),
             last_error_message: None,
+            task_picker_selected: 0,
             history: History::new(),
         }
     }
@@ -211,9 +214,19 @@ impl AppState {
 
     pub fn change_task_name(&mut self) {
         if matches!(self.edit_field, EditField::Name) && self.get_selected_record().is_some() {
-            self.mode = AppMode::Edit;
-            self.input_buffer.clear();
-            self.time_cursor = 0;
+            // Check if there are any existing tasks to pick from
+            let task_names = self.get_unique_task_names();
+            if !task_names.is_empty() {
+                // Open task picker if tasks exist
+                self.input_buffer.clear();
+                self.task_picker_selected = 0;
+                self.mode = AppMode::TaskPicker;
+            } else {
+                // Go directly to edit mode if no tasks exist
+                self.mode = AppMode::Edit;
+                self.input_buffer.clear();
+                self.time_cursor = 0;
+            }
         }
     }
 
@@ -829,6 +842,93 @@ impl AppState {
 
     pub fn clear_error(&mut self) {
         self.last_error_message = None;
+    }
+
+    pub fn close_task_picker(&mut self) {
+        // Cancel and return to Browse mode
+        self.input_buffer.clear();
+        self.mode = AppMode::Browse;
+    }
+
+    pub fn get_unique_task_names(&self) -> Vec<String> {
+        use std::collections::HashSet;
+
+        let mut seen = HashSet::new();
+        let mut task_names = Vec::new();
+
+        for record in self.day_data.work_records.values() {
+            let name = record.name.trim().to_string();
+            if !name.is_empty() && seen.insert(name.clone()) {
+                task_names.push(name);
+            }
+        }
+
+        task_names.sort();
+        task_names
+    }
+
+    pub fn get_filtered_task_names(&self) -> Vec<String> {
+        let all_tasks = self.get_unique_task_names();
+        let filter = self.input_buffer.to_lowercase();
+
+        if filter.is_empty() {
+            return all_tasks;
+        }
+
+        all_tasks
+            .into_iter()
+            .filter(|task| task.to_lowercase().contains(&filter))
+            .collect()
+    }
+
+    pub fn move_task_picker_up(&mut self) {
+        if self.task_picker_selected > 0 {
+            self.task_picker_selected -= 1;
+        }
+    }
+
+    pub fn move_task_picker_down(&mut self, task_count: usize) {
+        if self.task_picker_selected < task_count.saturating_sub(1) {
+            self.task_picker_selected += 1;
+        }
+    }
+
+    pub fn select_task_from_picker(&mut self) {
+        let filtered_tasks = self.get_filtered_task_names();
+
+        if filtered_tasks.is_empty() {
+            // No matches - use the typed input as-is (creating new task)
+            // input_buffer already contains the typed text
+        } else if let Some(selected_name) = filtered_tasks.get(self.task_picker_selected) {
+            // Select from filtered list
+            self.input_buffer = selected_name.clone();
+        }
+
+        // Save the task name and return to Browse mode
+        if let Some(record) = self.get_selected_record() {
+            let record_id = record.id;
+            let new_name = self.input_buffer.trim().to_string();
+
+            self.save_snapshot();
+            if let Some(work_record) = self.day_data.work_records.get_mut(&record_id) {
+                work_record.name = new_name;
+            }
+        }
+
+        self.input_buffer.clear();
+        self.mode = AppMode::Browse;
+    }
+
+    pub fn handle_task_picker_char(&mut self, c: char) {
+        self.input_buffer.push(c);
+        // Reset selection when typing
+        self.task_picker_selected = 0;
+    }
+
+    pub fn handle_task_picker_backspace(&mut self) {
+        self.input_buffer.pop();
+        // Reset selection when deleting
+        self.task_picker_selected = 0;
     }
 }
 
