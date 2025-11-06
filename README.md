@@ -9,6 +9,7 @@ Built with Rust and ratatui for efficient time management.
 ## Features
 
 - **Fully keyboard-driven**: No mouse required - everything accessible via keybinds
+- **Time as PIN-Inputs**: Easly type time with 4 clicks, since all time inputs are PIN-input alike
 - **Log tasks and breaks, get totals automatically**: Add work entries with start/end times - durations are calculated and summed
 - **Task picker with history**: Quickly select from previously used task names or create new ones
 - **Calendar navigation**: Jump between days, weeks, and months
