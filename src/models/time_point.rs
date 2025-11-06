@@ -63,3 +63,148 @@ impl FromStr for TimePoint {
         TimePoint::parse(s)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_new_valid_time() {
+        let time = TimePoint::new(14, 30).unwrap();
+        assert_eq!(time.hour, 14);
+        assert_eq!(time.minute, 30);
+    }
+
+    #[test]
+    fn test_new_boundary_values() {
+        assert!(TimePoint::new(0, 0).is_ok());
+        assert!(TimePoint::new(23, 59).is_ok());
+    }
+
+    #[test]
+    fn test_new_invalid_hour() {
+        assert!(TimePoint::new(24, 0).is_err());
+        assert!(TimePoint::new(25, 30).is_err());
+    }
+
+    #[test]
+    fn test_new_invalid_minute() {
+        assert!(TimePoint::new(12, 60).is_err());
+        assert!(TimePoint::new(12, 99).is_err());
+    }
+
+    #[test]
+    fn test_parse_valid_time() {
+        let time = TimePoint::parse("14:30").unwrap();
+        assert_eq!(time.hour, 14);
+        assert_eq!(time.minute, 30);
+    }
+
+    #[test]
+    fn test_parse_with_leading_zeros() {
+        let time = TimePoint::parse("09:05").unwrap();
+        assert_eq!(time.hour, 9);
+        assert_eq!(time.minute, 5);
+    }
+
+    #[test]
+    fn test_parse_without_leading_zeros() {
+        let time = TimePoint::parse("9:5").unwrap();
+        assert_eq!(time.hour, 9);
+        assert_eq!(time.minute, 5);
+    }
+
+    #[test]
+    fn test_parse_invalid_format() {
+        assert!(TimePoint::parse("14").is_err());
+        assert!(TimePoint::parse("14:30:00").is_err());
+        assert!(TimePoint::parse("not a time").is_err());
+        assert!(TimePoint::parse("").is_err());
+    }
+
+    #[test]
+    fn test_parse_invalid_values() {
+        assert!(TimePoint::parse("24:00").is_err());
+        assert!(TimePoint::parse("12:60").is_err());
+        assert!(TimePoint::parse("-1:30").is_err());
+    }
+
+    #[test]
+    fn test_to_minutes_since_midnight() {
+        assert_eq!(TimePoint::new(0, 0).unwrap().to_minutes_since_midnight(), 0);
+        assert_eq!(
+            TimePoint::new(1, 0).unwrap().to_minutes_since_midnight(),
+            60
+        );
+        assert_eq!(
+            TimePoint::new(14, 30).unwrap().to_minutes_since_midnight(),
+            870
+        );
+        assert_eq!(
+            TimePoint::new(23, 59).unwrap().to_minutes_since_midnight(),
+            1439
+        );
+    }
+
+    #[test]
+    fn test_from_minutes_since_midnight() {
+        let time = TimePoint::from_minutes_since_midnight(0).unwrap();
+        assert_eq!(time, TimePoint::new(0, 0).unwrap());
+
+        let time = TimePoint::from_minutes_since_midnight(60).unwrap();
+        assert_eq!(time, TimePoint::new(1, 0).unwrap());
+
+        let time = TimePoint::from_minutes_since_midnight(870).unwrap();
+        assert_eq!(time, TimePoint::new(14, 30).unwrap());
+
+        let time = TimePoint::from_minutes_since_midnight(1439).unwrap();
+        assert_eq!(time, TimePoint::new(23, 59).unwrap());
+    }
+
+    #[test]
+    fn test_from_minutes_invalid() {
+        assert!(TimePoint::from_minutes_since_midnight(1440).is_err());
+        assert!(TimePoint::from_minutes_since_midnight(9999).is_err());
+    }
+
+    #[test]
+    fn test_roundtrip_conversion() {
+        let original = TimePoint::new(14, 30).unwrap();
+        let minutes = original.to_minutes_since_midnight();
+        let converted = TimePoint::from_minutes_since_midnight(minutes).unwrap();
+        assert_eq!(original, converted);
+    }
+
+    #[test]
+    fn test_display_format() {
+        assert_eq!(TimePoint::new(9, 5).unwrap().to_string(), "09:05");
+        assert_eq!(TimePoint::new(14, 30).unwrap().to_string(), "14:30");
+        assert_eq!(TimePoint::new(0, 0).unwrap().to_string(), "00:00");
+        assert_eq!(TimePoint::new(23, 59).unwrap().to_string(), "23:59");
+    }
+
+    #[test]
+    fn test_from_str_trait() {
+        let time: TimePoint = "14:30".parse().unwrap();
+        assert_eq!(time.hour, 14);
+        assert_eq!(time.minute, 30);
+    }
+
+    #[test]
+    fn test_ordering() {
+        let time1 = TimePoint::new(9, 0).unwrap();
+        let time2 = TimePoint::new(14, 30).unwrap();
+        let time3 = TimePoint::new(14, 30).unwrap();
+
+        assert!(time1 < time2);
+        assert!(time2 > time1);
+        assert_eq!(time2, time3);
+    }
+
+    #[test]
+    fn test_clone_and_copy() {
+        let time1 = TimePoint::new(14, 30).unwrap();
+        let time2 = time1;
+        assert_eq!(time1, time2);
+    }
+}
