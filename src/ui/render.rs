@@ -1015,7 +1015,7 @@ fn render_task_picker(frame: &mut Frame, app: &AppState) {
     // Create a smaller centered modal (mini-picker style)
     let area = frame.size();
     let width = area.width.min(60);
-    let height = (filtered_tasks.len() as u16 + 6).min(15); // Dynamic height based on task count + input
+    let height = (filtered_tasks.len() as u16 + 8).max(12).min(20); // Ensure minimum height for visibility
     let x = (area.width.saturating_sub(width)) / 2;
     let y = (area.height.saturating_sub(height)) / 2;
 
@@ -1038,7 +1038,7 @@ fn render_task_picker(frame: &mut Frame, app: &AppState) {
         .direction(Direction::Vertical)
         .constraints([
             Constraint::Length(3), // Header
-            Constraint::Length(3), // Input field
+            Constraint::Length(4), // Input field (increased for better visibility)
             Constraint::Min(5),     // List
         ])
         .split(modal_area);
@@ -1089,7 +1089,8 @@ fn render_task_picker(frame: &mut Frame, app: &AppState) {
                 .border_style(Style::default().fg(Color::Yellow))
                 .title("Filter / New Task")
                 .title_style(Style::default().fg(Color::Yellow))
-                .style(Style::default().bg(Color::Rgb(35, 35, 50))),
+                .style(Style::default().bg(Color::Rgb(35, 35, 50)))
+                .padding(ratatui::widgets::Padding::horizontal(1)),
         );
 
     frame.render_widget(input, chunks[1]);
