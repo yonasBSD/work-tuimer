@@ -2,6 +2,7 @@ mod config;
 mod integrations;
 mod models;
 mod storage;
+mod timer;
 mod ui;
 
 use anyhow::Result;

@@ -1,4 +1,5 @@
 use crate::models::DayData;
+use crate::timer::TimerState;
 use anyhow::{Context, Result};
 use std::fs;
 use std::path::PathBuf;
@@ -65,6 +66,48 @@ impl Storage {
         let json = serde_json::to_string_pretty(day_data).context("Failed to serialize data")?;
 
         fs::write(&path, json).context(format!("Failed to write file: {:?}", path))?;
+
+        Ok(())
+    }
+
+    /// Get the path to the running timer file
+    fn get_timer_file_path(&self) -> PathBuf {
+        self.data_dir.join("running_timer.json")
+    }
+
+    /// Save an active timer to running_timer.json
+    pub fn save_active_timer(&self, timer: &TimerState) -> Result<()> {
+        let path = self.get_timer_file_path();
+        let json = serde_json::to_string_pretty(timer).context("Failed to serialize timer")?;
+        fs::write(&path, json).context(format!("Failed to write timer file: {:?}", path))?;
+        Ok(())
+    }
+
+    /// Load the active timer from running_timer.json
+    ///
+    /// Returns None if no timer file exists (no active timer)
+    pub fn load_active_timer(&self) -> Result<Option<TimerState>> {
+        let path = self.get_timer_file_path();
+
+        if !path.exists() {
+            return Ok(None);
+        }
+
+        let contents =
+            fs::read_to_string(&path).context(format!("Failed to read timer file: {:?}", path))?;
+        let timer: TimerState =
+            serde_json::from_str(&contents).context("Failed to parse timer JSON")?;
+
+        Ok(Some(timer))
+    }
+
+    /// Clear the active timer by deleting running_timer.json
+    pub fn clear_active_timer(&self) -> Result<()> {
+        let path = self.get_timer_file_path();
+
+        if path.exists() {
+            fs::remove_file(&path).context(format!("Failed to delete timer file: {:?}", path))?;
+        }
 
         Ok(())
     }
@@ -264,5 +307,94 @@ mod tests {
         // Pretty JSON should have newlines
         assert!(contents.contains('\n'));
         assert!(contents.contains("  ")); // Indentation
+    }
+
+    #[test]
+    fn test_load_active_timer_returns_none_when_not_exists() {
+        let temp_dir = TempDir::new().unwrap();
+        let storage = Storage::new_with_dir(temp_dir.path().to_path_buf()).unwrap();
+
+        let result = storage.load_active_timer().unwrap();
+        assert!(result.is_none());
+    }
+
+    #[test]
+    fn test_save_and_load_active_timer() {
+        use crate::timer::{TimerState, TimerStatus};
+        use time::OffsetDateTime;
+
+        let temp_dir = TempDir::new().unwrap();
+        let storage = Storage::new_with_dir(temp_dir.path().to_path_buf()).unwrap();
+
+        let now = OffsetDateTime::now_utc();
+        let timer = TimerState {
+            id: None,
+            task_name: "Work".to_string(),
+            description: Some("Important".to_string()),
+            start_time: now,
+            end_time: None,
+            date: now.date(),
+            status: TimerStatus::Running,
+            paused_duration_secs: 0,
+            paused_at: None,
+            created_at: now,
+            updated_at: now,
+        };
+
+        // Save
+        storage.save_active_timer(&timer).unwrap();
+
+        // Load
+        let loaded = storage.load_active_timer().unwrap();
+        assert!(loaded.is_some());
+
+        let loaded_timer = loaded.unwrap();
+        assert_eq!(loaded_timer.task_name, "Work");
+        assert_eq!(loaded_timer.description, Some("Important".to_string()));
+        assert_eq!(loaded_timer.status, TimerStatus::Running);
+    }
+
+    #[test]
+    fn test_clear_active_timer() {
+        use crate::timer::{TimerState, TimerStatus};
+        use time::OffsetDateTime;
+
+        let temp_dir = TempDir::new().unwrap();
+        let storage = Storage::new_with_dir(temp_dir.path().to_path_buf()).unwrap();
+
+        let now = OffsetDateTime::now_utc();
+        let timer = TimerState {
+            id: None,
+            task_name: "Work".to_string(),
+            description: None,
+            start_time: now,
+            end_time: None,
+            date: now.date(),
+            status: TimerStatus::Running,
+            paused_duration_secs: 0,
+            paused_at: None,
+            created_at: now,
+            updated_at: now,
+        };
+
+        // Save
+        storage.save_active_timer(&timer).unwrap();
+        assert!(storage.load_active_timer().unwrap().is_some());
+
+        // Clear
+        storage.clear_active_timer().unwrap();
+
+        // Verify it's gone
+        assert!(storage.load_active_timer().unwrap().is_none());
+    }
+
+    #[test]
+    fn test_clear_active_timer_when_none_exists() {
+        let temp_dir = TempDir::new().unwrap();
+        let storage = Storage::new_with_dir(temp_dir.path().to_path_buf()).unwrap();
+
+        // Should not error even if file doesn't exist
+        let result = storage.clear_active_timer();
+        assert!(result.is_ok());
     }
 }
