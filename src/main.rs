@@ -1,3 +1,4 @@
+mod cli;
 mod config;
 mod integrations;
 mod models;
@@ -6,6 +7,7 @@ mod timer;
 mod ui;
 
 use anyhow::Result;
+use clap::Parser;
 use crossterm::{
     event::{self, Event, KeyCode, KeyEvent, KeyEventKind},
     execute,
@@ -17,6 +19,27 @@ use time::OffsetDateTime;
 use ui::AppState;
 
 fn main() -> Result<()> {
+    // Try to parse CLI arguments
+    let args: Vec<String> = std::env::args().collect();
+
+    // If there are CLI arguments (beyond program name), run in CLI mode
+    if args.len() > 1 {
+        return run_cli();
+    }
+
+    // Otherwise, run TUI
+    run_tui()
+}
+
+/// Run in CLI mode
+fn run_cli() -> Result<()> {
+    let cli = cli::Cli::parse();
+    let storage = storage::Storage::new()?;
+    cli::handle_command(cli.command, storage)
+}
+
+/// Run in TUI mode
+fn run_tui() -> Result<()> {
     let today = OffsetDateTime::now_utc().date();
     let storage = storage::Storage::new()?;
     let day_data = storage.load(&today)?;
