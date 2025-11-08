@@ -60,7 +60,7 @@ fn handle_start(task: String, description: Option<String>, storage: Storage) -> 
         return Err(anyhow::anyhow!("Task name cannot be empty"));
     }
 
-    let timer = timer_manager.start(task, description, None)?;
+    let timer = timer_manager.start(task, description, None, None)?;
 
     let start_time = format_time(timer.start_time);
     println!("✓ Timer started");

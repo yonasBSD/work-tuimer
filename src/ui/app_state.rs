@@ -959,6 +959,7 @@ impl AppState {
                 record.name.clone(),
                 Some(record.description.clone()),
                 Some(record.id),
+                Some(self.current_date),
             ) {
                 Ok(timer) => {
                     self.active_timer = Some(timer);

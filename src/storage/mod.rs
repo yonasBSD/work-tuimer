@@ -340,6 +340,7 @@ mod tests {
             created_at: now,
             updated_at: now,
             source_record_id: None,
+            source_record_date: None,
         };
 
         // Save
@@ -377,6 +378,7 @@ mod tests {
             created_at: now,
             updated_at: now,
             source_record_id: None,
+            source_record_date: None,
         };
 
         // Save
