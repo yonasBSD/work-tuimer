@@ -73,13 +73,14 @@ pub struct TimerState {
 /// Timer manager for controlling timer operations
 ///
 /// Provides methods to start, stop, pause, and resume timers, as well as
-/// query their current status. Manages persistence through the Storage layer.
+/// query their current status. Manages persistence through the StorageManager layer.
 pub struct TimerManager {
     storage: Storage,
 }
 
 impl TimerManager {
-    /// Create a new timer manager
+    /// Create a new timer manager with low-level Storage
+    /// For internal use - external callers should use storage::StorageManager instead
     pub fn new(storage: Storage) -> Self {
         TimerManager { storage }
     }

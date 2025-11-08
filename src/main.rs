@@ -43,8 +43,8 @@ fn run_tui() -> Result<()> {
     let today = OffsetDateTime::now_local()
         .context("Failed to get local time")?
         .date();
-    let storage = storage::Storage::new()?;
-    let day_data = storage.load(&today)?;
+    let mut storage = storage::StorageManager::new()?;
+    let day_data = storage.load_with_tracking(today)?;
 
     enable_raw_mode()?;
     let mut stdout = io::stdout();
@@ -59,7 +59,10 @@ fn run_tui() -> Result<()> {
         app.active_timer = Some(timer);
     }
 
-    let result = run_app(&mut terminal, &mut app, &storage);
+    // Initialize last_file_modified with tracked time
+    app.last_file_modified = storage.get_last_modified(&today);
+
+    let result = run_app(&mut terminal, &mut app, &mut storage);
 
     disable_raw_mode()?;
     execute!(terminal.backend_mut(), LeaveAlternateScreen)?;
@@ -75,22 +78,22 @@ fn run_tui() -> Result<()> {
 fn run_app<B: ratatui::backend::Backend>(
     terminal: &mut Terminal<B>,
     app: &mut AppState,
-    storage: &storage::Storage,
+    storage: &mut storage::StorageManager,
 ) -> Result<()> {
     loop {
         terminal.draw(|f| ui::render::render(f, app))?;
 
         if app.should_quit {
             storage.save(&app.day_data)?;
-            app.last_file_modified = storage.get_file_modified_time(&app.current_date);
+            app.last_file_modified = storage.get_last_modified(&app.current_date);
             break;
         }
 
         if app.date_changed {
             storage.save(&app.day_data)?;
-            let new_day_data = storage.load(&app.current_date)?;
+            let new_day_data = storage.load_with_tracking(app.current_date)?;
             app.load_new_day_data(new_day_data);
-            app.last_file_modified = storage.get_file_modified_time(&app.current_date);
+            app.last_file_modified = storage.get_last_modified(&app.current_date);
             continue; // Force redraw with new data before waiting for next event
         }
 
@@ -111,7 +114,7 @@ fn run_app<B: ratatui::backend::Backend>(
     Ok(())
 }
 
-fn handle_key_event(app: &mut AppState, key: KeyEvent, storage: &storage::Storage) {
+fn handle_key_event(app: &mut AppState, key: KeyEvent, storage: &mut storage::StorageManager) {
     // Clear any previous error messages on new key press
     app.clear_error();
 
@@ -172,7 +175,7 @@ fn handle_key_event(app: &mut AppState, key: KeyEvent, storage: &storage::Storag
             KeyCode::Char('r') => app.redo(),
             KeyCode::Char('s') => {
                 let _ = storage.save(&app.day_data);
-                app.last_file_modified = storage.get_file_modified_time(&app.current_date);
+                app.last_file_modified = storage.get_last_modified(&app.current_date);
             }
             KeyCode::Char('[') => app.navigate_to_previous_day(),
             KeyCode::Char(']') => app.navigate_to_next_day(),
@@ -244,7 +247,7 @@ fn handle_key_event(app: &mut AppState, key: KeyEvent, storage: &storage::Storag
 fn execute_command_action(
     app: &mut AppState,
     action: ui::app_state::CommandAction,
-    storage: &storage::Storage,
+    storage: &mut storage::StorageManager,
 ) {
     use ui::app_state::CommandAction;
 
@@ -264,7 +267,7 @@ fn execute_command_action(
         CommandAction::Redo => app.redo(),
         CommandAction::Save => {
             let _ = storage.save(&app.day_data);
-            app.last_file_modified = storage.get_file_modified_time(&app.current_date);
+            app.last_file_modified = storage.get_last_modified(&app.current_date);
         }
         CommandAction::StartTimer => {
             if let Err(e) = app.start_timer_for_selected() {

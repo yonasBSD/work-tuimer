@@ -1046,29 +1046,19 @@ impl AppState {
 
     /// Check if the data file has been modified externally and reload if needed
     /// Returns true if the file was reloaded
-    pub fn check_and_reload_if_modified(&mut self, storage: &crate::storage::Storage) -> bool {
-        let current_file_time = storage.get_file_modified_time(&self.current_date);
-        
-        // If we have a last_file_modified time and current file time, compare them
-        if let (Some(last), Some(current)) = (self.last_file_modified, current_file_time) {
-            if current > last {
-                // File has been modified externally, reload it
-                if let Ok(new_data) = storage.load(&self.current_date) {
-                    self.day_data = new_data;
-                    self.last_file_modified = Some(current);
-                    
-                    // Adjust selected_index if it's now out of bounds
-                    let record_count = self.day_data.work_records.len();
-                    if self.selected_index >= record_count && record_count > 0 {
-                        self.selected_index = record_count - 1;
-                    }
-                    
-                    return true;
-                }
+    pub fn check_and_reload_if_modified(&mut self, storage: &mut crate::storage::StorageManager) -> bool {
+        // Use StorageManager's check_and_reload which handles all the tracking automatically
+        if let Ok(Some(new_data)) = storage.check_and_reload(self.current_date) {
+            self.day_data = new_data;
+            self.last_file_modified = storage.get_last_modified(&self.current_date);
+            
+            // Adjust selected_index if it's now out of bounds
+            let record_count = self.day_data.work_records.len();
+            if self.selected_index >= record_count && record_count > 0 {
+                self.selected_index = record_count - 1;
             }
-        } else if current_file_time.is_some() {
-            // First time checking, just store the modification time
-            self.last_file_modified = current_file_time;
+            
+            return true;
         }
         
         false

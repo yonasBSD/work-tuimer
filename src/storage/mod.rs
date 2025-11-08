@@ -1,12 +1,138 @@
-use crate::models::DayData;
+use crate::models::{DayData, WorkRecord};
 use crate::timer::TimerState;
 use anyhow::{Context, Result};
 use std::fs;
 use std::path::PathBuf;
+use std::time::SystemTime;
 use time::Date;
 
 pub struct Storage {
     data_dir: PathBuf,
+}
+
+/// High-level storage manager that provides transactional operations
+/// and automatic file modification tracking
+pub struct StorageManager {
+    storage: Storage,
+    file_modified_times: std::collections::HashMap<Date, Option<SystemTime>>,
+}
+
+impl StorageManager {
+    /// Create a new StorageManager
+    pub fn new() -> Result<Self> {
+        Ok(StorageManager {
+            storage: Storage::new()?,
+            file_modified_times: std::collections::HashMap::new(),
+        })
+    }
+
+    #[cfg(test)]
+    pub fn new_with_dir(data_dir: PathBuf) -> Result<Self> {
+        Ok(StorageManager {
+            storage: Storage::new_with_dir(data_dir)?,
+            file_modified_times: std::collections::HashMap::new(),
+        })
+    }
+
+    /// Load day data with automatic file modification tracking
+    /// Returns the loaded data and updates internal tracking
+    pub fn load_with_tracking(&mut self, date: Date) -> Result<DayData> {
+        let data = self.storage.load(&date)?;
+        let modified_time = self.storage.get_file_modified_time(&date);
+        self.file_modified_times.insert(date, modified_time);
+        Ok(data)
+    }
+
+    /// Check if file has been modified externally and reload if needed
+    /// Returns Some(DayData) if file was modified and reloaded, None if no change
+    pub fn check_and_reload(&mut self, date: Date) -> Result<Option<DayData>> {
+        let current_modified = self.storage.get_file_modified_time(&date);
+        let last_known = self.file_modified_times.get(&date).copied().flatten();
+
+        // If modification times differ, reload the file
+        if current_modified != last_known {
+            let data = self.storage.load(&date)?;
+            self.file_modified_times.insert(date, current_modified);
+            Ok(Some(data))
+        } else {
+            Ok(None)
+        }
+    }
+
+    /// Add a new work record (transactional: load → add → save → track)
+    pub fn add_record(&mut self, date: Date, record: WorkRecord) -> Result<()> {
+        let mut day_data = self.storage.load(&date)?;
+        day_data.add_record(record);
+        self.storage.save(&day_data)?;
+        
+        // Update tracking after successful save
+        let modified_time = self.storage.get_file_modified_time(&date);
+        self.file_modified_times.insert(date, modified_time);
+        
+        Ok(())
+    }
+
+    /// Update an existing work record (transactional: load → update → save → track)
+    pub fn update_record(&mut self, date: Date, record: WorkRecord) -> Result<()> {
+        let mut day_data = self.storage.load(&date)?;
+        
+        // Update the record (will replace if ID exists)
+        day_data.add_record(record);
+        
+        self.storage.save(&day_data)?;
+        
+        // Update tracking after successful save
+        let modified_time = self.storage.get_file_modified_time(&date);
+        self.file_modified_times.insert(date, modified_time);
+        
+        Ok(())
+    }
+
+    /// Remove a work record by ID (transactional: load → remove → save → track)
+    /// Returns the removed record if found
+    pub fn remove_record(&mut self, date: Date, id: u32) -> Result<WorkRecord> {
+        let mut day_data = self.storage.load(&date)?;
+        
+        let record = day_data.work_records.remove(&id)
+            .context(format!("Record with ID {} not found", id))?;
+        
+        self.storage.save(&day_data)?;
+        
+        // Update tracking after successful save
+        let modified_time = self.storage.get_file_modified_time(&date);
+        self.file_modified_times.insert(date, modified_time);
+        
+        Ok(record)
+    }
+
+    /// Save day data and update tracking
+    pub fn save(&mut self, day_data: &DayData) -> Result<()> {
+        self.storage.save(day_data)?;
+        
+        // Update tracking after successful save
+        let modified_time = self.storage.get_file_modified_time(&day_data.date);
+        self.file_modified_times.insert(day_data.date, modified_time);
+        
+        Ok(())
+    }
+
+    /// Get the last known modification time for a date
+    pub fn get_last_modified(&self, date: &Date) -> Option<SystemTime> {
+        self.file_modified_times.get(date).copied().flatten()
+    }
+
+    /// Pass-through methods for timer operations (these don't need tracking)
+    pub fn save_active_timer(&self, timer: &TimerState) -> Result<()> {
+        self.storage.save_active_timer(timer)
+    }
+
+    pub fn load_active_timer(&self) -> Result<Option<TimerState>> {
+        self.storage.load_active_timer()
+    }
+
+    pub fn clear_active_timer(&self) -> Result<()> {
+        self.storage.clear_active_timer()
+    }
 }
 
 impl Storage {
@@ -416,5 +542,151 @@ mod tests {
         // Should not error even if file doesn't exist
         let result = storage.clear_active_timer();
         assert!(result.is_ok());
+    }
+
+    // StorageManager tests
+    #[test]
+    fn test_storage_manager_new() {
+        let temp_dir = TempDir::new().unwrap();
+        let manager = StorageManager::new_with_dir(temp_dir.path().to_path_buf());
+        assert!(manager.is_ok());
+    }
+
+    #[test]
+    fn test_storage_manager_load_with_tracking() {
+        let temp_dir = TempDir::new().unwrap();
+        let mut manager = StorageManager::new_with_dir(temp_dir.path().to_path_buf()).unwrap();
+        let date = create_test_date();
+
+        let result = manager.load_with_tracking(date);
+        assert!(result.is_ok());
+
+        // Should have tracking info now
+        assert!(manager.file_modified_times.contains_key(&date));
+    }
+
+    #[test]
+    fn test_storage_manager_add_record_transactional() {
+        let temp_dir = TempDir::new().unwrap();
+        let mut manager = StorageManager::new_with_dir(temp_dir.path().to_path_buf()).unwrap();
+        let date = create_test_date();
+
+        let record = create_test_record(1, "Test Task");
+
+        // Add record (should load, add, save, track)
+        let result = manager.add_record(date, record);
+        assert!(result.is_ok());
+
+        // Verify it was saved
+        let day_data = manager.load_with_tracking(date).unwrap();
+        assert_eq!(day_data.work_records.len(), 1);
+        assert!(day_data.work_records.contains_key(&1));
+
+        // Verify tracking was updated
+        assert!(manager.get_last_modified(&date).is_some());
+    }
+
+    #[test]
+    fn test_storage_manager_update_record_transactional() {
+        let temp_dir = TempDir::new().unwrap();
+        let mut manager = StorageManager::new_with_dir(temp_dir.path().to_path_buf()).unwrap();
+        let date = create_test_date();
+
+        // Add initial record
+        let record1 = create_test_record(1, "Original Task");
+        manager.add_record(date, record1).unwrap();
+
+        // Update the record
+        let record2 = create_test_record(1, "Updated Task");
+        let result = manager.update_record(date, record2);
+        assert!(result.is_ok());
+
+        // Verify update
+        let day_data = manager.load_with_tracking(date).unwrap();
+        assert_eq!(day_data.work_records.len(), 1);
+        assert_eq!(day_data.work_records.get(&1).unwrap().name, "Updated Task");
+    }
+
+    #[test]
+    fn test_storage_manager_remove_record_transactional() {
+        let temp_dir = TempDir::new().unwrap();
+        let mut manager = StorageManager::new_with_dir(temp_dir.path().to_path_buf()).unwrap();
+        let date = create_test_date();
+
+        // Add record
+        let record = create_test_record(1, "To Be Removed");
+        manager.add_record(date, record).unwrap();
+
+        // Remove it
+        let result = manager.remove_record(date, 1);
+        assert!(result.is_ok());
+        assert_eq!(result.unwrap().name, "To Be Removed");
+
+        // Verify it's gone
+        let day_data = manager.load_with_tracking(date).unwrap();
+        assert_eq!(day_data.work_records.len(), 0);
+    }
+
+    #[test]
+    fn test_storage_manager_remove_nonexistent_record_fails() {
+        let temp_dir = TempDir::new().unwrap();
+        let mut manager = StorageManager::new_with_dir(temp_dir.path().to_path_buf()).unwrap();
+        let date = create_test_date();
+
+        // Try to remove record that doesn't exist
+        let result = manager.remove_record(date, 999);
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_storage_manager_check_and_reload_no_change() {
+        let temp_dir = TempDir::new().unwrap();
+        let mut manager = StorageManager::new_with_dir(temp_dir.path().to_path_buf()).unwrap();
+        let date = create_test_date();
+
+        // Load initially
+        manager.load_with_tracking(date).unwrap();
+
+        // Check for reload (no external changes)
+        let result = manager.check_and_reload(date);
+        assert!(result.is_ok());
+        assert!(result.unwrap().is_none()); // No reload needed
+    }
+
+    #[test]
+    fn test_storage_manager_check_and_reload_with_external_change() {
+        let temp_dir = TempDir::new().unwrap();
+        let mut manager = StorageManager::new_with_dir(temp_dir.path().to_path_buf()).unwrap();
+        let date = create_test_date();
+
+        // Load initially (empty)
+        manager.load_with_tracking(date).unwrap();
+
+        // Simulate external change by using a different storage instance
+        let mut external_manager = StorageManager::new_with_dir(temp_dir.path().to_path_buf()).unwrap();
+        let record = create_test_record(1, "External Change");
+        external_manager.add_record(date, record).unwrap();
+
+        // Check for reload - should detect change
+        let result = manager.check_and_reload(date);
+        assert!(result.is_ok());
+        let reloaded_data = result.unwrap();
+        assert!(reloaded_data.is_some()); // Reload happened
+        assert_eq!(reloaded_data.unwrap().work_records.len(), 1);
+    }
+
+    #[test]
+    fn test_storage_manager_save_updates_tracking() {
+        let temp_dir = TempDir::new().unwrap();
+        let mut manager = StorageManager::new_with_dir(temp_dir.path().to_path_buf()).unwrap();
+        let date = create_test_date();
+
+        let mut day_data = DayData::new(date);
+        day_data.add_record(create_test_record(1, "Task"));
+
+        // Save should update tracking
+        manager.save(&day_data).unwrap();
+
+        assert!(manager.get_last_modified(&date).is_some());
     }
 }
