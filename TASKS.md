@@ -121,6 +121,35 @@ This file tracks active development tasks for the WorkTimer project. Tasks are m
 
 ## Completed Tasks
 
+### Bug Fix: TUI UTC Timezone Causing CLI Records Invisible (2025-11-08)
+- [x] Investigate CLI-created timer records not visible in TUI
+- [x] Identify root cause: TUI using UTC time while CLI uses local time
+- [x] Fix TUI date calculation to use local time instead of UTC
+- [x] Verify all 126 tests pass with the fix
+- **Context**: Critical bug where CLI-created timer records were invisible in the TUI. Investigation revealed TUI and CLI were operating on different date files due to timezone mismatch.
+- **Root Cause**: `src/main.rs` line 43 used `OffsetDateTime::now_utc().date()` to determine which date file to load in TUI, while CLI uses `now_local()`. In certain timezones (e.g., UTC+1 at 23:30), this caused:
+  - Local date: November 8, 2025 → CLI saves to `2025-11-08.json`
+  - UTC date: November 9, 2025 → TUI loads/saves `2025-11-09.json`
+  - Result: TUI and CLI operate on completely different files, making CLI records "disappear"
+- **Evidence**: Test records created via CLI (IDs 1-3) were present in `2025-11-08.json` but TUI couldn't see them. New CLI record (ID 4) was successfully added with proper sequential ID (not duplicate ID 1), confirming previous ID fix from PR #26 is working.
+- **Solution**: Changed `now_utc()` to `now_local().context("Failed to get local time")?.date()` in TUI initialization. Both CLI and TUI now use local timezone for date calculation.
+- **Testing**: All 126 tests passing, no clippy warnings. Created test CLI record (ID 4) which was successfully saved alongside existing records (IDs 1-3) in correct date file.
+- **Files Modified**: src/main.rs (3 lines: added Context import, changed UTC to local time)
+- **Branch**: feature/timer-tracking
+- **Commit**: 0364046 - "Fix TUI using UTC instead of local time for date file selection"
+
+### Bug Fix: CLI Timer Record Overwrite - PR #26 (2025-11-08)
+- [x] Fix CLI timer creating duplicate ID 1 causing record overwrites
+- **Context**: Critical data loss bug where CLI-created timer records were not visible in TUI. Each new CLI timer would overwrite the previous record instead of creating a new one.
+- **Root Cause**: `src/timer/mod.rs` line 293 in `to_work_record()` method created `WorkRecord` with hardcoded ID `1` (placeholder). When adding to `DayData`, HashMap would replace any existing record with ID 1 instead of creating new record.
+- **Evidence**: File showed `last_id: 2` but only 1 record in map. "Testing basic workflow" record disappeared when "Debug test record" was created. Both had ID 1, causing HashMap replacement.
+- **Solution**: Added `work_record.id = day_data.next_id()` before adding record (lines 165-167 and 170-172). Generates proper sequential IDs (1, 2, 3...) instead of using hardcoded placeholder.
+- **Testing**: All 126 tests passing. Verified records now preserve correctly: Record 1 → Record 2 → Record 3 (all retained in JSON)
+- **Files Modified**: src/timer/mod.rs (2 lines added in stop logic)
+- **Branch**: feature/timer-tracking
+- **PR**: https://github.com/Kamyil/work-tuimer/pull/26
+- **Commit**: 2b1b7b7 - "Fix CLI timer creating duplicate ID 1 causing record overwrites"
+
 ### Bug Fix: Timer Bug Fixes - PR #26 (2025-11-08)
 - [x] Fix timer bar visibility - allocate 3 lines for borders and content
 - [x] Fix timer counter not updating - add event polling with 500ms timeout
