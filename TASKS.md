@@ -121,6 +121,23 @@ This file tracks active development tasks for the WorkTimer project. Tasks are m
 
 ## Completed Tasks
 
+### Bug Fix: Timer Stop Cross-Date Bug (2025-11-08)
+- [x] Add `source_record_date: Option<Date>` field to `TimerState` struct
+- [x] Update `TimerManager::start()` to accept `source_record_date` parameter
+- [x] Fix `TimerManager::stop()` to load correct day's data file using `source_record_date`
+- [x] Update TUI `start_timer_for_selected()` to pass `Some(self.current_date)`
+- [x] Update CLI timer start to pass `None` for source_record_date
+- [x] Add `update_duration()` call after updating record end time in stop logic
+- [x] Add `test_stop_updates_existing_record()` test to verify fix
+- [x] Update all existing tests with new parameter (15+ test calls)
+- [x] All 126 tests passing, no clippy warnings
+- **Context**: Fixed critical bug where stopping a timer that was started from a past/future day view would create a duplicate record instead of updating the existing one.
+- **Root Cause**: Timer always loaded data for `timer.start_time.date()` (today) when stopping. When viewing a different day (e.g., yesterday) and starting timer from a record, the `source_record_id` pointed to a record in THAT day's file. Result: record not found in today's file → fallback to creating new record.
+- **Solution**: Added `source_record_date: Option<Date>` field to track which day's file contains the source record. Stop logic now uses `source_record_date` if present, otherwise `timer.start_time.date()`. Used `#[serde(default)]` for backward compatibility with existing timer state files.
+- **Testing**: All 126 tests pass. New test verifies: start timer from existing record on specific date → stop → only 1 record exists (not duplicated).
+- **Files Modified**: src/timer/mod.rs, src/ui/app_state.rs, src/cli/mod.rs, src/storage/mod.rs
+- **Commit**: 54032c3 - "Fix timer stop cross-date bug - update correct day's file when stopping timer"
+
 ### Bug Fix: Timer Stop Creates Duplicate Records + Keybind Change (2025-11-08)
 - [x] Change timer stop keybind from `X` to `S` (toggle behavior: starts/stops timer)
 - [x] Fix critical bug where stopping timer created new record instead of updating existing one
