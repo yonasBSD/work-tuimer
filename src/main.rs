@@ -113,8 +113,17 @@ fn handle_key_event(app: &mut AppState, key: KeyEvent, storage: &storage::Storag
             KeyCode::Char('L') if app.config.has_integrations() => app.open_worklog_in_browser(),
             // Timer keybindings
             KeyCode::Char('S') => {
-                // Start timer on selected record
-                if let Err(e) = app.start_timer_for_selected() {
+                // Start/Stop toggle - Start if no timer active, Stop if timer is running
+                if let Some(timer) = app.get_timer_status() {
+                    use crate::timer::TimerStatus;
+                    if matches!(timer.status, TimerStatus::Running | TimerStatus::Paused) {
+                        if let Err(e) = app.stop_active_timer() {
+                            app.last_error_message = Some(e);
+                        }
+                    } else if let Err(e) = app.start_timer_for_selected() {
+                        app.last_error_message = Some(e);
+                    }
+                } else if let Err(e) = app.start_timer_for_selected() {
                     app.last_error_message = Some(e);
                 }
             }
@@ -135,12 +144,6 @@ fn handle_key_event(app: &mut AppState, key: KeyEvent, storage: &storage::Storag
                         }
                         _ => {}
                     }
-                }
-            }
-            KeyCode::Char('X') => {
-                // Stop timer
-                if let Err(e) = app.stop_active_timer() {
-                    app.last_error_message = Some(e);
                 }
             }
             KeyCode::Up | KeyCode::Char('k') => app.move_selection_up(),
@@ -273,11 +276,6 @@ fn execute_command_action(
                 if let Err(e) = app.resume_active_timer() {
                     app.last_error_message = Some(format!("Failed to resume timer: {}", e));
                 }
-            }
-        }
-        CommandAction::StopTimer => {
-            if let Err(e) = app.stop_active_timer() {
-                app.last_error_message = Some(format!("Failed to stop timer: {}", e));
             }
         }
         CommandAction::Quit => app.should_quit = true,

@@ -44,7 +44,6 @@ pub enum CommandAction {
     Save,
     StartTimer,
     PauseTimer,
-    StopTimer,
     Quit,
 }
 
@@ -149,18 +148,13 @@ impl AppState {
             },
             Command {
                 key: "S",
-                description: "Start timer on selected record",
+                description: "Start/Stop timer (toggle)",
                 action: CommandAction::StartTimer,
             },
             Command {
                 key: "P",
                 description: "Pause/Resume active timer",
                 action: CommandAction::PauseTimer,
-            },
-            Command {
-                key: "X",
-                description: "Stop active timer",
-                action: CommandAction::StopTimer,
             },
             Command {
                 key: "q",

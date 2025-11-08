@@ -121,6 +121,21 @@ This file tracks active development tasks for the WorkTimer project. Tasks are m
 
 ## Completed Tasks
 
+### Feature: Phase 4 - TUI Timer Integration (2025-11-08)
+- [x] Completed 14/14 tasks for full TUI integration
+- [x] Timer display bar with status, task name, and elapsed time (H:MM:SS)
+- [x] Dynamic layout adjustment (1-line timer bar at top when active)
+- [x] Timer keybindings in Browse mode: S (Start), P (Pause/Resume toggle), X (Stop)
+- [x] Visual distinction: Active timer rows highlighted in green with ⏱ icon
+- [x] Footer help text updated to show timer commands
+- [x] All 125 tests passing (120 existing + 5 CLI tests from Phase 3)
+- [x] No clippy warnings, properly formatted code
+- **Context**: Completed Phase 4 of the 4-phase timer implementation. TUI now shows active timer with full visual feedback and keyboard control. Timer status is persisted across sessions and loads automatically on startup.
+- **Design**: Timer bar appears at top (1 line), selected record with active timer shown with green background + ⏱ icon, keybindings follow convention (S=Start, P=Pause, X=Stop, capital letters to avoid conflicts)
+- **Testing**: All 125 tests pass, manual verification of keybindings working correctly
+- **Files Modified**: src/main.rs (timer load on startup, keybindings), src/ui/app_state.rs (timer methods already implemented in P3), src/ui/render.rs (timer bar, dynamic layout, visual distinction)
+- **Commit**: 1093622 - "Phase 4: TUI Timer Integration - Active timer display, keybindings, and visual distinction"
+
 ### Feature: Task Picker (Issue #14) (2025-11-06)
 - [x] Add `TaskPicker` mode to AppMode enum
 - [x] Implement `open_task_picker()` and `close_task_picker()` methods
