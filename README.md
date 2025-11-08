@@ -11,6 +11,7 @@ Built with Rust and ratatui for efficient time management.
 ## Features
 
 - **Fully keyboard-driven**: No mouse required - everything accessible via keybinds
+- **Active timer tracking**: Start/stop/pause timers that automatically update work records with actual time spent
 - **Time as PIN-Inputs**: Easly type time with 4 clicks, since all time inputs are PIN-input alike
 - **Log tasks and breaks, get totals automatically**: Add work entries with start/end times - durations are calculated and summed
 - **Task picker with history**: Quickly select from previously used task names or create new ones
@@ -72,6 +73,8 @@ cargo build --release
 | `b` | Add break (uses selected record's end time as start) |
 | `d` | Delete selected record |
 | `v` | Enter visual mode (multi-select) |
+| `S` | Start/Stop timer for selected record |
+| `P` | Pause/Resume active timer |
 | `t` | Set current time on selected field |
 | `T` | Open ticket in browser (only visible if config exists) |
 | `L` | Open worklog URL in browser (only visible if config exists) |
@@ -127,6 +130,49 @@ Press `c` on the Name field to open the task picker:
 | `]/>/.` | Next month |
 | `Enter` | Jump to selected date |
 | `Esc` | Close calendar view |
+
+## Timer Tracking
+
+WorkTimer includes a built-in timer for real-time time tracking. Start a timer for any task and it will automatically update the end time when stopped.
+
+### How to Use
+
+1. **Start Timer**: Select a work record and press `S` to start tracking time
+2. **Active Timer Display**: When a timer is running, you'll see a status bar at the top showing:
+   - Task name
+   - Elapsed time (H:MM:SS format)
+   - Timer status (Running/Paused)
+3. **Pause/Resume**: Press `P` to pause or resume the active timer
+4. **Stop Timer**: Press `S` again to stop and save the time to the record
+
+### Timer Features
+
+- **Automatic time updates**: End time is set to when you stop the timer
+- **Pause support**: Accumulates only active time, paused duration is tracked separately
+- **Cross-session persistence**: Timers survive app restarts - resume where you left off
+- **Cross-date support**: Start a timer on a record from any day (past/future) and it updates correctly
+- **Visual indicators**: Active timer records are highlighted with ⏱ icon
+
+### CLI Timer Commands
+
+You can also control timers from the command line:
+
+```bash
+# Start a timer
+work-tuimer timer start "My Task"
+
+# Check timer status
+work-tuimer timer status
+
+# Pause the timer
+work-tuimer timer pause
+
+# Resume a paused timer
+work-tuimer timer resume
+
+# Stop the timer and save
+work-tuimer timer stop
+```
 
 ## Issue Tracker Integration (Optional)
 
