@@ -24,13 +24,7 @@ impl Storage {
     }
 
     fn get_data_directory() -> Result<PathBuf> {
-        // Always use ./data as primary location for consistency between CLI and TUI
-        let local_data = PathBuf::from("./data");
-        if fs::create_dir_all(&local_data).is_ok() {
-            return Ok(local_data);
-        }
-
-        // Fallback to system data directory only if ./data cannot be created
+        // Primary: Use system data directory (~/.local/share on Linux, ~/Library/Application Support on macOS)
         if let Some(data_dir) = dirs::data_local_dir() {
             let app_dir = data_dir.join("work-tuimer");
             if fs::create_dir_all(&app_dir).is_ok() {
@@ -38,7 +32,13 @@ impl Storage {
             }
         }
 
-        anyhow::bail!("Failed to create data directory in ./data or system location")
+        // Fallback: Use ./data for development/testing if system location fails
+        let local_data = PathBuf::from("./data");
+        if fs::create_dir_all(&local_data).is_ok() {
+            return Ok(local_data);
+        }
+
+        anyhow::bail!("Failed to create data directory in system location or ./data")
     }
 
     fn get_file_path(&self, date: &Date) -> PathBuf {
