@@ -949,15 +949,9 @@ impl AppState {
     }
 
     /// Start a new timer with the current selected task
-    pub fn start_timer_for_selected(&mut self) -> Result<(), String> {
-        use crate::timer::TimerManager;
-
+    pub fn start_timer_for_selected(&mut self, storage: &crate::storage::StorageManager) -> Result<(), String> {
         if let Some(record) = self.get_selected_record() {
-            let storage = crate::storage::Storage::new()
-                .map_err(|_| "Failed to initialize storage".to_string())?;
-            let timer_manager = TimerManager::new(storage);
-
-            match timer_manager.start(
+            match storage.start_timer(
                 record.name.clone(),
                 Some(record.description.clone()),
                 Some(record.id),
@@ -975,17 +969,13 @@ impl AppState {
     }
 
     /// Stop the active timer and convert to work record
-    pub fn stop_active_timer(&mut self) -> Result<(), String> {
+    pub fn stop_active_timer(&mut self, storage: &mut crate::storage::StorageManager) -> Result<(), String> {
         if self.active_timer.is_some() {
-            let storage = crate::storage::Storage::new()
-                .map_err(|_| "Failed to initialize storage".to_string())?;
-            let timer_manager = crate::timer::TimerManager::new(storage);
-
-            match timer_manager.stop() {
+            match storage.stop_timer() {
                 Ok(_work_record) => {
                     self.active_timer = None;
                     // Reload day data to reflect the new work record
-                    match crate::storage::Storage::new().and_then(|s| s.load(&self.current_date)) {
+                    match storage.load_with_tracking(self.current_date) {
                         Ok(new_day_data) => {
                             self.day_data = new_day_data;
                             self.selected_index = 0;
@@ -1002,13 +992,9 @@ impl AppState {
     }
 
     /// Pause the active timer
-    pub fn pause_active_timer(&mut self) -> Result<(), String> {
+    pub fn pause_active_timer(&mut self, storage: &crate::storage::StorageManager) -> Result<(), String> {
         if self.active_timer.is_some() {
-            let storage = crate::storage::Storage::new()
-                .map_err(|_| "Failed to initialize storage".to_string())?;
-            let timer_manager = crate::timer::TimerManager::new(storage);
-
-            match timer_manager.pause() {
+            match storage.pause_timer() {
                 Ok(paused_timer) => {
                     self.active_timer = Some(paused_timer);
                     Ok(())
@@ -1021,13 +1007,9 @@ impl AppState {
     }
 
     /// Resume a paused timer
-    pub fn resume_active_timer(&mut self) -> Result<(), String> {
+    pub fn resume_active_timer(&mut self, storage: &crate::storage::StorageManager) -> Result<(), String> {
         if self.active_timer.is_some() {
-            let storage = crate::storage::Storage::new()
-                .map_err(|_| "Failed to initialize storage".to_string())?;
-            let timer_manager = crate::timer::TimerManager::new(storage);
-
-            match timer_manager.resume() {
+            match storage.resume_timer() {
                 Ok(resumed_timer) => {
                     self.active_timer = Some(resumed_timer);
                     Ok(())

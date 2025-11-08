@@ -131,13 +131,13 @@ fn handle_key_event(app: &mut AppState, key: KeyEvent, storage: &mut storage::St
                 if let Some(timer) = app.get_timer_status() {
                     use crate::timer::TimerStatus;
                     if matches!(timer.status, TimerStatus::Running | TimerStatus::Paused) {
-                        if let Err(e) = app.stop_active_timer() {
+                        if let Err(e) = app.stop_active_timer(storage) {
                             app.last_error_message = Some(e);
                         }
-                    } else if let Err(e) = app.start_timer_for_selected() {
+                    } else if let Err(e) = app.start_timer_for_selected(storage) {
                         app.last_error_message = Some(e);
                     }
-                } else if let Err(e) = app.start_timer_for_selected() {
+                } else if let Err(e) = app.start_timer_for_selected(storage) {
                     app.last_error_message = Some(e);
                 }
             }
@@ -147,12 +147,12 @@ fn handle_key_event(app: &mut AppState, key: KeyEvent, storage: &mut storage::St
                     use crate::timer::TimerStatus;
                     match timer.status {
                         TimerStatus::Running => {
-                            if let Err(e) = app.pause_active_timer() {
+                            if let Err(e) = app.pause_active_timer(storage) {
                                 app.last_error_message = Some(e);
                             }
                         }
                         TimerStatus::Paused => {
-                            if let Err(e) = app.resume_active_timer() {
+                            if let Err(e) = app.resume_active_timer(storage) {
                                 app.last_error_message = Some(e);
                             }
                         }
@@ -270,7 +270,7 @@ fn execute_command_action(
             app.last_file_modified = storage.get_last_modified(&app.current_date);
         }
         CommandAction::StartTimer => {
-            if let Err(e) = app.start_timer_for_selected() {
+            if let Err(e) = app.start_timer_for_selected(storage) {
                 app.last_error_message = Some(format!("Failed to start timer: {}", e));
             }
         }
@@ -281,7 +281,7 @@ fn execute_command_action(
                 .as_ref()
                 .is_some_and(|t| matches!(t.status, crate::timer::TimerStatus::Running))
             {
-                if let Err(e) = app.pause_active_timer() {
+                if let Err(e) = app.pause_active_timer(storage) {
                     app.last_error_message = Some(format!("Failed to pause timer: {}", e));
                 }
             } else if app
@@ -289,7 +289,7 @@ fn execute_command_action(
                 .as_ref()
                 .is_some_and(|t| matches!(t.status, crate::timer::TimerStatus::Paused))
             {
-                if let Err(e) = app.resume_active_timer() {
+                if let Err(e) = app.resume_active_timer(storage) {
                     app.last_error_message = Some(format!("Failed to resume timer: {}", e));
                 }
             }

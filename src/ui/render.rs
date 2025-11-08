@@ -1,10 +1,34 @@
 use crate::ui::AppState;
+use crate::timer::{TimerState, TimerStatus};
 use ratatui::{
     Frame,
     layout::{Alignment, Constraint, Direction, Layout, Rect},
     style::{Color, Modifier, Style},
     widgets::{Block, BorderType, Borders, Cell, Padding, Paragraph, Row, Table, TableState},
 };
+use std::time::Duration as StdDuration;
+use time::OffsetDateTime;
+
+/// Calculate elapsed duration for a timer (extracted from TimerManager to avoid storage dependency)
+fn calculate_timer_elapsed(timer: &TimerState) -> StdDuration {
+    let end_point = if timer.status == TimerStatus::Paused {
+        // If paused, use when it was paused
+        timer.paused_at.unwrap_or_else(|| OffsetDateTime::now_local().unwrap_or_else(|_| OffsetDateTime::now_utc()))
+    } else {
+        // If running, use now
+        OffsetDateTime::now_local().unwrap_or_else(|_| OffsetDateTime::now_utc())
+    };
+
+    let elapsed = end_point - timer.start_time;
+    let paused_duration_std = StdDuration::from_secs(timer.paused_duration_secs as u64);
+
+    // Convert time::Duration to std::Duration for arithmetic
+    let elapsed_std = StdDuration::from_secs(elapsed.whole_seconds() as u64)
+        + StdDuration::from_nanos(elapsed.subsec_nanoseconds() as u64);
+
+    // Subtract paused time
+    elapsed_std.saturating_sub(paused_duration_std)
+}
 
 pub fn render(frame: &mut Frame, app: &AppState) {
     // Layout changes if timer is active: add timer bar at top
@@ -1252,13 +1276,8 @@ fn render_timer_bar(frame: &mut Frame, area: Rect, app: &AppState) {
     use crate::timer::TimerStatus;
 
     if let Some(timer) = &app.active_timer {
-        // Calculate elapsed time
-        let storage = match crate::storage::Storage::new() {
-            Ok(s) => s,
-            Err(_) => return,
-        };
-        let timer_manager = crate::timer::TimerManager::new(storage);
-        let elapsed = timer_manager.get_elapsed_duration(timer);
+        // Calculate elapsed time directly without needing storage
+        let elapsed = calculate_timer_elapsed(timer);
 
         // Format elapsed time
         let secs = elapsed.as_secs();

@@ -6,6 +6,7 @@ use std::path::PathBuf;
 use std::time::SystemTime;
 use time::Date;
 
+#[derive(Clone)]
 pub struct Storage {
     data_dir: PathBuf,
 }
@@ -132,6 +133,50 @@ impl StorageManager {
 
     pub fn clear_active_timer(&self) -> Result<()> {
         self.storage.clear_active_timer()
+    }
+
+    /// Create a TimerManager using the internal storage
+    /// This allows timer operations while keeping storage abstraction
+    fn create_timer_manager(&self) -> crate::timer::TimerManager {
+        // Clone the storage for timer operations
+        // This is safe because timer operations are independent
+        crate::timer::TimerManager::new(self.storage.clone())
+    }
+
+    /// Start a new timer with the given task name and optional description
+    pub fn start_timer(
+        &self,
+        task_name: String,
+        description: Option<String>,
+        source_record_id: Option<u32>,
+        source_record_date: Option<time::Date>,
+    ) -> Result<TimerState> {
+        let timer_manager = self.create_timer_manager();
+        timer_manager.start(task_name, description, source_record_id, source_record_date)
+    }
+
+    /// Stop the active timer and return the work record
+    pub fn stop_timer(&self) -> Result<crate::models::WorkRecord> {
+        let timer_manager = self.create_timer_manager();
+        timer_manager.stop()
+    }
+
+    /// Pause the active timer
+    pub fn pause_timer(&self) -> Result<TimerState> {
+        let timer_manager = self.create_timer_manager();
+        timer_manager.pause()
+    }
+
+    /// Resume a paused timer
+    pub fn resume_timer(&self) -> Result<TimerState> {
+        let timer_manager = self.create_timer_manager();
+        timer_manager.resume()
+    }
+
+    /// Get elapsed duration for a timer
+    pub fn get_timer_elapsed(&self, timer: &TimerState) -> std::time::Duration {
+        let timer_manager = self.create_timer_manager();
+        timer_manager.get_elapsed_duration(timer)
     }
 }
 
