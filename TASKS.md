@@ -121,6 +121,27 @@ This file tracks active development tasks for the WorkTimer project. Tasks are m
 
 ## Completed Tasks
 
+### Bug Fix: Timer Stop Creates Duplicate Records + Keybind Change (2025-11-08)
+- [x] Change timer stop keybind from `X` to `S` (toggle behavior: starts/stops timer)
+- [x] Fix critical bug where stopping timer created new record instead of updating existing one
+- [x] Add `source_record_id: Option<u32>` field to `TimerState` struct
+- [x] Update `TimerManager::start()` to accept `source_record_id` parameter
+- [x] Rewrite `TimerManager::stop()` to update existing record's end time when source_record_id present
+- [x] Update TUI `start_timer_for_selected()` to pass record ID when starting timer
+- [x] Update CLI timer start to pass `None` (CLI timers create new records as before)
+- [x] Update all 20+ test cases to include new parameter
+- [x] All 125 tests passing, no clippy warnings
+- **Context**: Fixed critical bug where pressing `S` to stop a timer would create a NEW work record instead of updating the selected record's end time. The timer system didn't track which record it was started from.
+- **Root Cause**: Timer had no link back to source record, always created new records on stop
+- **Solution**: Added optional `source_record_id` field with `#[serde(default)]` for backward compatibility. TUI passes record ID when starting timer from existing record, CLI passes None to create new records.
+- **Keybind Change**: Changed stop from `X` to `S` for toggle behavior (S = start/stop). When timer running, S stops it. When no timer, S starts from selected record.
+- **Testing**: All 125 tests pass, clippy clean, ready for manual verification
+- **Files Modified**: src/timer/mod.rs, src/ui/app_state.rs, src/cli/mod.rs, src/storage/mod.rs, src/main.rs
+- **Commits**: 
+  - 352de58 - "Change timer stop keybind from X to S with toggle behavior"
+  - 14934ef - "Fix timer stop not saving work record to day data"
+  - 0857f83 - "Fix timer stop to update existing work record end time instead of creating duplicates"
+
 ### Feature: Phase 4 - TUI Timer Integration (2025-11-08)
 - [x] Completed 14/14 tasks for full TUI integration
 - [x] Timer display bar with status, task name, and elapsed time (H:MM:SS)
