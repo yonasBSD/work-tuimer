@@ -27,7 +27,8 @@ impl StorageManager {
         })
     }
 
-    #[cfg(test)]
+    /// Create a new StorageManager with a custom directory (for testing)
+    #[doc(hidden)]
     pub fn new_with_dir(data_dir: PathBuf) -> Result<Self> {
         Ok(StorageManager {
             storage: Storage::new_with_dir(data_dir)?,
@@ -188,7 +189,8 @@ impl Storage {
         Ok(Storage { data_dir })
     }
 
-    #[cfg(test)]
+    /// Create a new Storage with a custom directory (for testing)
+    #[doc(hidden)]
     pub fn new_with_dir(data_dir: PathBuf) -> Result<Self> {
         fs::create_dir_all(&data_dir).context("Failed to create data directory")?;
         Ok(Storage { data_dir })
@@ -733,5 +735,327 @@ mod tests {
         manager.save(&day_data).unwrap();
 
         assert!(manager.get_last_modified(&date).is_some());
+    }
+
+    // Additional Storage tests
+    #[test]
+    fn test_get_file_modified_time_returns_none_for_nonexistent_file() {
+        let temp_dir = TempDir::new().unwrap();
+        let storage = Storage::new_with_dir(temp_dir.path().to_path_buf()).unwrap();
+        let date = create_test_date();
+
+        let modified_time = storage.get_file_modified_time(&date);
+        assert!(modified_time.is_none());
+    }
+
+    #[test]
+    fn test_get_file_modified_time_returns_some_after_save() {
+        let temp_dir = TempDir::new().unwrap();
+        let storage = Storage::new_with_dir(temp_dir.path().to_path_buf()).unwrap();
+        let date = create_test_date();
+        let day_data = DayData::new(date);
+
+        // Before save - no modification time
+        assert!(storage.get_file_modified_time(&date).is_none());
+
+        // After save - should have modification time
+        storage.save(&day_data).unwrap();
+        assert!(storage.get_file_modified_time(&date).is_some());
+    }
+
+    #[test]
+    fn test_get_timer_file_path_format() {
+        let temp_dir = TempDir::new().unwrap();
+        let storage = Storage::new_with_dir(temp_dir.path().to_path_buf()).unwrap();
+
+        let timer_path = storage.get_timer_file_path();
+        assert_eq!(timer_path.file_name().unwrap(), "running_timer.json");
+    }
+
+    #[test]
+    fn test_file_path_format_with_single_digit_month_and_day() {
+        let temp_dir = TempDir::new().unwrap();
+        let storage = Storage::new_with_dir(temp_dir.path().to_path_buf()).unwrap();
+        let date = Date::from_calendar_date(2025, time::Month::January, 5).unwrap();
+
+        let file_path = storage.get_file_path(&date);
+        assert_eq!(file_path.file_name().unwrap(), "2025-01-05.json");
+    }
+
+    #[test]
+    fn test_file_path_format_with_december() {
+        let temp_dir = TempDir::new().unwrap();
+        let storage = Storage::new_with_dir(temp_dir.path().to_path_buf()).unwrap();
+        let date = Date::from_calendar_date(2025, time::Month::December, 31).unwrap();
+
+        let file_path = storage.get_file_path(&date);
+        assert_eq!(file_path.file_name().unwrap(), "2025-12-31.json");
+    }
+
+    #[test]
+    fn test_save_and_load_timer_with_paused_status() {
+        use crate::timer::{TimerState, TimerStatus};
+        use time::OffsetDateTime;
+
+        let temp_dir = TempDir::new().unwrap();
+        let storage = Storage::new_with_dir(temp_dir.path().to_path_buf()).unwrap();
+
+        let now = OffsetDateTime::now_utc();
+        let timer = TimerState {
+            id: None,
+            task_name: "Paused Work".to_string(),
+            description: None,
+            start_time: now,
+            end_time: None,
+            date: now.date(),
+            status: TimerStatus::Paused,
+            paused_duration_secs: 120,
+            paused_at: Some(now),
+            created_at: now,
+            updated_at: now,
+            source_record_id: None,
+            source_record_date: None,
+        };
+
+        storage.save_active_timer(&timer).unwrap();
+        let loaded = storage.load_active_timer().unwrap().unwrap();
+
+        assert_eq!(loaded.status, TimerStatus::Paused);
+        assert_eq!(loaded.paused_duration_secs, 120);
+        assert!(loaded.paused_at.is_some());
+    }
+
+    #[test]
+    fn test_save_and_load_timer_with_source_record() {
+        use crate::timer::{TimerState, TimerStatus};
+        use time::OffsetDateTime;
+
+        let temp_dir = TempDir::new().unwrap();
+        let storage = Storage::new_with_dir(temp_dir.path().to_path_buf()).unwrap();
+
+        let now = OffsetDateTime::now_utc();
+        let source_date = Date::from_calendar_date(2025, time::Month::November, 5).unwrap();
+        let timer = TimerState {
+            id: None,
+            task_name: "Continued Work".to_string(),
+            description: Some("From record 5".to_string()),
+            start_time: now,
+            end_time: None,
+            date: now.date(),
+            status: TimerStatus::Running,
+            paused_duration_secs: 0,
+            paused_at: None,
+            created_at: now,
+            updated_at: now,
+            source_record_id: Some(5),
+            source_record_date: Some(source_date),
+        };
+
+        storage.save_active_timer(&timer).unwrap();
+        let loaded = storage.load_active_timer().unwrap().unwrap();
+
+        assert_eq!(loaded.source_record_id, Some(5));
+        assert_eq!(loaded.source_record_date, Some(source_date));
+    }
+
+    #[test]
+    fn test_save_multiple_records_preserves_order() {
+        let temp_dir = TempDir::new().unwrap();
+        let storage = Storage::new_with_dir(temp_dir.path().to_path_buf()).unwrap();
+        let date = create_test_date();
+
+        let mut day_data = DayData::new(date);
+        for i in 1..=5 {
+            day_data.add_record(create_test_record(i, &format!("Task{}", i)));
+        }
+
+        storage.save(&day_data).unwrap();
+        let loaded = storage.load(&date).unwrap();
+
+        assert_eq!(loaded.work_records.len(), 5);
+        assert_eq!(loaded.last_id, 5);
+        for i in 1..=5 {
+            assert!(loaded.work_records.contains_key(&i));
+        }
+    }
+
+    // Additional StorageManager tests
+    #[test]
+    fn test_storage_manager_timer_passthrough_save_and_load() {
+        use crate::timer::{TimerState, TimerStatus};
+        use time::OffsetDateTime;
+
+        let temp_dir = TempDir::new().unwrap();
+        let manager = StorageManager::new_with_dir(temp_dir.path().to_path_buf()).unwrap();
+
+        let now = OffsetDateTime::now_utc();
+        let timer = TimerState {
+            id: None,
+            task_name: "Test".to_string(),
+            description: None,
+            start_time: now,
+            end_time: None,
+            date: now.date(),
+            status: TimerStatus::Running,
+            paused_duration_secs: 0,
+            paused_at: None,
+            created_at: now,
+            updated_at: now,
+            source_record_id: None,
+            source_record_date: None,
+        };
+
+        // Test passthrough methods
+        manager.save_active_timer(&timer).unwrap();
+        let loaded = manager.load_active_timer().unwrap();
+        assert!(loaded.is_some());
+
+        manager.clear_active_timer().unwrap();
+        let cleared = manager.load_active_timer().unwrap();
+        assert!(cleared.is_none());
+    }
+
+    #[test]
+    fn test_storage_manager_tracks_multiple_dates() {
+        let temp_dir = TempDir::new().unwrap();
+        let mut manager = StorageManager::new_with_dir(temp_dir.path().to_path_buf()).unwrap();
+
+        let date1 = Date::from_calendar_date(2025, time::Month::November, 1).unwrap();
+        let date2 = Date::from_calendar_date(2025, time::Month::November, 2).unwrap();
+        let date3 = Date::from_calendar_date(2025, time::Month::November, 3).unwrap();
+
+        // Load multiple dates
+        manager.load_with_tracking(date1).unwrap();
+        manager.load_with_tracking(date2).unwrap();
+        manager.load_with_tracking(date3).unwrap();
+
+        // All should be tracked
+        assert!(manager.file_modified_times.contains_key(&date1));
+        assert!(manager.file_modified_times.contains_key(&date2));
+        assert!(manager.file_modified_times.contains_key(&date3));
+    }
+
+    #[test]
+    fn test_storage_manager_get_last_modified_returns_none_for_untracked_date() {
+        let temp_dir = TempDir::new().unwrap();
+        let manager = StorageManager::new_with_dir(temp_dir.path().to_path_buf()).unwrap();
+        let date = create_test_date();
+
+        // Date not loaded yet - no tracking
+        assert!(manager.get_last_modified(&date).is_none());
+    }
+
+    #[test]
+    fn test_storage_manager_check_and_reload_before_tracking() {
+        let temp_dir = TempDir::new().unwrap();
+        let mut manager = StorageManager::new_with_dir(temp_dir.path().to_path_buf()).unwrap();
+        let date = create_test_date();
+
+        // Check without loading first - should load as new
+        let result = manager.check_and_reload(date).unwrap();
+        assert!(result.is_some());
+    }
+
+    #[test]
+    fn test_storage_manager_add_multiple_records_incrementally() {
+        let temp_dir = TempDir::new().unwrap();
+        let mut manager = StorageManager::new_with_dir(temp_dir.path().to_path_buf()).unwrap();
+        let date = create_test_date();
+
+        // Add records one by one
+        manager.add_record(date, create_test_record(1, "Task1")).unwrap();
+        manager.add_record(date, create_test_record(2, "Task2")).unwrap();
+        manager.add_record(date, create_test_record(3, "Task3")).unwrap();
+
+        // Verify all are saved
+        let day_data = manager.load_with_tracking(date).unwrap();
+        assert_eq!(day_data.work_records.len(), 3);
+    }
+
+    #[test]
+    fn test_storage_manager_update_multiple_times() {
+        let temp_dir = TempDir::new().unwrap();
+        let mut manager = StorageManager::new_with_dir(temp_dir.path().to_path_buf()).unwrap();
+        let date = create_test_date();
+
+        // Add initial record
+        manager.add_record(date, create_test_record(1, "Version1")).unwrap();
+
+        // Update multiple times
+        manager.update_record(date, create_test_record(1, "Version2")).unwrap();
+        manager.update_record(date, create_test_record(1, "Version3")).unwrap();
+
+        // Final version should be loaded
+        let day_data = manager.load_with_tracking(date).unwrap();
+        assert_eq!(day_data.work_records.get(&1).unwrap().name, "Version3");
+    }
+
+    #[test]
+    fn test_storage_manager_remove_from_multiple_records() {
+        let temp_dir = TempDir::new().unwrap();
+        let mut manager = StorageManager::new_with_dir(temp_dir.path().to_path_buf()).unwrap();
+        let date = create_test_date();
+
+        // Add multiple records
+        manager.add_record(date, create_test_record(1, "Task1")).unwrap();
+        manager.add_record(date, create_test_record(2, "Task2")).unwrap();
+        manager.add_record(date, create_test_record(3, "Task3")).unwrap();
+
+        // Remove middle one
+        let removed = manager.remove_record(date, 2).unwrap();
+        assert_eq!(removed.name, "Task2");
+
+        // Verify remaining
+        let day_data = manager.load_with_tracking(date).unwrap();
+        assert_eq!(day_data.work_records.len(), 2);
+        assert!(day_data.work_records.contains_key(&1));
+        assert!(!day_data.work_records.contains_key(&2));
+        assert!(day_data.work_records.contains_key(&3));
+    }
+
+    #[test]
+    fn test_storage_manager_save_empty_day_data() {
+        let temp_dir = TempDir::new().unwrap();
+        let mut manager = StorageManager::new_with_dir(temp_dir.path().to_path_buf()).unwrap();
+        let date = create_test_date();
+
+        let day_data = DayData::new(date);
+        manager.save(&day_data).unwrap();
+
+        // Should be able to load empty data
+        let loaded = manager.load_with_tracking(date).unwrap();
+        assert_eq!(loaded.work_records.len(), 0);
+        assert_eq!(loaded.last_id, 0);
+    }
+
+    #[test]
+    fn test_storage_manager_save_overwrites_with_tracking_update() {
+        let temp_dir = TempDir::new().unwrap();
+        let mut manager = StorageManager::new_with_dir(temp_dir.path().to_path_buf()).unwrap();
+        let date = create_test_date();
+
+        // First save
+        let mut day_data1 = DayData::new(date);
+        day_data1.add_record(create_test_record(1, "Task1"));
+        manager.save(&day_data1).unwrap();
+        let first_modified = manager.get_last_modified(&date);
+
+        // Give time for modification time to change
+        std::thread::sleep(std::time::Duration::from_millis(10));
+
+        // Second save - overwrite
+        let mut day_data2 = DayData::new(date);
+        day_data2.add_record(create_test_record(2, "Task2"));
+        manager.save(&day_data2).unwrap();
+        let second_modified = manager.get_last_modified(&date);
+
+        // Tracking should be updated
+        assert_ne!(first_modified, second_modified);
+
+        // Data should be overwritten
+        let loaded = manager.load_with_tracking(date).unwrap();
+        assert_eq!(loaded.work_records.len(), 1);
+        assert!(loaded.work_records.contains_key(&2));
+        assert!(!loaded.work_records.contains_key(&1));
     }
 }

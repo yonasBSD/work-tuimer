@@ -3,6 +3,10 @@ name = "work-tuimer"
 version = "0.1.0"
 edition = "2024"
 
+[lib]
+name = "work_tuimer"
+path = "src/lib.rs"
+
 [dependencies]
 ratatui = "0.26"
 crossterm = "0.27"
