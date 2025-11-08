@@ -6,14 +6,14 @@ mod storage;
 mod timer;
 mod ui;
 
-use anyhow::Result;
+use anyhow::{Context, Result};
 use clap::Parser;
 use crossterm::{
     event::{self, Event, KeyCode, KeyEvent, KeyEventKind},
     execute,
-    terminal::{EnterAlternateScreen, LeaveAlternateScreen, disable_raw_mode, enable_raw_mode},
+    terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
 };
-use ratatui::{Terminal, backend::CrosstermBackend};
+use ratatui::{backend::CrosstermBackend, Terminal};
 use std::io;
 use time::OffsetDateTime;
 use ui::AppState;
@@ -40,7 +40,9 @@ fn run_cli() -> Result<()> {
 
 /// Run in TUI mode
 fn run_tui() -> Result<()> {
-    let today = OffsetDateTime::now_utc().date();
+    let today = OffsetDateTime::now_local()
+        .context("Failed to get local time")?
+        .date();
     let storage = storage::Storage::new()?;
     let day_data = storage.load(&today)?;
 
