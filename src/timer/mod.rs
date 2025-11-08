@@ -132,11 +132,13 @@ impl TimerManager {
             .ok_or_else(|| anyhow!("No timer is currently running"))?;
 
         let now = OffsetDateTime::now_utc();
-        
+
         // Determine which date's data file to load:
         // - If timer has source_record_date, use that (record is from a specific day's view)
         // - Otherwise use timer.start_time.date() (creating new record on timer's start date)
-        let target_date = timer.source_record_date.unwrap_or_else(|| timer.start_time.date());
+        let target_date = timer
+            .source_record_date
+            .unwrap_or_else(|| timer.start_time.date());
 
         timer.end_time = Some(now);
         timer.status = TimerStatus::Stopped;
@@ -520,7 +522,12 @@ mod tests {
         let (storage, _temp) = create_test_storage();
         let manager = TimerManager::new(storage);
 
-        let _ = manager.start("Work".to_string(), Some("Important task".to_string()), None, None);
+        let _ = manager.start(
+            "Work".to_string(),
+            Some("Important task".to_string()),
+            None,
+            None,
+        );
         let work_record = manager.stop().unwrap();
 
         assert_eq!(work_record.name, "Work");
@@ -593,18 +600,18 @@ mod tests {
         use crate::models::DayData;
         use crate::models::TimePoint;
         use crate::models::WorkRecord;
-        use time::OffsetDateTime;
         use tempfile::TempDir;
+        use time::OffsetDateTime;
 
         // Create a temp dir and storage that we can reuse
         let temp_dir = TempDir::new().unwrap();
         let storage_path = temp_dir.path().to_path_buf();
-        
+
         // Create initial day data with one record
         let now = OffsetDateTime::now_utc();
         let today = now.date();
         let mut day_data = DayData::new(today);
-        
+
         let record = WorkRecord::new(
             1,
             "Existing Task".to_string(),
@@ -612,30 +619,34 @@ mod tests {
             TimePoint::new(10, 0).unwrap(),
         );
         day_data.add_record(record);
-        
+
         // Save using first storage instance
         let storage1 = Storage::new_with_dir(storage_path.clone()).unwrap();
         storage1.save(&day_data).unwrap();
-        
+
         // Start timer with source_record_id = 1, source_record_date = today
         let manager = TimerManager::new(storage1);
-        manager.start("Existing Task".to_string(), None, Some(1), Some(today)).unwrap();
-        
+        manager
+            .start("Existing Task".to_string(), None, Some(1), Some(today))
+            .unwrap();
+
         // Stop timer - should update the existing record's end time
         manager.stop().unwrap();
-        
+
         // Create a new storage instance pointing to the same temp dir to verify the update
         let storage2 = Storage::new_with_dir(storage_path).unwrap();
         let updated_day_data = storage2.load(&today).unwrap();
-        
+
         // Should still have only 1 record (not 2!)
         assert_eq!(updated_day_data.work_records.len(), 1);
-        
+
         // The record should have updated end time (not still 10:00)
         let updated_record = updated_day_data.work_records.get(&1).unwrap();
         assert_eq!(updated_record.name, "Existing Task");
         // End time should be close to now (within a few minutes)
-        assert!(updated_record.end.hour >= now.hour() || 
-                (updated_record.end.hour == 0 && now.hour() == 23)); // Handle day boundary
+        assert!(
+            updated_record.end.hour >= now.hour()
+                || (updated_record.end.hour == 0 && now.hour() == 23)
+        ); // Handle day boundary
     }
 }
