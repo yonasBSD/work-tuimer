@@ -977,7 +977,7 @@ impl AppState {
             match timer_manager.stop() {
                 Ok(_work_record) => {
                     self.active_timer = None;
-                    // Reload day data to show new work record
+                    // Reload day data to reflect the new work record
                     match crate::storage::Storage::new().and_then(|s| s.load(&self.current_date)) {
                         Ok(new_day_data) => {
                             self.day_data = new_day_data;

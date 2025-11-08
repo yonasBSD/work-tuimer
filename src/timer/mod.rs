@@ -114,11 +114,18 @@ impl TimerManager {
             .ok_or_else(|| anyhow!("No timer is currently running"))?;
 
         let now = OffsetDateTime::now_utc();
+        let timer_date = timer.start_time.date();
+
         timer.end_time = Some(now);
         timer.status = TimerStatus::Stopped;
         timer.updated_at = now;
 
         let work_record = self.to_work_record(timer)?;
+
+        // Save the work record to the day's data file
+        let mut day_data = self.storage.load(&timer_date)?;
+        day_data.add_record(work_record.clone());
+        self.storage.save(&day_data)?;
 
         self.storage.clear_active_timer()?;
 
