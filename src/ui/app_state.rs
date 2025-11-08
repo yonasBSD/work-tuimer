@@ -1,6 +1,7 @@
 use super::history::History;
 use crate::config::Config;
 use crate::models::{DayData, WorkRecord};
+use crate::timer::TimerState;
 use time::Date;
 
 pub enum AppMode {
@@ -65,6 +66,7 @@ pub struct AppState {
     pub config: Config,
     pub last_error_message: Option<String>,
     pub task_picker_selected: usize,
+    pub active_timer: Option<TimerState>,
     history: History,
 }
 
@@ -170,6 +172,7 @@ impl AppState {
             config: Config::load().unwrap_or_default(),
             last_error_message: None,
             task_picker_selected: 0,
+            active_timer: None,
             history: History::new(),
         }
     }
@@ -929,6 +932,97 @@ impl AppState {
         self.input_buffer.pop();
         // Reset selection when deleting
         self.task_picker_selected = 0;
+    }
+
+    /// Start a new timer with the current selected task
+    pub fn start_timer_for_selected(&mut self) -> Result<(), String> {
+        use crate::timer::TimerManager;
+
+        if let Some(record) = self.get_selected_record() {
+            let storage = crate::storage::Storage::new()
+                .map_err(|_| "Failed to initialize storage".to_string())?;
+            let timer_manager = TimerManager::new(storage);
+
+            match timer_manager.start(record.name.clone(), Some(record.description.clone())) {
+                Ok(timer) => {
+                    self.active_timer = Some(timer);
+                    Ok(())
+                }
+                Err(e) => Err(e.to_string()),
+            }
+        } else {
+            Err("No record selected".to_string())
+        }
+    }
+
+    /// Stop the active timer and convert to work record
+    pub fn stop_active_timer(&mut self) -> Result<(), String> {
+        if self.active_timer.is_some() {
+            let storage = crate::storage::Storage::new()
+                .map_err(|_| "Failed to initialize storage".to_string())?;
+            let timer_manager = crate::timer::TimerManager::new(storage);
+
+            match timer_manager.stop() {
+                Ok(_work_record) => {
+                    self.active_timer = None;
+                    // Reload day data to show new work record
+                    match crate::storage::Storage::new().and_then(|s| s.load(&self.current_date)) {
+                        Ok(new_day_data) => {
+                            self.day_data = new_day_data;
+                            self.selected_index = 0;
+                            Ok(())
+                        }
+                        Err(e) => Err(format!("Failed to reload day data: {}", e)),
+                    }
+                }
+                Err(e) => Err(e.to_string()),
+            }
+        } else {
+            Err("No active timer".to_string())
+        }
+    }
+
+    /// Pause the active timer
+    pub fn pause_active_timer(&mut self) -> Result<(), String> {
+        if self.active_timer.is_some() {
+            let storage = crate::storage::Storage::new()
+                .map_err(|_| "Failed to initialize storage".to_string())?;
+            let timer_manager = crate::timer::TimerManager::new(storage);
+
+            match timer_manager.pause() {
+                Ok(paused_timer) => {
+                    self.active_timer = Some(paused_timer);
+                    Ok(())
+                }
+                Err(e) => Err(e.to_string()),
+            }
+        } else {
+            Err("No active timer".to_string())
+        }
+    }
+
+    /// Resume a paused timer
+    pub fn resume_active_timer(&mut self) -> Result<(), String> {
+        if self.active_timer.is_some() {
+            let storage = crate::storage::Storage::new()
+                .map_err(|_| "Failed to initialize storage".to_string())?;
+            let timer_manager = crate::timer::TimerManager::new(storage);
+
+            match timer_manager.resume() {
+                Ok(resumed_timer) => {
+                    self.active_timer = Some(resumed_timer);
+                    Ok(())
+                }
+                Err(e) => Err(e.to_string()),
+            }
+        } else {
+            Err("No active timer".to_string())
+        }
+    }
+
+    /// Get current status of active timer or None if no timer running
+    pub fn get_timer_status(&self) -> Option<&TimerState> {
+        self.active_timer.as_ref()
     }
 }
 

@@ -52,6 +52,11 @@ fn run_tui() -> Result<()> {
 
     let mut app = AppState::new(day_data);
 
+    // Load active timer if one exists
+    if let Ok(Some(timer)) = storage.load_active_timer() {
+        app.active_timer = Some(timer);
+    }
+
     let result = run_app(&mut terminal, &mut app, &storage);
 
     disable_raw_mode()?;
@@ -106,6 +111,38 @@ fn handle_key_event(app: &mut AppState, key: KeyEvent, storage: &storage::Storag
             KeyCode::Char('C') => app.open_calendar(),
             KeyCode::Char('T') if app.config.has_integrations() => app.open_ticket_in_browser(),
             KeyCode::Char('L') if app.config.has_integrations() => app.open_worklog_in_browser(),
+            // Timer keybindings
+            KeyCode::Char('S') => {
+                // Start timer on selected record
+                if let Err(e) = app.start_timer_for_selected() {
+                    app.last_error_message = Some(e);
+                }
+            }
+            KeyCode::Char('P') => {
+                // Pause/Resume toggle
+                if let Some(timer) = app.get_timer_status() {
+                    use crate::timer::TimerStatus;
+                    match timer.status {
+                        TimerStatus::Running => {
+                            if let Err(e) = app.pause_active_timer() {
+                                app.last_error_message = Some(e);
+                            }
+                        }
+                        TimerStatus::Paused => {
+                            if let Err(e) = app.resume_active_timer() {
+                                app.last_error_message = Some(e);
+                            }
+                        }
+                        _ => {}
+                    }
+                }
+            }
+            KeyCode::Char('X') => {
+                // Stop timer
+                if let Err(e) = app.stop_active_timer() {
+                    app.last_error_message = Some(e);
+                }
+            }
             KeyCode::Up | KeyCode::Char('k') => app.move_selection_up(),
             KeyCode::Down | KeyCode::Char('j') => app.move_selection_down(),
             KeyCode::Left | KeyCode::Char('h') => app.move_field_left(),
