@@ -162,12 +162,16 @@ impl TimerManager {
                 record.update_duration();
             } else {
                 // Source record not found, create new one instead
-                let work_record = self.to_work_record(timer.clone())?;
+                let mut work_record = self.to_work_record(timer.clone())?;
+                // Assign proper ID from day_data instead of using placeholder
+                work_record.id = day_data.next_id();
                 day_data.add_record(work_record);
             }
         } else {
             // No source record, create a new work record
-            let work_record = self.to_work_record(timer.clone())?;
+            let mut work_record = self.to_work_record(timer.clone())?;
+            // Assign proper ID from day_data instead of using placeholder
+            work_record.id = day_data.next_id();
             day_data.add_record(work_record);
         }
 
