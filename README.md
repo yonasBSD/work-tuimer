@@ -22,7 +22,11 @@ Built with Rust and ratatui for efficient time management.
 
 ## Installation
 
-No package managers support yet, will be done soon :(
+### FreeBSD
+
+```sh
+pkg install work-tuimer
+```
 
 ### Pre-built Binaries
 
