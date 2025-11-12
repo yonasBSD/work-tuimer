@@ -1,6 +1,6 @@
 # Timer Sessions
 
-WorkTimer includes a powerful built-in timer system for real-time time tracking. Sessions allow you to track time as you work, with automatic updates, pause/resume support, and seamless integration between the TUI and CLI.
+Sessions track time in real-time with automatic updates, pause/resume support, and shared state between TUI and CLI.
 
 ## Table of Contents
 
@@ -13,28 +13,28 @@ WorkTimer includes a powerful built-in timer system for real-time time tracking.
 
 ## What are Sessions?
 
-A **session** is an active timer that tracks the time you spend on a specific task. When you start a session, WorkTimer records:
+A session is an active timer that tracks time spent on a task. Recorded data:
 - Task name and optional description
 - Start time
 - Elapsed time (updated in real-time)
 - Pause/resume history
 - Final duration when stopped
 
-Sessions are designed to eliminate manual time entry - just start a timer when you begin work and stop it when you're done. The end time is automatically set to the current time when you stop.
+Start a timer when you begin work, stop it when done. End time is automatically set to the current time.
 
 ## TUI Usage
 
 ### Starting a Session
 
-There are two ways to start a session in the TUI:
+Two ways to start a session:
 
 1. **From an existing work record**: Select a record and press `S`
-   - The session will update that record's end time when stopped
-   - Useful for extending existing work entries
+   - Updates that record's end time when stopped
+   - Use to extend existing entries
 
-2. **From the TUI timer interface**: Press `S` when no record is selected
+2. **New session**: Press `S` when no record is selected
    - Creates a new work record when stopped
-   - Start time is set to when you started the timer
+   - Start time is set to current time
 
 ### Session Controls
 
@@ -45,17 +45,16 @@ There are two ways to start a session in the TUI:
 
 ### Visual Indicators
 
-When a session is active, you'll see:
+Active session displays:
 
 1. **Timer Status Bar** (top of screen):
    ```
    ⏱ Running: Task Name | 1h 23m 45s | Status: Running
    ```
-   Shows task name, elapsed time (H:MM:SS format), and current status (Running/Paused)
+   Shows task name, elapsed time (H:MM:SS), and status (Running/Paused)
 
 2. **Record Highlighting**:
-   - Active session records are highlighted with a ⏱ icon
-   - Makes it easy to see which record is being tracked
+   - Active session records show ⏱ icon
 
 ### Session States
 
@@ -65,7 +64,7 @@ When a session is active, you'll see:
 
 ## CLI Usage
 
-The CLI provides full session control from the command line, perfect for scripting or quick operations without opening the TUI.
+Control sessions from the command line without opening the TUI.
 
 ### Starting a Session
 
@@ -160,40 +159,34 @@ Error: A timer is already running
 
 ### Automatic Time Updates
 
-When you stop a session, the end time is automatically set to the current time. No need to manually enter when you finished - just stop the timer and WorkTimer records it for you.
+End time is automatically set to current time when stopped.
 
 ### Pause Support
 
-Sessions can be paused and resumed:
-- **Elapsed time**: Only counts active time (paused time is excluded)
-- **Paused duration**: Tracked separately for reference
-- **Multiple pauses**: Pause and resume as many times as needed
+Pause and resume sessions:
+- **Elapsed time**: Only counts active time (excludes paused duration)
+- **Paused duration**: Tracked separately
+- **Multiple pauses**: Pause/resume as needed
 
-### Cross-Session Persistence
+### Persistence Across Restarts
 
-Sessions survive application restarts:
-- Close the TUI while a session is running
-- Your session continues in the background
-- Reopen the TUI or use the CLI to check status or stop
-
-The session state is saved to `~/.local/share/work-tuimer/active_timer.json`
+Sessions survive application restarts. State is saved to `~/.local/share/work-tuimer/active_timer.json`.
 
 ### Cross-Date Support
 
-Start a session on a record from any day:
-- Navigate to a past day in the TUI
-- Start a session on an old record
-- When stopped, the end time updates correctly
-- Works for future dates too (for planning)
+Start a session on a record from any date:
+- Navigate to any day in the TUI
+- Start a session on that day's record
+- End time updates correctly when stopped
 
 ### CLI and TUI Integration
 
-Sessions work seamlessly across both interfaces:
-- Start a session in the CLI, pause it in the TUI
-- Start in the TUI, check status in the CLI
-- Changes in one interface are immediately visible in the other
+Sessions share state across both interfaces:
+- Start in CLI, pause in TUI
+- Start in TUI, check status in CLI
+- Changes sync automatically
 
-**Auto-reload feature**: The TUI checks for external file changes every 500ms, so CLI-created records appear automatically without manual refresh.
+TUI auto-reloads every 500ms to reflect external changes.
 
 ## Common Workflows
 
@@ -253,12 +246,12 @@ work-tuimer session stop
 ### Workflow 4: Updating Existing Records
 
 In the TUI:
-1. Navigate to a work record you want to extend
+1. Navigate to a work record to extend
 2. Press `S` to start a session
 3. Work continues...
 4. Press `S` again to stop
 
-The record's end time updates to when you stopped, and duration recalculates automatically.
+Record's end time and duration update automatically.
 
 ### Workflow 5: Quick Status Checks
 
@@ -319,15 +312,15 @@ Daily work records are saved to (checked in order):
 1. `~/.local/share/work-tuimer/YYYY-MM-DD.json`
 2. `./data/YYYY-MM-DD.json` (fallback)
 
-## Tips and Best Practices
+## Tips
 
-1. **Use descriptive task names**: Make it easy to identify what you worked on
-2. **Add descriptions for context**: Helpful when reviewing your time later
-3. **Pause during interruptions**: Get accurate time tracking by pausing during breaks
-4. **Check status regularly**: Use `work-tuimer session status` to stay aware of running sessions
-5. **Stop sessions promptly**: Don't forget to stop when switching tasks
-6. **Use CLI for quick starts**: Start sessions from your terminal without opening the TUI
-7. **Leverage auto-reload**: Work in CLI and TUI simultaneously without conflicts
+1. **Use descriptive task names**: Easier to identify work later
+2. **Add descriptions for context**: Useful when reviewing time logs
+3. **Pause during interruptions**: Accurate tracking excludes breaks
+4. **Check status regularly**: `work-tuimer session status` shows active sessions
+5. **Stop sessions promptly**: Remember to stop when switching tasks
+6. **Use CLI for quick starts**: Start sessions without opening TUI
+7. **Work in both interfaces**: Auto-reload syncs changes every 500ms
 
 ## Troubleshooting
 
@@ -343,8 +336,8 @@ Daily work records are saved to (checked in order):
 
 ### Wrong end time on stopped session
 
-- End time is set to when you stopped, not when the timer started
-- If you forgot to stop earlier, manually edit the end time in the TUI
+- End time is set to when you stopped
+- If stopped late, manually edit the end time in the TUI
 
 ### CLI and TUI showing different data
 
