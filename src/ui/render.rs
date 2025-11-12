@@ -559,9 +559,9 @@ fn render_grouped_totals(frame: &mut Frame, area: Rect, app: &AppState) {
 fn render_footer(frame: &mut Frame, area: Rect, app: &AppState) {
     // Build help text for Browse mode conditionally
     let browse_help = if app.config.has_integrations() {
-        "↑/↓: Row | ←/→: Field | [/]: Day | C: Calendar | Enter: Edit | c: Change | n: New | b: Break | d: Delete | v: Visual | t: Now | T: Ticket | L: Worklog | S: Start/Stop | P: Pause | ?: Help | q: Quit"
+        "↑/↓: Row | ←/→: Field | [/]: Day | C: Calendar | Enter: Edit | c: Change | n: New | b: Break | d: Delete | v: Visual | t: Now | T: Ticket | L: Worklog | S: Session Start/Stop | P: Pause | ?: Help | q: Quit"
     } else {
-        "↑/↓: Row | ←/→: Field | [/]: Day | C: Calendar | Enter: Edit | c: Change | n: New | b: Break | d: Delete | v: Visual | t: Now | S: Start/Stop | P: Pause | ?: Help | q: Quit"
+        "↑/↓: Row | ←/→: Field | [/]: Day | C: Calendar | Enter: Edit | c: Change | n: New | b: Break | d: Delete | v: Visual | t: Now | S: Session Start/Stop | P: Pause | ?: Help | q: Quit"
     };
 
     let (help_text, mode_color, mode_label) = match app.mode {
