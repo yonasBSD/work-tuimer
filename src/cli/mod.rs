@@ -8,6 +8,7 @@ use std::time::Duration;
 #[derive(Parser)]
 #[command(name = "work-tuimer")]
 #[command(about = "Automatic time tracking with CLI commands and TUI", long_about = None)]
+#[command(version)]
 pub struct Cli {
     #[command(subcommand)]
     pub command: Commands,
