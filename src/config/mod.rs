@@ -248,26 +248,26 @@ impl Theme {
         }
     }
 
-    /// Kanagawa theme (dark navy blue aesthetic)
+    /// Kanagawa theme (dark navy blue aesthetic inspired by Hokusai's painting)
     pub fn kanagawa() -> Self {
         Self {
-            active_border: Color::Rgb(126, 156, 216),     // springBlue
+            active_border: Color::Rgb(127, 180, 202),     // springBlue (brighter)
             inactive_border: Color::Rgb(54, 59, 77),      // sumiInk4
             searching_border: Color::Rgb(255, 160, 102),  // surimiOrange
-            selected_bg: Color::Rgb(37, 43, 55),          // sumiInk3
-            selected_inactive_bg: Color::Rgb(30, 34, 44), // sumiInk2
-            visual_bg: Color::Rgb(57, 80, 112),           // waveBlue2
-            timer_active_bg: Color::Rgb(118, 151, 122),   // springGreen
-            row_alternate_bg: Color::Rgb(22, 25, 32),     // sumiInk1
-            edit_bg: Color::Rgb(34, 61, 80),              // waveBlue1
+            selected_bg: Color::Rgb(42, 42, 55),          // sumiInk3 (slightly lighter for distinction)
+            selected_inactive_bg: Color::Rgb(31, 31, 40), // sumiInk1/2
+            visual_bg: Color::Rgb(45, 79, 103),           // waveBlue2 (darker for distinction)
+            timer_active_bg: Color::Rgb(152, 187, 106),   // springGreen (brighter)
+            row_alternate_bg: Color::Rgb(22, 25, 32),     // sumiInk1 (darker)
+            edit_bg: Color::Rgb(106, 149, 137),           // waveAqua1 (distinct teal, not blue!)
             primary_text: Color::Rgb(220, 215, 186),      // fujiWhite
-            secondary_text: Color::Rgb(114, 118, 129),    // fujiGray
-            highlight_text: Color::Rgb(126, 156, 216),    // springBlue
-            success: Color::Rgb(152, 187, 108),           // autumnGreen
+            secondary_text: Color::Rgb(114, 118, 129),    // fujiGray (comments)
+            highlight_text: Color::Rgb(230, 195, 132),    // carpYellow (warmer highlight)
+            success: Color::Rgb(152, 187, 106),           // springGreen
             warning: Color::Rgb(255, 160, 102),           // surimiOrange
-            error: Color::Rgb(227, 99, 102),              // peachRed
-            info: Color::Rgb(125, 208, 234),              // lightBlue
-            timer_text: Color::Rgb(255, 199, 119),        // carpYellow
+            error: Color::Rgb(255, 93, 98),               // peachRed (brighter)
+            info: Color::Rgb(127, 180, 202),              // springBlue
+            timer_text: Color::Rgb(230, 195, 132),        // carpYellow
             badge: Color::Rgb(149, 127, 184),             // oniViolet
         }
     }
@@ -323,21 +323,21 @@ impl Theme {
     /// Monokai theme (classic vibrant)
     pub fn monokai() -> Self {
         Self {
-            active_border: Color::Rgb(102, 217, 239),     // cyan
+            active_border: Color::Rgb(102, 217, 239),     // cyan (vibrant)
             inactive_border: Color::Rgb(73, 72, 62),      // darker gray
             searching_border: Color::Rgb(230, 219, 116),  // yellow
             selected_bg: Color::Rgb(73, 72, 62),          // dark gray
             selected_inactive_bg: Color::Rgb(39, 40, 34), // background
-            visual_bg: Color::Rgb(102, 217, 239),         // cyan
-            timer_active_bg: Color::Rgb(166, 226, 46),    // green
+            visual_bg: Color::Rgb(249, 38, 114),          // magenta (distinct!)
+            timer_active_bg: Color::Rgb(166, 226, 46),    // vibrant green
             row_alternate_bg: Color::Rgb(30, 31, 28),     // darker bg
-            edit_bg: Color::Rgb(98, 114, 164),            // blue
+            edit_bg: Color::Rgb(100, 85, 60),             // warm brown (distinct from selected_bg!)
             primary_text: Color::Rgb(248, 248, 242),      // foreground
-            secondary_text: Color::Rgb(117, 113, 94),     // comment
-            highlight_text: Color::Rgb(102, 217, 239),    // cyan
-            success: Color::Rgb(166, 226, 46),            // green
+            secondary_text: Color::Rgb(117, 113, 94),     // comment gray
+            highlight_text: Color::Rgb(253, 151, 31),     // bright orange (not cyan!)
+            success: Color::Rgb(166, 226, 46),            // vibrant green
             warning: Color::Rgb(230, 219, 116),           // yellow
-            error: Color::Rgb(249, 38, 114),              // red
+            error: Color::Rgb(249, 38, 114),              // magenta/pink
             info: Color::Rgb(102, 217, 239),              // cyan
             timer_text: Color::Rgb(253, 151, 31),         // orange
             badge: Color::Rgb(174, 129, 255),             // purple
@@ -348,17 +348,17 @@ impl Theme {
     pub fn dracula() -> Self {
         Self {
             active_border: Color::Rgb(139, 233, 253),     // cyan
-            inactive_border: Color::Rgb(68, 71, 90),      // comment
+            inactive_border: Color::Rgb(68, 71, 90),      // current line
             searching_border: Color::Rgb(241, 250, 140),  // yellow
-            selected_bg: Color::Rgb(68, 71, 90),          // selection
+            selected_bg: Color::Rgb(68, 71, 90),          // current line
             selected_inactive_bg: Color::Rgb(40, 42, 54), // background
-            visual_bg: Color::Rgb(98, 114, 164),          // purple
+            visual_bg: Color::Rgb(139, 233, 253),         // cyan (distinct from purple)
             timer_active_bg: Color::Rgb(80, 250, 123),    // green
-            row_alternate_bg: Color::Rgb(33, 34, 44),     // darker bg
-            edit_bg: Color::Rgb(68, 71, 90),              // selection
+            row_alternate_bg: Color::Rgb(30, 31, 40),     // darker than bg
+            edit_bg: Color::Rgb(98, 114, 164),            // purple (distinct from selected_bg!)
             primary_text: Color::Rgb(248, 248, 242),      // foreground
-            secondary_text: Color::Rgb(98, 114, 164),     // comment
-            highlight_text: Color::Rgb(139, 233, 253),    // cyan
+            secondary_text: Color::Rgb(98, 114, 164),     // purple/comment
+            highlight_text: Color::Rgb(189, 147, 249),    // bright purple
             success: Color::Rgb(80, 250, 123),            // green
             warning: Color::Rgb(241, 250, 140),           // yellow
             error: Color::Rgb(255, 85, 85),               // red
