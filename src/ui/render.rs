@@ -249,17 +249,20 @@ fn render_records(frame: &mut Frame, area: Rect, app: &AppState) {
             let (name_display, start_display, end_display, description_display) = if is_editing {
                 match app.edit_field {
                     crate::ui::EditField::Name => {
+                        // Add cursor indicator to show user is in edit mode
+                        let text_with_cursor = format!("{}▏", app.input_buffer);
+
                         // Extract and display ticket badge if present and config exists
                         let display = if app.config.has_integrations() {
                             if crate::integrations::extract_ticket_from_name(&app.input_buffer)
                                 .is_some()
                             {
-                                format!("🎫 {} {}", icon, app.input_buffer)
+                                format!("🎫 {} {}", icon, text_with_cursor)
                             } else {
-                                format!("{} {}", icon, app.input_buffer)
+                                format!("{} {}", icon, text_with_cursor)
                             }
                         } else {
-                            format!("{} {}", icon, app.input_buffer)
+                            format!("{} {}", icon, text_with_cursor)
                         };
                         (
                             display,
@@ -269,6 +272,9 @@ fn render_records(frame: &mut Frame, area: Rect, app: &AppState) {
                         )
                     }
                     crate::ui::EditField::Description => {
+                        // Add cursor indicator to show user is in edit mode
+                        let description_with_cursor = format!("{}▏", app.input_buffer);
+
                         // Extract and display ticket badge if present and config exists
                         let display = if app.config.has_integrations() {
                             if crate::integrations::extract_ticket_from_name(&record.name).is_some()
@@ -284,7 +290,7 @@ fn render_records(frame: &mut Frame, area: Rect, app: &AppState) {
                             display,
                             record.start.to_string(),
                             record.end.to_string(),
-                            app.input_buffer.clone(),
+                            description_with_cursor,
                         )
                     }
                     crate::ui::EditField::Start | crate::ui::EditField::End => {
