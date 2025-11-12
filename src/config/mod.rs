@@ -248,27 +248,27 @@ impl Theme {
         }
     }
 
-    /// Kanagawa theme (dark navy blue aesthetic)
+    /// Kanagawa Dragon theme (earthy, warm dark aesthetic with authentic iTerm2 colors)
     pub fn kanagawa() -> Self {
         Self {
-            active_border: Color::Rgb(126, 156, 216),     // springBlue
-            inactive_border: Color::Rgb(54, 59, 77),      // sumiInk4
-            searching_border: Color::Rgb(255, 160, 102),  // surimiOrange
-            selected_bg: Color::Rgb(37, 43, 55),          // sumiInk3
-            selected_inactive_bg: Color::Rgb(30, 34, 44), // sumiInk2
-            visual_bg: Color::Rgb(57, 80, 112),           // waveBlue2
-            timer_active_bg: Color::Rgb(118, 151, 122),   // springGreen
-            row_alternate_bg: Color::Rgb(22, 25, 32),     // sumiInk1
-            edit_bg: Color::Rgb(34, 61, 80),              // waveBlue1
-            primary_text: Color::Rgb(220, 215, 186),      // fujiWhite
-            secondary_text: Color::Rgb(114, 118, 129),    // fujiGray
-            highlight_text: Color::Rgb(126, 156, 216),    // springBlue
-            success: Color::Rgb(152, 187, 108),           // autumnGreen
-            warning: Color::Rgb(255, 160, 102),           // surimiOrange
-            error: Color::Rgb(227, 99, 102),              // peachRed
-            info: Color::Rgb(125, 208, 234),              // lightBlue
-            timer_text: Color::Rgb(255, 199, 119),        // carpYellow
-            badge: Color::Rgb(149, 127, 184),             // oniViolet
+            active_border: Color::Rgb(127, 180, 202),     // Ansi 12 Bright Blue
+            inactive_border: Color::Rgb(56, 53, 51),      // Ansi 8 Bright Black
+            searching_border: Color::Rgb(230, 195, 132),  // Ansi 11 Bright Yellow
+            selected_bg: Color::Rgb(34, 50, 73),          // Selection Color
+            selected_inactive_bg: Color::Rgb(24, 22, 22), // Background Color
+            visual_bg: Color::Rgb(73, 97, 122),           // Ansi 4 Blue
+            timer_active_bg: Color::Rgb(135, 169, 135),   // Ansi 10 Bright Green
+            row_alternate_bg: Color::Rgb(29, 27, 27),     // Slightly lighter than bg
+            edit_bg: Color::Rgb(52, 66, 81),              // Lighter selection
+            primary_text: Color::Rgb(200, 192, 147),      // Foreground Color
+            secondary_text: Color::Rgb(161, 152, 123),    // Dimmed foreground
+            highlight_text: Color::Rgb(127, 180, 202),    // Ansi 12 Bright Blue
+            success: Color::Rgb(135, 169, 135),           // Ansi 10 Bright Green
+            warning: Color::Rgb(230, 195, 132),           // Ansi 11 Bright Yellow
+            error: Color::Rgb(228, 104, 118),             // Ansi 9 Bright Red
+            info: Color::Rgb(122, 168, 159),              // Ansi 14 Bright Cyan
+            timer_text: Color::Rgb(230, 195, 132),        // Ansi 11 Bright Yellow
+            badge: Color::Rgb(147, 138, 169),             // Ansi 13 Bright Magenta
         }
     }
 

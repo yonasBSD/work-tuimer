@@ -28,7 +28,7 @@ active = "kanagawa"  # Options: default, kanagawa, catppuccin, gruvbox, monokai,
 
 ## Pre-defined Themes
 
-WorkTimer includes 8 carefully crafted themes:
+WorkTimer includes 8 carefully crafted themes using authentic colors from popular terminal color schemes (iTerm2 format):
 
 ### 1. **default**
 The original WorkTimer color scheme with cyan highlights and dark backgrounds. Clean and professional.
@@ -39,7 +39,7 @@ active = "default"
 ```
 
 ### 2. **kanagawa**
-Dark navy blue aesthetic inspired by the Great Wave off Kanagawa. Deep blues with warm accents.
+Kanagawa Dragon variant with earthy, warm dark aesthetic. Uses authentic iTerm2 colors for a refined terminal experience.
 
 ```toml
 [theme]
