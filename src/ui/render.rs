@@ -3,7 +3,7 @@ use crate::ui::AppState;
 use ratatui::{
     Frame,
     layout::{Alignment, Constraint, Direction, Layout, Rect},
-    style::{Color, Modifier, Style},
+    style::{Modifier, Style},
     widgets::{Block, BorderType, Borders, Cell, Padding, Paragraph, Row, Table, TableState},
 };
 use std::time::Duration as StdDuration;
@@ -143,7 +143,7 @@ fn render_header(frame: &mut Frame, area: Rect, app: &AppState) {
     let title = Paragraph::new(title_text)
         .style(
             Style::default()
-                .fg(Color::Cyan)
+                .fg(app.theme.highlight_text)
                 .add_modifier(Modifier::BOLD),
         )
         .alignment(Alignment::Left)
@@ -151,14 +151,14 @@ fn render_header(frame: &mut Frame, area: Rect, app: &AppState) {
             Block::default()
                 .borders(Borders::ALL)
                 .border_type(BorderType::Rounded)
-                .border_style(Style::default().fg(Color::Cyan)),
+                .border_style(Style::default().fg(app.theme.active_border)),
         );
 
     let total_text = format!("Total: {}h {:02}m", total_hours, total_mins);
     let total = Paragraph::new(total_text)
         .style(
             Style::default()
-                .fg(Color::Green)
+                .fg(app.theme.success)
                 .add_modifier(Modifier::BOLD),
         )
         .alignment(Alignment::Right)
@@ -166,7 +166,7 @@ fn render_header(frame: &mut Frame, area: Rect, app: &AppState) {
             Block::default()
                 .borders(Borders::ALL)
                 .border_type(BorderType::Rounded)
-                .border_style(Style::default().fg(Color::Green)),
+                .border_style(Style::default().fg(app.theme.success)),
         );
 
     frame.render_widget(title, chunks[0]);
@@ -210,22 +210,22 @@ fn render_records(frame: &mut Frame, area: Rect, app: &AppState) {
             // Enhanced styling with more vibrant colors
             let style = if is_in_visual {
                 Style::default()
-                    .bg(Color::Rgb(70, 130, 180)) // Steel blue background
-                    .fg(Color::White)
+                    .bg(app.theme.visual_bg)
+                    .fg(app.theme.primary_text)
                     .add_modifier(Modifier::BOLD)
             } else if has_active_timer {
                 // Highlight record with active timer in green/gold
                 Style::default()
-                    .bg(Color::Rgb(34, 139, 34)) // Forest green background
-                    .fg(Color::Yellow)
+                    .bg(app.theme.timer_active_bg)
+                    .fg(app.theme.timer_text)
                     .add_modifier(Modifier::BOLD)
             } else if is_selected {
                 Style::default()
-                    .bg(Color::Rgb(40, 40, 60)) // Dark blue-gray background
-                    .fg(Color::Cyan)
+                    .bg(app.theme.selected_bg)
+                    .fg(app.theme.highlight_text)
                     .add_modifier(Modifier::BOLD)
             } else if i % 2 == 0 {
-                Style::default().bg(Color::Rgb(25, 25, 35)) // Subtle alternating rows
+                Style::default().bg(app.theme.row_alternate_bg)
             } else {
                 Style::default()
             };
@@ -362,20 +362,16 @@ fn render_records(frame: &mut Frame, area: Rect, app: &AppState) {
                 )
             };
 
-            // Define toned down background colors for focused and edit states
-            let focus_bg = Color::Rgb(88, 28, 135); // Dark purple (similar to Tailwind purple-900)
-            let edit_bg = Color::Rgb(22, 78, 99); // Dark cyan (similar to Tailwind cyan-900)
-
             // Apply styles based on focus and edit state
             let name_style = if is_editing && matches!(app.edit_field, crate::ui::EditField::Name) {
                 Style::default()
-                    .bg(edit_bg)
-                    .fg(Color::White)
+                    .bg(app.theme.edit_bg)
+                    .fg(app.theme.primary_text)
                     .add_modifier(Modifier::BOLD)
             } else if is_selected && matches!(app.edit_field, crate::ui::EditField::Name) {
                 Style::default()
-                    .bg(focus_bg)
-                    .fg(Color::White)
+                    .bg(app.theme.focus_bg)
+                    .fg(app.theme.primary_text)
                     .add_modifier(Modifier::BOLD)
             } else {
                 Style::default()
@@ -384,54 +380,53 @@ fn render_records(frame: &mut Frame, area: Rect, app: &AppState) {
             let start_style = if is_editing && matches!(app.edit_field, crate::ui::EditField::Start)
             {
                 Style::default()
-                    .bg(edit_bg)
-                    .fg(Color::White)
+                    .bg(app.theme.edit_bg)
+                    .fg(app.theme.primary_text)
                     .add_modifier(Modifier::BOLD)
             } else if is_selected && matches!(app.edit_field, crate::ui::EditField::Start) {
                 Style::default()
-                    .bg(focus_bg)
-                    .fg(Color::White)
+                    .bg(app.theme.focus_bg)
+                    .fg(app.theme.primary_text)
                     .add_modifier(Modifier::BOLD)
             } else {
-                Style::default().fg(Color::LightGreen)
+                Style::default().fg(app.theme.success)
             };
 
             let end_style = if is_editing && matches!(app.edit_field, crate::ui::EditField::End) {
                 Style::default()
-                    .bg(edit_bg)
-                    .fg(Color::White)
+                    .bg(app.theme.edit_bg)
+                    .fg(app.theme.primary_text)
                     .add_modifier(Modifier::BOLD)
             } else if is_selected && matches!(app.edit_field, crate::ui::EditField::End) {
                 Style::default()
-                    .bg(focus_bg)
-                    .fg(Color::White)
+                    .bg(app.theme.focus_bg)
+                    .fg(app.theme.primary_text)
                     .add_modifier(Modifier::BOLD)
             } else {
-                Style::default().fg(Color::LightRed)
+                Style::default().fg(app.theme.error)
             };
 
             let description_style = if is_editing
                 && matches!(app.edit_field, crate::ui::EditField::Description)
             {
                 Style::default()
-                    .bg(edit_bg)
-                    .fg(Color::White)
+                    .bg(app.theme.edit_bg)
+                    .fg(app.theme.primary_text)
                     .add_modifier(Modifier::BOLD)
             } else if is_selected && matches!(app.edit_field, crate::ui::EditField::Description) {
                 Style::default()
-                    .bg(focus_bg)
-                    .fg(Color::White)
+                    .bg(app.theme.focus_bg)
+                    .fg(app.theme.primary_text)
                     .add_modifier(Modifier::BOLD)
             } else {
-                Style::default().fg(Color::White) // White for description text
+                Style::default().fg(app.theme.primary_text)
             };
 
             Row::new(vec![
                 Cell::from(name_display).style(name_style),
                 Cell::from(start_display).style(start_style),
                 Cell::from(end_display).style(end_style),
-                Cell::from(record.format_duration())
-                    .style(Style::default().fg(Color::LightMagenta)),
+                Cell::from(record.format_duration()).style(Style::default().fg(app.theme.badge)),
                 Cell::from(description_display).style(description_style),
             ])
             .style(style)
@@ -458,7 +453,7 @@ fn render_records(frame: &mut Frame, area: Rect, app: &AppState) {
         ])
         .style(
             Style::default()
-                .fg(Color::Rgb(255, 215, 0)) // Gold color
+                .fg(app.theme.warning)
                 .add_modifier(Modifier::BOLD),
         )
         .bottom_margin(1),
@@ -467,11 +462,11 @@ fn render_records(frame: &mut Frame, area: Rect, app: &AppState) {
         Block::default()
             .borders(Borders::ALL)
             .border_type(BorderType::Rounded)
-            .border_style(Style::default().fg(Color::Magenta))
+            .border_style(Style::default().fg(app.theme.active_border))
             .title("📊 Work Records")
             .title_style(
                 Style::default()
-                    .fg(Color::Cyan)
+                    .fg(app.theme.highlight_text)
                     .add_modifier(Modifier::BOLD),
             ),
     );
@@ -489,17 +484,17 @@ fn render_grouped_totals(frame: &mut Frame, area: Rect, app: &AppState) {
 
     if grouped.is_empty() {
         let paragraph = Paragraph::new("No records yet")
-            .style(Style::default().fg(Color::DarkGray))
+            .style(Style::default().fg(app.theme.secondary_text))
             .alignment(Alignment::Center)
             .block(
                 Block::default()
                     .borders(Borders::ALL)
                     .border_type(BorderType::Rounded)
-                    .border_style(Style::default().fg(Color::Yellow))
+                    .border_style(Style::default().fg(app.theme.warning))
                     .title("📈 Summary")
                     .title_style(
                         Style::default()
-                            .fg(Color::Yellow)
+                            .fg(app.theme.warning)
                             .add_modifier(Modifier::BOLD),
                     ),
             );
@@ -528,7 +523,7 @@ fn render_grouped_totals(frame: &mut Frame, area: Rect, app: &AppState) {
                 Cell::from(format!("{} {}", icon, name)),
                 Cell::from(format!("{}h {:02}m", hours, mins)).style(
                     Style::default()
-                        .fg(Color::LightMagenta)
+                        .fg(app.theme.badge)
                         .add_modifier(Modifier::BOLD),
                 ),
             ])
@@ -543,7 +538,7 @@ fn render_grouped_totals(frame: &mut Frame, area: Rect, app: &AppState) {
         Row::new(vec![Cell::from("Task"), Cell::from("Total")])
             .style(
                 Style::default()
-                    .fg(Color::Rgb(255, 215, 0))
+                    .fg(app.theme.warning)
                     .add_modifier(Modifier::BOLD),
             )
             .bottom_margin(1),
@@ -552,11 +547,11 @@ fn render_grouped_totals(frame: &mut Frame, area: Rect, app: &AppState) {
         Block::default()
             .borders(Borders::ALL)
             .border_type(BorderType::Rounded)
-            .border_style(Style::default().fg(Color::Yellow))
+            .border_style(Style::default().fg(app.theme.warning))
             .title("📈 Summary")
             .title_style(
                 Style::default()
-                    .fg(Color::Yellow)
+                    .fg(app.theme.warning)
                     .add_modifier(Modifier::BOLD),
             ),
     );
@@ -573,36 +568,36 @@ fn render_footer(frame: &mut Frame, area: Rect, app: &AppState) {
     };
 
     let (help_text, mode_color, mode_label) = match app.mode {
-        crate::ui::AppMode::Browse => (browse_help, Color::Cyan, "BROWSE"),
+        crate::ui::AppMode::Browse => (browse_help, app.theme.info, "BROWSE"),
         crate::ui::AppMode::Edit => (
             "Tab: Next field | Enter: Save | Esc: Cancel",
-            Color::Yellow,
+            app.theme.warning,
             "EDIT",
         ),
         crate::ui::AppMode::Visual => (
             "↑/↓: Extend selection | d: Delete | Esc: Exit visual",
-            Color::Magenta,
+            app.theme.badge,
             "VISUAL",
         ),
         crate::ui::AppMode::CommandPalette => (
             "↑/↓: Navigate | Enter: Execute | Esc: Cancel",
-            Color::LightGreen,
+            app.theme.success,
             "COMMAND PALETTE",
         ),
         crate::ui::AppMode::Calendar => (
             "hjkl/arrows: Navigate | </>: Month | Enter: Select | Esc: Cancel",
-            Color::Magenta,
+            app.theme.badge,
             "CALENDAR",
         ),
         crate::ui::AppMode::TaskPicker => (
             "Type: Filter/Create | ↑/↓: Navigate | Enter: Select | Esc: Cancel",
-            Color::LightCyan,
+            app.theme.info,
             "TASK PICKER",
         ),
     };
 
     let footer = Paragraph::new(help_text)
-        .style(Style::default().fg(Color::Gray))
+        .style(Style::default().fg(app.theme.secondary_text))
         .alignment(Alignment::Center)
         .block(
             Block::default()
@@ -638,7 +633,7 @@ fn render_command_palette(frame: &mut Frame, app: &AppState) {
     frame.render_widget(Clear, modal_area);
 
     // Add a background block for the entire modal
-    let bg_block = Block::default().style(Style::default().bg(Color::Rgb(20, 20, 30)));
+    let bg_block = Block::default().style(Style::default().bg(app.theme.row_alternate_bg));
     frame.render_widget(bg_block, modal_area);
 
     // Split modal into input and results
@@ -656,24 +651,26 @@ fn render_command_palette(frame: &mut Frame, app: &AppState) {
 
     let input_style = if app.command_palette_input.is_empty() {
         Style::default()
-            .fg(Color::DarkGray)
-            .bg(Color::Rgb(30, 30, 45))
+            .fg(app.theme.secondary_text)
+            .bg(app.theme.edit_bg)
     } else {
-        Style::default().fg(Color::White).bg(Color::Rgb(30, 30, 45))
+        Style::default()
+            .fg(app.theme.primary_text)
+            .bg(app.theme.edit_bg)
     };
 
     let input = Paragraph::new(input_text).style(input_style).block(
         Block::default()
             .borders(Borders::ALL)
             .border_type(BorderType::Rounded)
-            .border_style(Style::default().fg(Color::LightGreen))
+            .border_style(Style::default().fg(app.theme.active_border))
             .title("🔍 Search Commands")
             .title_style(
                 Style::default()
-                    .fg(Color::LightGreen)
+                    .fg(app.theme.active_border)
                     .add_modifier(Modifier::BOLD),
             )
-            .style(Style::default().bg(Color::Rgb(30, 30, 45))),
+            .style(Style::default().bg(app.theme.edit_bg)),
     );
 
     frame.render_widget(input, chunks[0]);
@@ -689,11 +686,11 @@ fn render_command_palette(frame: &mut Frame, app: &AppState) {
 
             let style = if is_selected {
                 Style::default()
-                    .bg(Color::Rgb(70, 130, 180))
-                    .fg(Color::White)
+                    .bg(app.theme.selected_bg)
+                    .fg(app.theme.primary_text)
                     .add_modifier(Modifier::BOLD)
             } else {
-                Style::default().bg(Color::Rgb(25, 25, 38))
+                Style::default().bg(app.theme.row_alternate_bg)
             };
 
             let key_display = format!("  {}  ", cmd.key);
@@ -706,11 +703,11 @@ fn render_command_palette(frame: &mut Frame, app: &AppState) {
             Row::new(vec![
                 Cell::from(key_display).style(
                     Style::default()
-                        .fg(Color::LightGreen)
+                        .fg(app.theme.success)
                         .add_modifier(Modifier::BOLD),
                 ),
-                Cell::from(cmd.description).style(Style::default().fg(Color::White)),
-                Cell::from(score_display).style(Style::default().fg(Color::DarkGray)),
+                Cell::from(cmd.description).style(Style::default().fg(app.theme.primary_text)),
+                Cell::from(score_display).style(Style::default().fg(app.theme.secondary_text)),
             ])
             .style(style)
         })
@@ -728,14 +725,14 @@ fn render_command_palette(frame: &mut Frame, app: &AppState) {
         Block::default()
             .borders(Borders::ALL)
             .border_type(BorderType::Rounded)
-            .border_style(Style::default().fg(Color::LightGreen))
+            .border_style(Style::default().fg(app.theme.active_border))
             .title(format!("📋 Commands ({} found)", filtered.len()))
             .title_style(
                 Style::default()
-                    .fg(Color::LightGreen)
+                    .fg(app.theme.active_border)
                     .add_modifier(Modifier::BOLD),
             )
-            .style(Style::default().bg(Color::Rgb(25, 25, 38))),
+            .style(Style::default().bg(app.theme.row_alternate_bg)),
     );
 
     frame.render_widget(results_table, chunks[1]);
@@ -763,7 +760,7 @@ fn render_calendar(frame: &mut Frame, app: &AppState) {
     frame.render_widget(Clear, modal_area);
 
     // Add a background block for the entire modal
-    let bg_block = Block::default().style(Style::default().bg(Color::Rgb(20, 20, 30)));
+    let bg_block = Block::default().style(Style::default().bg(app.theme.row_alternate_bg));
     frame.render_widget(bg_block, modal_area);
 
     // Create the calendar layout
@@ -798,7 +795,7 @@ fn render_calendar(frame: &mut Frame, app: &AppState) {
     let header = Paragraph::new(header_text)
         .style(
             Style::default()
-                .fg(Color::Magenta)
+                .fg(app.theme.info)
                 .add_modifier(Modifier::BOLD),
         )
         .alignment(Alignment::Center)
@@ -806,8 +803,8 @@ fn render_calendar(frame: &mut Frame, app: &AppState) {
             Block::default()
                 .borders(Borders::ALL)
                 .border_type(BorderType::Rounded)
-                .border_style(Style::default().fg(Color::Magenta))
-                .style(Style::default().bg(Color::Rgb(30, 30, 45))),
+                .border_style(Style::default().fg(app.theme.info))
+                .style(Style::default().bg(app.theme.edit_bg)),
         );
 
     frame.render_widget(header, chunks[0]);
@@ -837,37 +834,37 @@ fn render_calendar(frame: &mut Frame, app: &AppState) {
     rows.push(Row::new(vec![
         Cell::from("Mon").style(
             Style::default()
-                .fg(Color::Yellow)
+                .fg(app.theme.warning)
                 .add_modifier(Modifier::BOLD),
         ),
         Cell::from("Tue").style(
             Style::default()
-                .fg(Color::Yellow)
+                .fg(app.theme.warning)
                 .add_modifier(Modifier::BOLD),
         ),
         Cell::from("Wed").style(
             Style::default()
-                .fg(Color::Yellow)
+                .fg(app.theme.warning)
                 .add_modifier(Modifier::BOLD),
         ),
         Cell::from("Thu").style(
             Style::default()
-                .fg(Color::Yellow)
+                .fg(app.theme.warning)
                 .add_modifier(Modifier::BOLD),
         ),
         Cell::from("Fri").style(
             Style::default()
-                .fg(Color::Yellow)
+                .fg(app.theme.warning)
                 .add_modifier(Modifier::BOLD),
         ),
         Cell::from("Sat").style(
             Style::default()
-                .fg(Color::Cyan)
+                .fg(app.theme.info)
                 .add_modifier(Modifier::BOLD),
         ),
         Cell::from("Sun").style(
             Style::default()
-                .fg(Color::Cyan)
+                .fg(app.theme.info)
                 .add_modifier(Modifier::BOLD),
         ),
     ]));
@@ -899,20 +896,20 @@ fn render_calendar(frame: &mut Frame, app: &AppState) {
 
             let style = if is_selected {
                 Style::default()
-                    .bg(Color::Rgb(147, 51, 234)) // Purple highlight
-                    .fg(Color::White)
+                    .bg(app.theme.visual_bg)
+                    .fg(app.theme.primary_text)
                     .add_modifier(Modifier::BOLD)
             } else if is_current_view {
                 Style::default()
-                    .bg(Color::Rgb(30, 80, 150)) // Blue for current viewed day
-                    .fg(Color::White)
+                    .bg(app.theme.selected_bg)
+                    .fg(app.theme.primary_text)
                     .add_modifier(Modifier::BOLD)
             } else if is_today {
                 Style::default()
-                    .fg(Color::LightGreen)
+                    .fg(app.theme.success)
                     .add_modifier(Modifier::BOLD | Modifier::UNDERLINED)
             } else {
-                Style::default().fg(Color::White)
+                Style::default().fg(app.theme.primary_text)
             };
 
             week_row.push(Cell::from(day_str).style(style));
@@ -946,20 +943,20 @@ fn render_calendar(frame: &mut Frame, app: &AppState) {
 
                 let style = if is_selected {
                     Style::default()
-                        .bg(Color::Rgb(147, 51, 234))
-                        .fg(Color::White)
+                        .bg(app.theme.visual_bg)
+                        .fg(app.theme.primary_text)
                         .add_modifier(Modifier::BOLD)
                 } else if is_current_view {
                     Style::default()
-                        .bg(Color::Rgb(30, 80, 150))
-                        .fg(Color::White)
+                        .bg(app.theme.selected_bg)
+                        .fg(app.theme.primary_text)
                         .add_modifier(Modifier::BOLD)
                 } else if is_today {
                     Style::default()
-                        .fg(Color::LightGreen)
+                        .fg(app.theme.success)
                         .add_modifier(Modifier::BOLD | Modifier::UNDERLINED)
                 } else {
-                    Style::default().fg(Color::White)
+                    Style::default().fg(app.theme.primary_text)
                 };
 
                 week_row.push(Cell::from(day_str).style(style));
@@ -988,14 +985,14 @@ fn render_calendar(frame: &mut Frame, app: &AppState) {
         Block::default()
             .borders(Borders::ALL)
             .border_type(BorderType::Rounded)
-            .border_style(Style::default().fg(Color::Magenta))
+            .border_style(Style::default().fg(app.theme.info))
             .title("📆 Select Date")
             .title_style(
                 Style::default()
-                    .fg(Color::Magenta)
+                    .fg(app.theme.info)
                     .add_modifier(Modifier::BOLD),
             )
-            .style(Style::default().bg(Color::Rgb(25, 25, 38))),
+            .style(Style::default().bg(app.theme.row_alternate_bg)),
     );
 
     frame.render_widget(calendar_table, chunks[1]);
@@ -1048,7 +1045,7 @@ fn render_error_modal(frame: &mut Frame, app: &AppState) {
     frame.render_widget(Clear, modal_area);
 
     // Add a background block for the entire modal
-    let bg_block = Block::default().style(Style::default().bg(Color::Rgb(40, 20, 20)));
+    let bg_block = Block::default().style(Style::default().bg(app.theme.row_alternate_bg));
     frame.render_widget(bg_block, modal_area);
 
     // Get error message
@@ -1067,7 +1064,7 @@ fn render_error_modal(frame: &mut Frame, app: &AppState) {
     // Render error message
     let lines = vec![
         Line::from(""),
-        Line::from(format!("  {}", error_text)).style(Style::default().fg(Color::White)),
+        Line::from(format!("  {}", error_text)).style(Style::default().fg(app.theme.primary_text)),
         Line::from(""),
     ];
 
@@ -1075,10 +1072,14 @@ fn render_error_modal(frame: &mut Frame, app: &AppState) {
         Block::default()
             .borders(Borders::ALL)
             .border_type(BorderType::Rounded)
-            .border_style(Style::default().fg(Color::Red))
+            .border_style(Style::default().fg(app.theme.error))
             .title("❌ ERROR")
-            .title_style(Style::default().fg(Color::Red).add_modifier(Modifier::BOLD))
-            .style(Style::default().bg(Color::Rgb(40, 20, 20))),
+            .title_style(
+                Style::default()
+                    .fg(app.theme.error)
+                    .add_modifier(Modifier::BOLD),
+            )
+            .style(Style::default().bg(app.theme.row_alternate_bg)),
     );
 
     frame.render_widget(error_msg, chunks[0]);
@@ -1086,7 +1087,7 @@ fn render_error_modal(frame: &mut Frame, app: &AppState) {
     // Render help text
     let help = Paragraph::new("Press any key to dismiss")
         .alignment(Alignment::Center)
-        .style(Style::default().fg(Color::DarkGray));
+        .style(Style::default().fg(app.theme.secondary_text));
 
     frame.render_widget(help, chunks[1]);
 }
@@ -1115,7 +1116,7 @@ fn render_task_picker(frame: &mut Frame, app: &AppState) {
     frame.render_widget(Clear, modal_area);
 
     // Add a background block for the entire modal
-    let bg_block = Block::default().style(Style::default().bg(Color::Rgb(20, 20, 30)));
+    let bg_block = Block::default().style(Style::default().bg(app.theme.selected_inactive_bg));
     frame.render_widget(bg_block, modal_area);
 
     // Split modal into header, input, and list
@@ -1136,20 +1137,20 @@ fn render_task_picker(frame: &mut Frame, app: &AppState) {
     };
 
     let header = Paragraph::new(header_text)
-        .style(Style::default().fg(Color::White))
+        .style(Style::default().fg(app.theme.primary_text))
         .alignment(Alignment::Center)
         .block(
             Block::default()
                 .borders(Borders::ALL)
                 .border_type(BorderType::Rounded)
-                .border_style(Style::default().fg(Color::LightCyan))
+                .border_style(Style::default().fg(app.theme.info))
                 .title("📋 Task Picker")
                 .title_style(
                     Style::default()
-                        .fg(Color::LightCyan)
+                        .fg(app.theme.info)
                         .add_modifier(Modifier::BOLD),
                 )
-                .style(Style::default().bg(Color::Rgb(30, 30, 45))),
+                .style(Style::default().bg(app.theme.selected_inactive_bg)),
         );
 
     frame.render_widget(header, chunks[0]);
@@ -1163,20 +1164,20 @@ fn render_task_picker(frame: &mut Frame, app: &AppState) {
 
     let input = Paragraph::new(input_display)
         .style(if app.input_buffer.is_empty() {
-            Style::default().fg(Color::DarkGray)
+            Style::default().fg(app.theme.secondary_text)
         } else {
             Style::default()
-                .fg(Color::White)
+                .fg(app.theme.primary_text)
                 .add_modifier(Modifier::BOLD)
         })
         .block(
             Block::default()
                 .borders(Borders::ALL)
                 .border_type(BorderType::Rounded)
-                .border_style(Style::default().fg(Color::Yellow))
+                .border_style(Style::default().fg(app.theme.warning))
                 .title("Filter / New Task")
-                .title_style(Style::default().fg(Color::Yellow))
-                .style(Style::default().bg(Color::Rgb(35, 35, 50)))
+                .title_style(Style::default().fg(app.theme.warning))
+                .style(Style::default().bg(app.theme.selected_inactive_bg))
                 .padding(ratatui::widgets::Padding::horizontal(1)),
         );
 
@@ -1185,14 +1186,14 @@ fn render_task_picker(frame: &mut Frame, app: &AppState) {
     // Render task list
     if all_tasks.is_empty() {
         let empty_msg = Paragraph::new("No existing tasks. Type to create new one.")
-            .style(Style::default().fg(Color::DarkGray))
+            .style(Style::default().fg(app.theme.secondary_text))
             .alignment(Alignment::Center)
             .block(
                 Block::default()
                     .borders(Borders::ALL)
                     .border_type(BorderType::Rounded)
-                    .border_style(Style::default().fg(Color::LightCyan))
-                    .style(Style::default().bg(Color::Rgb(25, 25, 38))),
+                    .border_style(Style::default().fg(app.theme.info))
+                    .style(Style::default().bg(app.theme.selected_inactive_bg)),
             );
         frame.render_widget(empty_msg, chunks[2]);
     } else if filtered_tasks.is_empty() && !app.input_buffer.is_empty() {
@@ -1200,7 +1201,7 @@ fn render_task_picker(frame: &mut Frame, app: &AppState) {
             Paragraph::new(format!("Press Enter to create: \"{}\"", app.input_buffer))
                 .style(
                     Style::default()
-                        .fg(Color::Green)
+                        .fg(app.theme.success)
                         .add_modifier(Modifier::BOLD),
                 )
                 .alignment(Alignment::Center)
@@ -1208,14 +1209,14 @@ fn render_task_picker(frame: &mut Frame, app: &AppState) {
                     Block::default()
                         .borders(Borders::ALL)
                         .border_type(BorderType::Rounded)
-                        .border_style(Style::default().fg(Color::Green))
+                        .border_style(Style::default().fg(app.theme.success))
                         .title("New Task")
                         .title_style(
                             Style::default()
-                                .fg(Color::Green)
+                                .fg(app.theme.success)
                                 .add_modifier(Modifier::BOLD),
                         )
-                        .style(Style::default().bg(Color::Rgb(25, 38, 25))),
+                        .style(Style::default().bg(app.theme.selected_inactive_bg)),
                 );
         frame.render_widget(new_task_msg, chunks[2]);
     } else {
@@ -1227,11 +1228,11 @@ fn render_task_picker(frame: &mut Frame, app: &AppState) {
 
                 let style = if is_selected {
                     Style::default()
-                        .bg(Color::Rgb(70, 130, 180))
-                        .fg(Color::White)
+                        .bg(app.theme.selected_bg)
+                        .fg(app.theme.primary_text)
                         .add_modifier(Modifier::BOLD)
                 } else {
-                    Style::default().bg(Color::Rgb(25, 25, 38))
+                    Style::default().bg(app.theme.selected_inactive_bg)
                 };
 
                 // Add icon based on task type
@@ -1250,7 +1251,7 @@ fn render_task_picker(frame: &mut Frame, app: &AppState) {
                 let display_name = format!("{} {}", icon, name);
 
                 Row::new(vec![
-                    Cell::from(display_name).style(Style::default().fg(Color::White)),
+                    Cell::from(display_name).style(Style::default().fg(app.theme.primary_text)),
                 ])
                 .style(style)
             })
@@ -1266,14 +1267,14 @@ fn render_task_picker(frame: &mut Frame, app: &AppState) {
             Block::default()
                 .borders(Borders::ALL)
                 .border_type(BorderType::Rounded)
-                .border_style(Style::default().fg(Color::LightCyan))
+                .border_style(Style::default().fg(app.theme.info))
                 .title(title)
                 .title_style(
                     Style::default()
-                        .fg(Color::LightCyan)
+                        .fg(app.theme.info)
                         .add_modifier(Modifier::BOLD),
                 )
-                .style(Style::default().bg(Color::Rgb(25, 25, 38))),
+                .style(Style::default().bg(app.theme.selected_inactive_bg)),
         );
 
         frame.render_widget(task_table, chunks[2]);
@@ -1313,9 +1314,9 @@ fn render_timer_bar(frame: &mut Frame, area: Rect, app: &AppState) {
         };
 
         let timer_color = match timer.status {
-            TimerStatus::Running => Color::Green,
-            TimerStatus::Paused => Color::Yellow,
-            TimerStatus::Stopped => Color::Red,
+            TimerStatus::Running => app.theme.success,
+            TimerStatus::Paused => app.theme.warning,
+            TimerStatus::Stopped => app.theme.error,
         };
 
         let timer_paragraph = Paragraph::new(timer_text)

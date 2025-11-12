@@ -85,11 +85,13 @@ This file tracks active development tasks for the WorkTimer project. Tasks are m
 - [ ] Allow editing template library
 - [ ] Support template with default durations
 
-#### Themes
-- [ ] Implement theme switching system
-- [ ] Create dark/light theme variants
+#### Themes (Issue #6)
+- [x] Design and implement theme system with pre-defined themes
+- [x] Create dark/light theme variants (7 pre-defined themes + terminal theme)
+- [x] Add 13 comprehensive theme tests for edge cases and coverage (28 total theme tests)
+- [x] Refactor theme documentation to separate THEMING.md file
 - [ ] Auto-detect system theme preference
-- [ ] Allow custom color palette configuration
+- [x] Allow custom color palette configuration via config.toml
 
 ### Future/Research Tasks
 
@@ -120,6 +122,72 @@ This file tracks active development tasks for the WorkTimer project. Tasks are m
 ---
 
 ## Completed Tasks
+
+### UI Enhancement: Task Picker Modal Background (2025-11-12)
+- [x] Fix Task Picker modal background to use darker color
+- [x] Replace row_alternate_bg/edit_bg with selected_inactive_bg across all modal components
+- [x] Apply changes to 6 locations: modal background, header block, input block, empty message, unselected rows, task table
+- [x] Test changes - all 191 tests passing
+- **Context**: Improved visual distinction of Task Picker modal by using `selected_inactive_bg` instead of `row_alternate_bg` and `edit_bg`. The brighter backgrounds made the modal less distinguishable from the main UI.
+- **Solution**: Used existing darker theme color (`selected_inactive_bg`) to avoid adding new theme fields and breaking changes. Applied consistently across all 6 background locations in the modal.
+- **Testing**: All 191 tests pass (180 unit + 11 integration), clippy clean, format check passing
+- **Files Modified**: src/ui/render.rs (6 line changes in render_task_picker function)
+- **Branch**: feature/add-theming-option
+- **Commit**: e782baf - "Use darker background for Task Picker modal"
+
+### Feature: Theming System - Issue #6 (2025-11-12)
+- [x] Design theme architecture with semantic color names (18 color fields)
+- [x] Implement 8 pre-defined themes (default, kanagawa, catppuccin, gruvbox, monokai, dracula, everforest, terminal)
+- [x] Add custom theme support via config.toml with 3 color format options (hex, RGB tuples, named colors)
+- [x] Replace all 117 hardcoded Color:: references in render.rs with theme colors
+- [x] Add theme configuration section to README.md with examples
+- [x] Add comprehensive test suite (15+ tests for theme loading, color parsing, TOML deserialization, fallback behavior)
+- [x] Refactor theme documentation to separate docs/THEMING.md file (11KB comprehensive guide)
+- [x] Simplify README.md theme section to ~25 lines with reference link
+- [x] Add 13 additional comprehensive theme tests (28 total theme tests)
+- **Context**: Implemented complete theming system allowing users to customize the TUI appearance through config.toml. Users can choose from 8 pre-defined themes or create custom themes using hex colors (#RRGGBB, #RGB), RGB tuples (R, G, B), or named colors (Red, Blue, etc.).
+- **Architecture**: 
+  - Config layer: ThemeConfig manages theme selection and custom theme storage
+  - Theme layer: Theme struct with 18 semantic color fields (borders, backgrounds, text, status, specific elements)
+  - UI layer: All render functions use theme colors from AppState
+- **Pre-defined Themes**:
+  1. `default` - Original blue/cyan theme
+  2. `kanagawa` - Dark navy aesthetic inspired by Japanese art
+  3. `catppuccin` - Popular pastel theme (Mocha variant)
+  4. `gruvbox` - Retro warm colors
+  5. `monokai` - Classic vibrant theme
+  6. `dracula` - Purple/pink accents
+  7. `everforest` - Green forest aesthetic
+  8. `terminal` - Uses terminal's native colors
+- **Color Parsing**: Supports 3 formats with fallback to white on invalid input
+- **Documentation**: Created comprehensive 11KB docs/THEMING.md guide with:
+  - Table of contents with anchor links
+  - All 8 theme descriptions with color palettes
+  - Custom theme creation guide with 3 full examples
+  - Complete color format reference and semantic color table
+  - Tips and troubleshooting sections
+- **Testing**: 28 total theme tests covering:
+  - All predefined theme constructors
+  - Color parsing edge cases (hex, RGB, named colors)
+  - Whitespace handling and case sensitivity
+  - Custom theme loading and overrides
+  - Theme serialization round-trip
+- **Files Modified**: 
+  - src/config/mod.rs (theme system + 28 tests)
+  - src/ui/app_state.rs (theme field)
+  - src/ui/render.rs (117 color replacements)
+  - README.md (simplified theme section)
+  - docs/THEMING.md (NEW - comprehensive documentation)
+- **Branch**: feature/add-theming-option
+- **Issue**: https://github.com/Kamyil/work-tuimer/issues/6
+- **PR**: https://github.com/Kamyil/work-tuimer/pull/32
+- **Commits**:
+  - d10e2e7 - "Complete theming system implementation with UI integration and documentation"
+  - dbdce7e - "Add comprehensive test suite for theming system (fixes #6)"
+  - 552d02d - "Refactor: Move theme documentation to separate THEMING.md file"
+  - dc59aa5 - "Add 13 comprehensive theme tests for edge cases and coverage"
+  - d5ebc97 - "Revert iTerm2 color experiment - restore handcrafted theme colors for better visual distinction"
+- **Note**: Initially attempted to use authentic iTerm2 ANSI colors (commits 87da5d4, bfb9031) but this made themes indistinguishable because iTerm2 colors are designed for terminal emulators, not TUI applications. Reverted to original handcrafted themes which use distinct colors for each semantic UI element (e.g., selected_bg ≠ edit_bg ≠ row_alternate_bg).
 
 ### Feature: Add --version Command + Bump to v0.3.0 - Issue #18 (2025-11-12)
 - [x] Create new branch feature/add-version-command

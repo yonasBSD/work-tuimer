@@ -1,5 +1,5 @@
 use super::history::History;
-use crate::config::Config;
+use crate::config::{Config, Theme};
 use crate::models::{DayData, WorkRecord};
 use crate::timer::TimerState;
 use time::Date;
@@ -66,6 +66,7 @@ pub struct AppState {
     pub calendar_view_month: time::Month,
     pub calendar_view_year: i32,
     pub config: Config,
+    pub theme: Theme,
     pub last_error_message: Option<String>,
     pub task_picker_selected: usize,
     pub active_timer: Option<TimerState>,
@@ -164,6 +165,9 @@ impl AppState {
             },
         ];
 
+        let config = Config::load().unwrap_or_default();
+        let theme = config.get_theme();
+
         AppState {
             calendar_selected_date: current_date,
             calendar_view_month: current_date.month(),
@@ -182,7 +186,8 @@ impl AppState {
             command_palette_selected: 0,
             available_commands,
             date_changed: false,
-            config: Config::load().unwrap_or_default(),
+            config,
+            theme,
             last_error_message: None,
             task_picker_selected: 0,
             active_timer: None,

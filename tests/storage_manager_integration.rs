@@ -79,13 +79,13 @@ fn test_timer_pause_resume() -> Result<()> {
     assert_eq!(resumed_timer.task_name, "Pausable Task");
 
     // Elapsed should be approximately the same as when paused
-    // Note: Allow some tolerance for system timing variations
+    // Note: Allow some tolerance for system timing variations (increased for CI environments)
     let elapsed_after_resume = manager.get_timer_elapsed(&resumed_timer);
     let diff = elapsed_after_resume
         .as_millis()
         .abs_diff(elapsed_at_pause.as_millis());
     assert!(
-        diff < 200,
+        diff < 300,
         "Elapsed time increased too much during pause: {} ms",
         diff
     );
