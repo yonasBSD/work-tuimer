@@ -193,11 +193,14 @@ pub struct CustomThemeColors {
 pub struct Theme {
     // Border colors
     pub active_border: Color,
+    #[allow(dead_code)]
     pub inactive_border: Color,
+    #[allow(dead_code)]
     pub searching_border: Color,
 
     // Background colors
     pub selected_bg: Color,
+    #[allow(dead_code)]
     pub selected_inactive_bg: Color,
     pub visual_bg: Color,
     pub timer_active_bg: Color,
@@ -484,8 +487,10 @@ fn parse_color(color_str: &str) -> Color {
         "lightcyan" => Color::LightCyan,
         "white" => Color::White,
         _ => {
-            // Fallback: try to parse as RGB tuple "r,g,b"
-            let parts: Vec<&str> = trimmed.split(',').map(|s| s.trim()).collect();
+            // Fallback: try to parse as RGB tuple "r,g,b" or "(r, g, b)"
+            // Strip parentheses if present
+            let rgb_str = trimmed.trim_start_matches('(').trim_end_matches(')').trim();
+            let parts: Vec<&str> = rgb_str.split(',').map(|s| s.trim()).collect();
             if parts.len() == 3
                 && let (Ok(r), Ok(g), Ok(b)) = (
                     parts[0].parse::<u8>(),

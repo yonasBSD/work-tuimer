@@ -88,6 +88,8 @@ This file tracks active development tasks for the WorkTimer project. Tasks are m
 #### Themes (Issue #6)
 - [x] Design and implement theme system with pre-defined themes
 - [x] Create dark/light theme variants (7 pre-defined themes + terminal theme)
+- [x] Add 13 comprehensive theme tests for edge cases and coverage (28 total theme tests)
+- [x] Refactor theme documentation to separate THEMING.md file
 - [ ] Auto-detect system theme preference
 - [x] Allow custom color palette configuration via config.toml
 
@@ -128,6 +130,9 @@ This file tracks active development tasks for the WorkTimer project. Tasks are m
 - [x] Replace all 117 hardcoded Color:: references in render.rs with theme colors
 - [x] Add theme configuration section to README.md with examples
 - [x] Add comprehensive test suite (15+ tests for theme loading, color parsing, TOML deserialization, fallback behavior)
+- [x] Refactor theme documentation to separate docs/THEMING.md file (11KB comprehensive guide)
+- [x] Simplify README.md theme section to ~25 lines with reference link
+- [x] Add 13 additional comprehensive theme tests (28 total theme tests)
 - **Context**: Implemented complete theming system allowing users to customize the TUI appearance through config.toml. Users can choose from 8 pre-defined themes or create custom themes using hex colors (#RRGGBB, #RGB), RGB tuples (R, G, B), or named colors (Red, Blue, etc.).
 - **Architecture**: 
   - Config layer: ThemeConfig manages theme selection and custom theme storage
@@ -143,11 +148,32 @@ This file tracks active development tasks for the WorkTimer project. Tasks are m
   7. `everforest` - Green forest aesthetic
   8. `terminal` - Uses terminal's native colors
 - **Color Parsing**: Supports 3 formats with fallback to white on invalid input
-- **Testing**: All 168 tests pass (15 new theme tests), cargo check passes with only 3 harmless unused field warnings
-- **Files Modified**: src/config/mod.rs (theme system + tests), src/ui/app_state.rs (theme field), src/ui/render.rs (117 color replacements), README.md (documentation)
+- **Documentation**: Created comprehensive 11KB docs/THEMING.md guide with:
+  - Table of contents with anchor links
+  - All 8 theme descriptions with color palettes
+  - Custom theme creation guide with 3 full examples
+  - Complete color format reference and semantic color table
+  - Tips and troubleshooting sections
+- **Testing**: 28 total theme tests covering:
+  - All predefined theme constructors
+  - Color parsing edge cases (hex, RGB, named colors)
+  - Whitespace handling and case sensitivity
+  - Custom theme loading and overrides
+  - Theme serialization round-trip
+- **Files Modified**: 
+  - src/config/mod.rs (theme system + 28 tests)
+  - src/ui/app_state.rs (theme field)
+  - src/ui/render.rs (117 color replacements)
+  - README.md (simplified theme section)
+  - docs/THEMING.md (NEW - comprehensive documentation)
 - **Branch**: feature/add-theming-option
 - **Issue**: https://github.com/Kamyil/work-tuimer/issues/6
 - **PR**: https://github.com/Kamyil/work-tuimer/pull/32
+- **Commits**:
+  - d10e2e7 - "Complete theming system implementation with UI integration and documentation"
+  - dbdce7e - "Add comprehensive test suite for theming system (fixes #6)"
+  - 552d02d - "Refactor: Move theme documentation to separate THEMING.md file"
+  - dc59aa5 - "Add 13 comprehensive theme tests for edge cases and coverage"
 
 ### Feature: Add --version Command + Bump to v0.3.0 - Issue #18 (2025-11-12)
 - [x] Create new branch feature/add-version-command

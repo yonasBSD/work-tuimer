@@ -426,8 +426,7 @@ fn render_records(frame: &mut Frame, area: Rect, app: &AppState) {
                 Cell::from(name_display).style(name_style),
                 Cell::from(start_display).style(start_style),
                 Cell::from(end_display).style(end_style),
-                Cell::from(record.format_duration())
-                    .style(Style::default().fg(app.theme.badge)),
+                Cell::from(record.format_duration()).style(Style::default().fg(app.theme.badge)),
                 Cell::from(description_display).style(description_style),
             ])
             .style(style)
@@ -655,7 +654,9 @@ fn render_command_palette(frame: &mut Frame, app: &AppState) {
             .fg(app.theme.secondary_text)
             .bg(app.theme.edit_bg)
     } else {
-        Style::default().fg(app.theme.primary_text).bg(app.theme.edit_bg)
+        Style::default()
+            .fg(app.theme.primary_text)
+            .bg(app.theme.edit_bg)
     };
 
     let input = Paragraph::new(input_text).style(input_style).block(
@@ -1073,7 +1074,11 @@ fn render_error_modal(frame: &mut Frame, app: &AppState) {
             .border_type(BorderType::Rounded)
             .border_style(Style::default().fg(app.theme.error))
             .title("❌ ERROR")
-            .title_style(Style::default().fg(app.theme.error).add_modifier(Modifier::BOLD))
+            .title_style(
+                Style::default()
+                    .fg(app.theme.error)
+                    .add_modifier(Modifier::BOLD),
+            )
             .style(Style::default().bg(app.theme.row_alternate_bg)),
     );
 
