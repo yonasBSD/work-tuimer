@@ -121,6 +121,18 @@ This file tracks active development tasks for the WorkTimer project. Tasks are m
 
 ## Completed Tasks
 
+### Feature: Add --version Command - Issue #18 (2025-11-12)
+- [x] Create new branch feature/add-version-command
+- [x] Add `#[command(version)]` attribute to CLI struct in src/cli/mod.rs
+- [x] Test `--version` and `-V` flags (both display "work-tuimer 0.1.0")
+- [x] Run all tests - 152 tests passing
+- **Context**: Implemented basic --version command as requested in GitHub Issue #18
+- **Solution**: Added single line `#[command(version)]` to Cli struct, leveraging clap's built-in version support
+- **Testing**: All 152 tests pass, both `--version` and `-V` work correctly
+- **Files Modified**: src/cli/mod.rs (1 line added)
+- **Branch**: feature/add-version-command
+- **Commit**: e370a6e - "Add --version command to CLI (fixes #18)"
+
 ### Bug Fix: CLI/TUI Session Synchronization & Auto-Save (2025-11-12)
 - [x] Add `PartialEq` derive to `TimerState` for state comparison
 - [x] Enhance `check_and_reload_if_modified()` to monitor active timer file changes
