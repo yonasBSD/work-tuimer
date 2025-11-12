@@ -166,13 +166,33 @@ fn handle_key_event(app: &mut AppState, key: KeyEvent, storage: &mut storage::St
             KeyCode::Right | KeyCode::Char('l') => app.move_field_right(),
             KeyCode::Enter | KeyCode::Char('i') => app.enter_edit_mode(),
             KeyCode::Char('c') => app.change_task_name(),
-            KeyCode::Char('n') => app.add_new_record(),
-            KeyCode::Char('b') => app.add_break(),
-            KeyCode::Char('d') => app.delete_selected_record(),
+            KeyCode::Char('n') => {
+                app.add_new_record();
+                let _ = storage.save(&app.day_data);
+                app.last_file_modified = storage.get_last_modified(&app.current_date);
+            }
+            KeyCode::Char('b') => {
+                app.add_break();
+                let _ = storage.save(&app.day_data);
+                app.last_file_modified = storage.get_last_modified(&app.current_date);
+            }
+            KeyCode::Char('d') => {
+                app.delete_selected_record();
+                let _ = storage.save(&app.day_data);
+                app.last_file_modified = storage.get_last_modified(&app.current_date);
+            }
             KeyCode::Char('v') => app.enter_visual_mode(),
             KeyCode::Char('t') => app.set_current_time_on_field(),
-            KeyCode::Char('u') => app.undo(),
-            KeyCode::Char('r') => app.redo(),
+            KeyCode::Char('u') => {
+                app.undo();
+                let _ = storage.save(&app.day_data);
+                app.last_file_modified = storage.get_last_modified(&app.current_date);
+            }
+            KeyCode::Char('r') => {
+                app.redo();
+                let _ = storage.save(&app.day_data);
+                app.last_file_modified = storage.get_last_modified(&app.current_date);
+            }
             KeyCode::Char('s') => {
                 let _ = storage.save(&app.day_data);
                 app.last_file_modified = storage.get_last_modified(&app.current_date);
@@ -258,13 +278,33 @@ fn execute_command_action(
         CommandAction::MoveRight => app.move_field_right(),
         CommandAction::Edit => app.enter_edit_mode(),
         CommandAction::Change => app.change_task_name(),
-        CommandAction::New => app.add_new_record(),
-        CommandAction::Break => app.add_break(),
-        CommandAction::Delete => app.delete_selected_record(),
+        CommandAction::New => {
+            app.add_new_record();
+            let _ = storage.save(&app.day_data);
+            app.last_file_modified = storage.get_last_modified(&app.current_date);
+        }
+        CommandAction::Break => {
+            app.add_break();
+            let _ = storage.save(&app.day_data);
+            app.last_file_modified = storage.get_last_modified(&app.current_date);
+        }
+        CommandAction::Delete => {
+            app.delete_selected_record();
+            let _ = storage.save(&app.day_data);
+            app.last_file_modified = storage.get_last_modified(&app.current_date);
+        }
         CommandAction::Visual => app.enter_visual_mode(),
         CommandAction::SetNow => app.set_current_time_on_field(),
-        CommandAction::Undo => app.undo(),
-        CommandAction::Redo => app.redo(),
+        CommandAction::Undo => {
+            app.undo();
+            let _ = storage.save(&app.day_data);
+            app.last_file_modified = storage.get_last_modified(&app.current_date);
+        }
+        CommandAction::Redo => {
+            app.redo();
+            let _ = storage.save(&app.day_data);
+            app.last_file_modified = storage.get_last_modified(&app.current_date);
+        }
         CommandAction::Save => {
             let _ = storage.save(&app.day_data);
             app.last_file_modified = storage.get_last_modified(&app.current_date);

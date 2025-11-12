@@ -24,7 +24,7 @@ pub enum TimerStatus {
 ///
 /// This struct represents an active timer session. All fields are designed
 /// to be compatible with SQLite storage for future migration (Issue #22).
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct TimerState {
     /// Optional ID for future SQLite primary key (currently unused)
     pub id: Option<u32>,

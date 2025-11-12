@@ -1029,7 +1029,9 @@ impl AppState {
     /// Check if the data file has been modified externally and reload if needed
     /// Returns true if the file was reloaded
     pub fn check_and_reload_if_modified(&mut self, storage: &mut crate::storage::StorageManager) -> bool {
-        // Use StorageManager's check_and_reload which handles all the tracking automatically
+        let mut changed = false;
+        
+        // Check if day data file has been modified
         if let Ok(Some(new_data)) = storage.check_and_reload(self.current_date) {
             self.day_data = new_data;
             self.last_file_modified = storage.get_last_modified(&self.current_date);
@@ -1040,10 +1042,23 @@ impl AppState {
                 self.selected_index = record_count - 1;
             }
             
-            return true;
+            changed = true;
         }
         
-        false
+        // Check if active timer has been modified externally (e.g., started/stopped from CLI)
+        if let Ok(Some(timer)) = storage.load_active_timer() {
+            // Timer exists - update if different from current state
+            if self.active_timer.is_none() || self.active_timer.as_ref() != Some(&timer) {
+                self.active_timer = Some(timer);
+                changed = true;
+            }
+        } else if self.active_timer.is_some() {
+            // Timer was cleared externally
+            self.active_timer = None;
+            changed = true;
+        }
+        
+        changed
     }
 }
 
