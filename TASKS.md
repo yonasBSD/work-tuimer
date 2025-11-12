@@ -123,6 +123,18 @@ This file tracks active development tasks for the WorkTimer project. Tasks are m
 
 ## Completed Tasks
 
+### UI Enhancement: Task Picker Modal Background (2025-11-12)
+- [x] Fix Task Picker modal background to use darker color
+- [x] Replace row_alternate_bg/edit_bg with selected_inactive_bg across all modal components
+- [x] Apply changes to 6 locations: modal background, header block, input block, empty message, unselected rows, task table
+- [x] Test changes - all 191 tests passing
+- **Context**: Improved visual distinction of Task Picker modal by using `selected_inactive_bg` instead of `row_alternate_bg` and `edit_bg`. The brighter backgrounds made the modal less distinguishable from the main UI.
+- **Solution**: Used existing darker theme color (`selected_inactive_bg`) to avoid adding new theme fields and breaking changes. Applied consistently across all 6 background locations in the modal.
+- **Testing**: All 191 tests pass (180 unit + 11 integration), clippy clean, format check passing
+- **Files Modified**: src/ui/render.rs (6 line changes in render_task_picker function)
+- **Branch**: feature/add-theming-option
+- **Commit**: e782baf - "Use darker background for Task Picker modal"
+
 ### Feature: Theming System - Issue #6 (2025-11-12)
 - [x] Design theme architecture with semantic color names (18 color fields)
 - [x] Implement 8 pre-defined themes (default, kanagawa, catppuccin, gruvbox, monokai, dracula, everforest, terminal)
