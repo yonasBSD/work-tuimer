@@ -149,12 +149,12 @@ impl AppState {
             },
             Command {
                 key: "S",
-                description: "Start/Stop timer (toggle)",
+                description: "Start/Stop session (toggle)",
                 action: CommandAction::StartTimer,
             },
             Command {
                 key: "P",
-                description: "Pause/Resume active timer",
+                description: "Pause/Resume active session",
                 action: CommandAction::PauseTimer,
             },
             Command {
