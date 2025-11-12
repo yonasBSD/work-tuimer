@@ -133,7 +133,12 @@ impl Default for ThemeConfig {
 impl ThemeConfig {
     /// Get the active theme based on config
     pub fn get_active_theme(&self) -> Theme {
-        // Check if it's a pre-defined theme
+        // Check custom themes first (allows overriding predefined themes)
+        if let Some(custom_colors) = self.custom.get(&self.active) {
+            return Theme::from_custom(custom_colors);
+        }
+
+        // Then check if it's a pre-defined theme
         match self.active.as_str() {
             "default" => Theme::default_theme(),
             "kanagawa" => Theme::kanagawa(),
@@ -143,14 +148,9 @@ impl ThemeConfig {
             "dracula" => Theme::dracula(),
             "everforest" => Theme::everforest(),
             "terminal" => Theme::terminal(),
-            custom_name => {
-                // Try to find custom theme
-                if let Some(custom_colors) = self.custom.get(custom_name) {
-                    Theme::from_custom(custom_colors)
-                } else {
-                    // Fallback to default if custom theme not found
-                    Theme::default_theme()
-                }
+            _ => {
+                // Fallback to default if theme not found
+                Theme::default_theme()
             }
         }
     }
@@ -1161,7 +1161,7 @@ badge = "magenta"
 
     #[test]
     fn test_parse_color_rgb_with_parentheses_and_spaces() {
-        // RGB tuples can have parentheses (users might include them)
+        // RGB tuples can have parentheses (users might include them) - we strip them
         assert!(matches!(
             parse_color("(255, 128, 64)"),
             Color::Rgb(255, 128, 64)
@@ -1171,12 +1171,9 @@ badge = "magenta"
             Color::Rgb(100, 200, 150)
         ));
 
-        // But parentheses aren't stripped by parse_color, they're just whitespace
-        // This should fail to parse as RGB (because of parentheses) and fallback to white
-        // Actually, let's verify the actual behavior
+        // Parentheses are now stripped, so this should parse successfully
         let result = parse_color("(10,20,30)");
-        // This will fail to parse as RGB tuple because of parens, fallback to white
-        assert!(matches!(result, Color::White));
+        assert!(matches!(result, Color::Rgb(10, 20, 30)));
     }
 
     #[test]
