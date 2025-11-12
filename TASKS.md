@@ -174,6 +174,8 @@ This file tracks active development tasks for the WorkTimer project. Tasks are m
   - dbdce7e - "Add comprehensive test suite for theming system (fixes #6)"
   - 552d02d - "Refactor: Move theme documentation to separate THEMING.md file"
   - dc59aa5 - "Add 13 comprehensive theme tests for edge cases and coverage"
+  - d5ebc97 - "Revert iTerm2 color experiment - restore handcrafted theme colors for better visual distinction"
+- **Note**: Initially attempted to use authentic iTerm2 ANSI colors (commits 87da5d4, bfb9031) but this made themes indistinguishable because iTerm2 colors are designed for terminal emulators, not TUI applications. Reverted to original handcrafted themes which use distinct colors for each semantic UI element (e.g., selected_bg ≠ edit_bg ≠ row_alternate_bg).
 
 ### Feature: Add --version Command + Bump to v0.3.0 - Issue #18 (2025-11-12)
 - [x] Create new branch feature/add-version-command
