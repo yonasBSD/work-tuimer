@@ -121,6 +121,36 @@ This file tracks active development tasks for the WorkTimer project. Tasks are m
 
 ## Completed Tasks
 
+### Bug Fix: CLI/TUI Session Synchronization & Auto-Save (2025-11-12)
+- [x] Add `PartialEq` derive to `TimerState` for state comparison
+- [x] Enhance `check_and_reload_if_modified()` to monitor active timer file changes
+- [x] Add auto-save after mutating operations: new/break/delete/undo/redo
+- [x] Fix task edits not persisting to disk immediately
+- [x] All changes tested and verified working
+- **Context**: Fixed critical race conditions between CLI and TUI when using session tracking. Two major issues discovered during manual testing:
+  1. **CLI timer not visible in TUI**: When starting a session from CLI, the TUI wouldn't show the active timer until it was stopped
+  2. **Task edits lost on CLI stop**: Creating or editing tasks in TUI would be overwritten when CLI stopped a session
+- **Root Causes**:
+  1. TUI only monitored day data file changes, not the active timer file (`running_timer.json`)
+  2. Mutating operations (new/break/delete/undo/redo/edit) only updated in-memory data without saving to disk
+  3. Edit mode (Enter key) saved changes to memory but not to disk
+- **Solutions**:
+  1. Added `PartialEq` to `TimerState` struct for comparing timer states at `src/timer/mod.rs:27`
+  2. Enhanced `check_and_reload_if_modified()` to check both day data AND active timer file every 500ms at `src/ui/app_state.rs:1032-1061`
+  3. Added immediate `storage.save()` calls after all mutating operations in Browse mode at `src/main.rs:169-195`
+  4. Added immediate `storage.save()` calls after command palette actions at `src/main.rs:281-310`
+  5. Added immediate `storage.save()` after Edit mode Enter key at `src/main.rs:208-210`
+- **Behavior**: 
+  - TUI now detects CLI-started timers within 500ms and displays them
+  - All TUI changes (new tasks, edits, deletes, undo/redo) save immediately to disk
+  - CLI operations always see the latest data, preventing overwrites
+- **Testing**: Manual testing confirmed both issues resolved - CLI timer appears in TUI within 500ms, task edits preserved when CLI stops session
+- **Files Modified**: src/timer/mod.rs (1 line: PartialEq), src/ui/app_state.rs (23 lines: timer reload check), src/main.rs (32 lines: auto-save after operations)
+- **Branch**: feature/timer-tracking
+- **Commits**: 
+  - 6fb6e20 - "Fix CLI/TUI session synchronization and auto-save"
+  - 12c5669 - "Fix task edits not persisting to disk"
+
 ### Bug Fix: Timer Session Highlighting & Storage Test Fix (2025-11-12)
 - [x] Fix TUI timer session highlighting bug - changed comparison from task name to source_record_id
 - [x] Fix failing storage test `test_storage_manager_check_and_reload_before_tracking`
