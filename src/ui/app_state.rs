@@ -1,6 +1,7 @@
 use super::history::History;
 use crate::config::Config;
 use crate::models::{DayData, WorkRecord};
+use crate::timer::TimerState;
 use time::Date;
 
 pub enum AppMode {
@@ -41,6 +42,8 @@ pub enum CommandAction {
     Undo,
     Redo,
     Save,
+    StartTimer,
+    PauseTimer,
     Quit,
 }
 
@@ -65,6 +68,8 @@ pub struct AppState {
     pub config: Config,
     pub last_error_message: Option<String>,
     pub task_picker_selected: usize,
+    pub active_timer: Option<TimerState>,
+    pub last_file_modified: Option<std::time::SystemTime>,
     history: History,
 }
 
@@ -143,6 +148,16 @@ impl AppState {
                 action: CommandAction::Save,
             },
             Command {
+                key: "S",
+                description: "Start/Stop session (toggle)",
+                action: CommandAction::StartTimer,
+            },
+            Command {
+                key: "P",
+                description: "Pause/Resume active session",
+                action: CommandAction::PauseTimer,
+            },
+            Command {
                 key: "q",
                 description: "Quit application",
                 action: CommandAction::Quit,
@@ -170,6 +185,8 @@ impl AppState {
             config: Config::load().unwrap_or_default(),
             last_error_message: None,
             task_picker_selected: 0,
+            active_timer: None,
+            last_file_modified: None,
             history: History::new(),
         }
     }
@@ -929,6 +946,134 @@ impl AppState {
         self.input_buffer.pop();
         // Reset selection when deleting
         self.task_picker_selected = 0;
+    }
+
+    /// Start a new timer with the current selected task
+    pub fn start_timer_for_selected(
+        &mut self,
+        storage: &crate::storage::StorageManager,
+    ) -> Result<(), String> {
+        if let Some(record) = self.get_selected_record() {
+            match storage.start_timer(
+                record.name.clone(),
+                Some(record.description.clone()),
+                Some(record.id),
+                Some(self.current_date),
+            ) {
+                Ok(timer) => {
+                    self.active_timer = Some(timer);
+                    Ok(())
+                }
+                Err(e) => Err(e.to_string()),
+            }
+        } else {
+            Err("No record selected".to_string())
+        }
+    }
+
+    /// Stop the active timer and convert to work record
+    pub fn stop_active_timer(
+        &mut self,
+        storage: &mut crate::storage::StorageManager,
+    ) -> Result<(), String> {
+        if self.active_timer.is_some() {
+            match storage.stop_timer() {
+                Ok(_work_record) => {
+                    self.active_timer = None;
+                    // Reload day data to reflect the new work record
+                    match storage.load_with_tracking(self.current_date) {
+                        Ok(new_day_data) => {
+                            self.day_data = new_day_data;
+                            self.selected_index = 0;
+                            Ok(())
+                        }
+                        Err(e) => Err(format!("Failed to reload day data: {}", e)),
+                    }
+                }
+                Err(e) => Err(e.to_string()),
+            }
+        } else {
+            Err("No active timer".to_string())
+        }
+    }
+
+    /// Pause the active timer
+    pub fn pause_active_timer(
+        &mut self,
+        storage: &crate::storage::StorageManager,
+    ) -> Result<(), String> {
+        if self.active_timer.is_some() {
+            match storage.pause_timer() {
+                Ok(paused_timer) => {
+                    self.active_timer = Some(paused_timer);
+                    Ok(())
+                }
+                Err(e) => Err(e.to_string()),
+            }
+        } else {
+            Err("No active timer".to_string())
+        }
+    }
+
+    /// Resume a paused timer
+    pub fn resume_active_timer(
+        &mut self,
+        storage: &crate::storage::StorageManager,
+    ) -> Result<(), String> {
+        if self.active_timer.is_some() {
+            match storage.resume_timer() {
+                Ok(resumed_timer) => {
+                    self.active_timer = Some(resumed_timer);
+                    Ok(())
+                }
+                Err(e) => Err(e.to_string()),
+            }
+        } else {
+            Err("No active timer".to_string())
+        }
+    }
+
+    /// Get current status of active timer or None if no timer running
+    pub fn get_timer_status(&self) -> Option<&TimerState> {
+        self.active_timer.as_ref()
+    }
+
+    /// Check if the data file has been modified externally and reload if needed
+    /// Returns true if the file was reloaded
+    pub fn check_and_reload_if_modified(
+        &mut self,
+        storage: &mut crate::storage::StorageManager,
+    ) -> bool {
+        let mut changed = false;
+
+        // Check if day data file has been modified
+        if let Ok(Some(new_data)) = storage.check_and_reload(self.current_date) {
+            self.day_data = new_data;
+            self.last_file_modified = storage.get_last_modified(&self.current_date);
+
+            // Adjust selected_index if it's now out of bounds
+            let record_count = self.day_data.work_records.len();
+            if self.selected_index >= record_count && record_count > 0 {
+                self.selected_index = record_count - 1;
+            }
+
+            changed = true;
+        }
+
+        // Check if active timer has been modified externally (e.g., started/stopped from CLI)
+        if let Ok(Some(timer)) = storage.load_active_timer() {
+            // Timer exists - update if different from current state
+            if self.active_timer.is_none() || self.active_timer.as_ref() != Some(&timer) {
+                self.active_timer = Some(timer);
+                changed = true;
+            }
+        } else if self.active_timer.is_some() {
+            // Timer was cleared externally
+            self.active_timer = None;
+            changed = true;
+        }
+
+        changed
     }
 }
 

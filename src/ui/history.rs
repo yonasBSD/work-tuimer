@@ -2,7 +2,7 @@ use crate::models::DayData;
 
 const MAX_HISTORY_DEPTH: usize = 50;
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct History {
     undo_stack: Vec<DayData>,
     redo_stack: Vec<DayData>,
@@ -10,10 +10,7 @@ pub struct History {
 
 impl History {
     pub fn new() -> Self {
-        History {
-            undo_stack: Vec::new(),
-            redo_stack: Vec::new(),
-        }
+        Self::default()
     }
 
     pub fn push(&mut self, state: DayData) {

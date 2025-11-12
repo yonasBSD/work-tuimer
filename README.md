@@ -11,6 +11,7 @@ Built with Rust and ratatui for efficient time management.
 ## Features
 
 - **Fully keyboard-driven**: No mouse required - everything accessible via keybinds
+- **Active timer tracking**: Start/stop/pause timers that automatically update work records with actual time spent
 - **Time as PIN-Inputs**: Easly type time with 4 clicks, since all time inputs are PIN-input alike
 - **Log tasks and breaks, get totals automatically**: Add work entries with start/end times - durations are calculated and summed
 - **Task picker with history**: Quickly select from previously used task names or create new ones
@@ -76,6 +77,8 @@ cargo build --release
 | `b` | Add break (uses selected record's end time as start) |
 | `d` | Delete selected record |
 | `v` | Enter visual mode (multi-select) |
+| `S` | Start/Stop timer for selected record |
+| `P` | Pause/Resume active timer |
 | `t` | Set current time on selected field |
 | `T` | Open ticket in browser (only visible if config exists) |
 | `L` | Open worklog URL in browser (only visible if config exists) |
@@ -131,6 +134,43 @@ Press `c` on the Name field to open the task picker:
 | `]/>/.` | Next month |
 | `Enter` | Jump to selected date |
 | `Esc` | Close calendar view |
+
+## Timer Sessions
+
+WorkTimer includes a built-in timer system for real-time time tracking. Sessions allow you to track time as you work, with automatic updates, pause/resume support, and seamless CLI/TUI integration.
+
+### Quick Start
+
+**In the TUI:**
+1. Select a work record and press `S` to start a session
+2. See the timer status bar at the top with elapsed time
+3. Press `P` to pause/resume, `S` to stop
+
+**From the CLI:**
+```bash
+# Start a session
+work-tuimer session start "My Task"
+
+# Check status
+work-tuimer session status
+
+# Pause/resume
+work-tuimer session pause
+work-tuimer session resume
+
+# Stop and save
+work-tuimer session stop
+```
+
+### Key Features
+
+- **Automatic time updates**: End time is set when you stop the session
+- **Pause support**: Only active time is counted, paused duration tracked separately
+- **Cross-session persistence**: Sessions survive app restarts
+- **CLI + TUI integration**: Start in CLI, stop in TUI, or vice versa
+- **Visual indicators**: Active sessions highlighted with ⏱ icon
+
+**📖 For detailed documentation, workflows, and troubleshooting, see [Timer Sessions Guide](docs/SESSIONS.md)**
 
 ## Issue Tracker Integration (Optional)
 

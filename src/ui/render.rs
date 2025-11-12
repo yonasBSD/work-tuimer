@@ -1,3 +1,4 @@
+use crate::timer::{TimerState, TimerStatus};
 use crate::ui::AppState;
 use ratatui::{
     Frame,
@@ -5,36 +6,99 @@ use ratatui::{
     style::{Color, Modifier, Style},
     widgets::{Block, BorderType, Borders, Cell, Padding, Paragraph, Row, Table, TableState},
 };
+use std::time::Duration as StdDuration;
+use time::OffsetDateTime;
 
-pub fn render(frame: &mut Frame, app: &AppState) {
-    let chunks = Layout::default()
-        .direction(Direction::Vertical)
-        .constraints([
-            Constraint::Length(3),
-            Constraint::Min(10),
-            Constraint::Length(3),
-        ])
-        .split(frame.size());
-
-    let is_wide = frame.size().width >= 100;
-    let middle_chunks = if is_wide {
-        Layout::default()
-            .direction(Direction::Horizontal)
-            .constraints([Constraint::Percentage(70), Constraint::Percentage(30)])
-            .split(chunks[1])
+/// Calculate elapsed duration for a timer (extracted from TimerManager to avoid storage dependency)
+fn calculate_timer_elapsed(timer: &TimerState) -> StdDuration {
+    let end_point = if timer.status == TimerStatus::Paused {
+        // If paused, use when it was paused
+        timer.paused_at.unwrap_or_else(|| {
+            OffsetDateTime::now_local().unwrap_or_else(|_| OffsetDateTime::now_utc())
+        })
     } else {
-        Layout::default()
-            .direction(Direction::Vertical)
-            .constraints([Constraint::Min(10), Constraint::Length(15)])
-            .split(chunks[1])
+        // If running, use now
+        OffsetDateTime::now_local().unwrap_or_else(|_| OffsetDateTime::now_utc())
     };
 
-    render_header(frame, chunks[0], app);
+    let elapsed = end_point - timer.start_time;
+    let paused_duration_std = StdDuration::from_secs(timer.paused_duration_secs as u64);
 
-    render_records(frame, middle_chunks[0], app);
-    render_grouped_totals(frame, middle_chunks[1], app);
+    // Convert time::Duration to std::Duration for arithmetic
+    let elapsed_std = StdDuration::from_secs(elapsed.whole_seconds() as u64)
+        + StdDuration::from_nanos(elapsed.subsec_nanoseconds() as u64);
 
-    render_footer(frame, chunks[2], app);
+    // Subtract paused time
+    elapsed_std.saturating_sub(paused_duration_std)
+}
+
+pub fn render(frame: &mut Frame, app: &AppState) {
+    // Layout changes if timer is active: add timer bar at top
+    let main_constraints = if app.active_timer.is_some() {
+        vec![
+            Constraint::Length(3), // Timer bar (needs 3 lines for borders + content)
+            Constraint::Length(3), // Header
+            Constraint::Min(10),   // Content
+            Constraint::Length(3), // Footer
+        ]
+    } else {
+        vec![
+            Constraint::Length(3), // Header
+            Constraint::Min(10),   // Content
+            Constraint::Length(3), // Footer
+        ]
+    };
+
+    let chunks = Layout::default()
+        .direction(Direction::Vertical)
+        .constraints(main_constraints)
+        .split(frame.size());
+
+    // Render timer bar if active
+    if app.active_timer.is_some() {
+        render_timer_bar(frame, chunks[0], app);
+        let start_idx = 1;
+        let header_chunk = chunks[start_idx];
+        let content_chunk = chunks[start_idx + 1];
+        let footer_chunk = chunks[start_idx + 2];
+
+        let is_wide = frame.size().width >= 100;
+        let middle_chunks = if is_wide {
+            Layout::default()
+                .direction(Direction::Horizontal)
+                .constraints([Constraint::Percentage(70), Constraint::Percentage(30)])
+                .split(content_chunk)
+        } else {
+            Layout::default()
+                .direction(Direction::Vertical)
+                .constraints([Constraint::Min(10), Constraint::Length(15)])
+                .split(content_chunk)
+        };
+
+        render_header(frame, header_chunk, app);
+        render_records(frame, middle_chunks[0], app);
+        render_grouped_totals(frame, middle_chunks[1], app);
+        render_footer(frame, footer_chunk, app);
+    } else {
+        // Original layout without timer
+        let is_wide = frame.size().width >= 100;
+        let middle_chunks = if is_wide {
+            Layout::default()
+                .direction(Direction::Horizontal)
+                .constraints([Constraint::Percentage(70), Constraint::Percentage(30)])
+                .split(chunks[1])
+        } else {
+            Layout::default()
+                .direction(Direction::Vertical)
+                .constraints([Constraint::Min(10), Constraint::Length(15)])
+                .split(chunks[1])
+        };
+
+        render_header(frame, chunks[0], app);
+        render_records(frame, middle_chunks[0], app);
+        render_grouped_totals(frame, middle_chunks[1], app);
+        render_footer(frame, chunks[2], app);
+    }
 
     // Render command palette overlay if active
     if matches!(app.mode, crate::ui::AppMode::CommandPalette) {
@@ -136,11 +200,24 @@ fn render_records(frame: &mut Frame, area: Rect, app: &AppState) {
             let is_in_visual =
                 matches!(app.mode, crate::ui::AppMode::Visual) && app.is_in_visual_selection(i);
 
+            // Check if this record has an active timer running
+            // Compare by source_record_id to highlight only the specific record, not all with same name
+            let has_active_timer = app
+                .active_timer
+                .as_ref()
+                .is_some_and(|timer| timer.source_record_id == Some(record.id));
+
             // Enhanced styling with more vibrant colors
             let style = if is_in_visual {
                 Style::default()
                     .bg(Color::Rgb(70, 130, 180)) // Steel blue background
                     .fg(Color::White)
+                    .add_modifier(Modifier::BOLD)
+            } else if has_active_timer {
+                // Highlight record with active timer in green/gold
+                Style::default()
+                    .bg(Color::Rgb(34, 139, 34)) // Forest green background
+                    .fg(Color::Yellow)
                     .add_modifier(Modifier::BOLD)
             } else if is_selected {
                 Style::default()
@@ -153,8 +230,10 @@ fn render_records(frame: &mut Frame, area: Rect, app: &AppState) {
                 Style::default()
             };
 
-            // Add icon/emoji based on task type
-            let icon = if record.name.to_lowercase().contains("break") {
+            // Add icon/emoji based on task type, with timer indicator if active
+            let icon = if has_active_timer {
+                "⏱ " // Timer icon for active timers
+            } else if record.name.to_lowercase().contains("break") {
                 "☕"
             } else if record.name.to_lowercase().contains("meeting") {
                 "👥"
@@ -482,9 +561,9 @@ fn render_grouped_totals(frame: &mut Frame, area: Rect, app: &AppState) {
 fn render_footer(frame: &mut Frame, area: Rect, app: &AppState) {
     // Build help text for Browse mode conditionally
     let browse_help = if app.config.has_integrations() {
-        "↑/↓: Row | ←/→: Field | [/]: Day | C: Calendar | Enter: Edit | c: Change | n: New | b: Break | d: Delete | v: Visual | t: Now | T: Ticket | L: Worklog | ?: Help | q: Quit"
+        "↑/↓: Row | ←/→: Field | [/]: Day | C: Calendar | Enter: Edit | c: Change | n: New | b: Break | d: Delete | v: Visual | t: Now | T: Ticket | L: Worklog | S: Session Start/Stop | P: Pause | ?: Help | q: Quit"
     } else {
-        "↑/↓: Row | ←/→: Field | [/]: Day | C: Calendar | Enter: Edit | c: Change | n: New | b: Break | d: Delete | v: Visual | t: Now | ?: Help | q: Quit"
+        "↑/↓: Row | ←/→: Field | [/]: Day | C: Calendar | Enter: Edit | c: Change | n: New | b: Break | d: Delete | v: Visual | t: Now | S: Session Start/Stop | P: Pause | ?: Help | q: Quit"
     };
 
     let (help_text, mode_color, mode_label) = match app.mode {
@@ -1192,5 +1271,61 @@ fn render_task_picker(frame: &mut Frame, app: &AppState) {
         );
 
         frame.render_widget(task_table, chunks[2]);
+    }
+}
+
+/// Render timer bar showing active timer status at the top of the screen
+fn render_timer_bar(frame: &mut Frame, area: Rect, app: &AppState) {
+    use crate::timer::TimerStatus;
+
+    if let Some(timer) = &app.active_timer {
+        // Calculate elapsed time directly without needing storage
+        let elapsed = calculate_timer_elapsed(timer);
+
+        // Format elapsed time
+        let secs = elapsed.as_secs();
+        let hours = secs / 3600;
+        let mins = (secs % 3600) / 60;
+        let seconds = secs % 60;
+
+        let status_icon = match timer.status {
+            TimerStatus::Running => "▶",
+            TimerStatus::Paused => "⏸",
+            TimerStatus::Stopped => "⏹",
+        };
+
+        let timer_text = if hours > 0 {
+            format!(
+                "{} {} - {}:{}:{}",
+                status_icon, timer.task_name, hours, mins, seconds
+            )
+        } else {
+            format!(
+                "{} {} - {:02}:{:02}",
+                status_icon, timer.task_name, mins, seconds
+            )
+        };
+
+        let timer_color = match timer.status {
+            TimerStatus::Running => Color::Green,
+            TimerStatus::Paused => Color::Yellow,
+            TimerStatus::Stopped => Color::Red,
+        };
+
+        let timer_paragraph = Paragraph::new(timer_text)
+            .style(
+                Style::default()
+                    .fg(timer_color)
+                    .add_modifier(Modifier::BOLD),
+            )
+            .alignment(Alignment::Center)
+            .block(
+                Block::default()
+                    .borders(Borders::ALL)
+                    .border_type(BorderType::Rounded)
+                    .border_style(Style::default().fg(timer_color)),
+            );
+
+        frame.render_widget(timer_paragraph, area);
     }
 }
