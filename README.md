@@ -222,7 +222,7 @@ active = "kanagawa"  # Options: default, kanagawa, catppuccin, gruvbox, monokai,
 ### Available Themes
 
 - **default**: Original cyan highlights with dark backgrounds
-- **kanagawa**: Earthy Dragon variant with warm, refined colors (authentic iTerm2)
+- **kanagawa**: Dark navy blue aesthetic inspired by the Great Wave
 - **catppuccin**: Soothing pastel theme for comfortable viewing
 - **gruvbox**: Retro groove warm color palette
 - **monokai**: Classic editor theme with vibrant colors

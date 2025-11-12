@@ -248,147 +248,147 @@ impl Theme {
         }
     }
 
-    /// Kanagawa Dragon theme (earthy, warm dark aesthetic with authentic iTerm2 colors)
+    /// Kanagawa theme (dark navy blue aesthetic)
     pub fn kanagawa() -> Self {
         Self {
-            active_border: Color::Rgb(127, 180, 202),     // Ansi 12 Bright Blue
-            inactive_border: Color::Rgb(56, 53, 51),      // Ansi 8 Bright Black
-            searching_border: Color::Rgb(230, 195, 132),  // Ansi 11 Bright Yellow
-            selected_bg: Color::Rgb(34, 50, 73),          // Selection Color
-            selected_inactive_bg: Color::Rgb(24, 22, 22), // Background Color
-            visual_bg: Color::Rgb(73, 97, 122),           // Ansi 4 Blue
-            timer_active_bg: Color::Rgb(135, 169, 135),   // Ansi 10 Bright Green
-            row_alternate_bg: Color::Rgb(29, 27, 27),     // Slightly lighter than bg
-            edit_bg: Color::Rgb(52, 66, 81),              // Lighter selection
-            primary_text: Color::Rgb(200, 192, 147),      // Foreground Color
-            secondary_text: Color::Rgb(161, 152, 123),    // Dimmed foreground
-            highlight_text: Color::Rgb(127, 180, 202),    // Ansi 12 Bright Blue
-            success: Color::Rgb(135, 169, 135),           // Ansi 10 Bright Green
-            warning: Color::Rgb(230, 195, 132),           // Ansi 11 Bright Yellow
-            error: Color::Rgb(228, 104, 118),             // Ansi 9 Bright Red
-            info: Color::Rgb(122, 168, 159),              // Ansi 14 Bright Cyan
-            timer_text: Color::Rgb(230, 195, 132),        // Ansi 11 Bright Yellow
-            badge: Color::Rgb(147, 138, 169),             // Ansi 13 Bright Magenta
+            active_border: Color::Rgb(126, 156, 216),     // springBlue
+            inactive_border: Color::Rgb(54, 59, 77),      // sumiInk4
+            searching_border: Color::Rgb(255, 160, 102),  // surimiOrange
+            selected_bg: Color::Rgb(37, 43, 55),          // sumiInk3
+            selected_inactive_bg: Color::Rgb(30, 34, 44), // sumiInk2
+            visual_bg: Color::Rgb(57, 80, 112),           // waveBlue2
+            timer_active_bg: Color::Rgb(118, 151, 122),   // springGreen
+            row_alternate_bg: Color::Rgb(22, 25, 32),     // sumiInk1
+            edit_bg: Color::Rgb(34, 61, 80),              // waveBlue1
+            primary_text: Color::Rgb(220, 215, 186),      // fujiWhite
+            secondary_text: Color::Rgb(114, 118, 129),    // fujiGray
+            highlight_text: Color::Rgb(126, 156, 216),    // springBlue
+            success: Color::Rgb(152, 187, 108),           // autumnGreen
+            warning: Color::Rgb(255, 160, 102),           // surimiOrange
+            error: Color::Rgb(227, 99, 102),              // peachRed
+            info: Color::Rgb(125, 208, 234),              // lightBlue
+            timer_text: Color::Rgb(255, 199, 119),        // carpYellow
+            badge: Color::Rgb(149, 127, 184),             // oniViolet
         }
     }
 
-    /// Catppuccin Mocha theme - authentic iTerm2 colors
+    /// Catppuccin Mocha theme (popular pastel theme)
     pub fn catppuccin() -> Self {
         Self {
-            active_border: Color::Rgb(116, 168, 252),     // Ansi 12 Bright Blue
-            inactive_border: Color::Rgb(88, 91, 112),     // Selection Color (surface2)
-            searching_border: Color::Rgb(235, 211, 145),  // Ansi 11 Bright Yellow
-            selected_bg: Color::Rgb(88, 91, 112),         // Selection Color
-            selected_inactive_bg: Color::Rgb(30, 30, 46), // Background Color
-            visual_bg: Color::Rgb(107, 215, 202),         // Ansi 14 Bright Cyan
-            timer_active_bg: Color::Rgb(137, 216, 139),   // Ansi 10 Bright Green
-            row_alternate_bg: Color::Rgb(30, 30, 46),     // Background Color
-            edit_bg: Color::Rgb(88, 91, 112),             // Selection Color
-            primary_text: Color::Rgb(205, 214, 244),      // Foreground Color
-            secondary_text: Color::Rgb(166, 173, 200),    // Ansi 7 White
-            highlight_text: Color::Rgb(116, 168, 252),    // Ansi 12 Bright Blue
-            success: Color::Rgb(137, 216, 139),           // Ansi 10 Bright Green
-            warning: Color::Rgb(235, 211, 145),           // Ansi 11 Bright Yellow
-            error: Color::Rgb(243, 119, 153),             // Ansi 9 Bright Red
-            info: Color::Rgb(107, 215, 202),              // Ansi 14 Bright Cyan
-            timer_text: Color::Rgb(235, 211, 145),        // Ansi 11 Bright Yellow
-            badge: Color::Rgb(242, 174, 222),             // Ansi 13 Bright Magenta
+            active_border: Color::Rgb(137, 180, 250),     // blue
+            inactive_border: Color::Rgb(69, 71, 90),      // surface1
+            searching_border: Color::Rgb(249, 226, 175),  // yellow
+            selected_bg: Color::Rgb(49, 50, 68),          // surface0
+            selected_inactive_bg: Color::Rgb(30, 30, 46), // base
+            visual_bg: Color::Rgb(116, 199, 236),         // sapphire
+            timer_active_bg: Color::Rgb(166, 227, 161),   // green
+            row_alternate_bg: Color::Rgb(24, 24, 37),     // mantle
+            edit_bg: Color::Rgb(137, 180, 250),           // blue (dimmed)
+            primary_text: Color::Rgb(205, 214, 244),      // text
+            secondary_text: Color::Rgb(127, 132, 156),    // overlay0
+            highlight_text: Color::Rgb(137, 180, 250),    // blue
+            success: Color::Rgb(166, 227, 161),           // green
+            warning: Color::Rgb(249, 226, 175),           // yellow
+            error: Color::Rgb(243, 139, 168),             // red
+            info: Color::Rgb(137, 180, 250),              // blue
+            timer_text: Color::Rgb(245, 194, 231),        // pink
+            badge: Color::Rgb(203, 166, 247),             // mauve
         }
     }
 
-    /// Gruvbox Dark theme - authentic iTerm2 colors
+    /// Gruvbox theme (retro warm colors)
     pub fn gruvbox() -> Self {
         Self {
-            active_border: Color::Rgb(131, 165, 152),     // Ansi 12 Bright Blue
-            inactive_border: Color::Rgb(102, 92, 84),     // Selection Color
-            searching_border: Color::Rgb(250, 189, 47),   // Ansi 11 Bright Yellow
-            selected_bg: Color::Rgb(102, 92, 84),         // Selection Color
-            selected_inactive_bg: Color::Rgb(40, 40, 40), // Background Color
-            visual_bg: Color::Rgb(142, 192, 124),         // Ansi 14 Bright Cyan
-            timer_active_bg: Color::Rgb(184, 187, 38),    // Ansi 10 Bright Green
-            row_alternate_bg: Color::Rgb(40, 40, 40),     // Background Color
-            edit_bg: Color::Rgb(102, 92, 84),             // Selection Color
-            primary_text: Color::Rgb(235, 219, 178),      // Foreground Color
-            secondary_text: Color::Rgb(168, 153, 132),    // Ansi 7 White
-            highlight_text: Color::Rgb(131, 165, 152),    // Ansi 12 Bright Blue
-            success: Color::Rgb(184, 187, 38),            // Ansi 10 Bright Green
-            warning: Color::Rgb(250, 189, 47),            // Ansi 11 Bright Yellow
-            error: Color::Rgb(251, 73, 52),               // Ansi 9 Bright Red
-            info: Color::Rgb(142, 192, 124),              // Ansi 14 Bright Cyan
-            timer_text: Color::Rgb(250, 189, 47),         // Ansi 11 Bright Yellow
-            badge: Color::Rgb(211, 134, 155),             // Ansi 13 Bright Magenta
+            active_border: Color::Rgb(131, 165, 152),     // aqua
+            inactive_border: Color::Rgb(60, 56, 54),      // bg2
+            searching_border: Color::Rgb(250, 189, 47),   // yellow
+            selected_bg: Color::Rgb(60, 56, 54),          // bg2
+            selected_inactive_bg: Color::Rgb(40, 40, 40), // bg0
+            visual_bg: Color::Rgb(69, 133, 136),          // blue
+            timer_active_bg: Color::Rgb(152, 151, 26),    // green
+            row_alternate_bg: Color::Rgb(29, 32, 33),     // bg0_h
+            edit_bg: Color::Rgb(80, 73, 69),              // bg3
+            primary_text: Color::Rgb(235, 219, 178),      // fg
+            secondary_text: Color::Rgb(146, 131, 116),    // fg4
+            highlight_text: Color::Rgb(131, 165, 152),    // aqua
+            success: Color::Rgb(184, 187, 38),            // green
+            warning: Color::Rgb(250, 189, 47),            // yellow
+            error: Color::Rgb(251, 73, 52),               // red
+            info: Color::Rgb(131, 165, 152),              // aqua
+            timer_text: Color::Rgb(254, 128, 25),         // orange
+            badge: Color::Rgb(211, 134, 155),             // purple
         }
     }
 
-    /// Monokai Soda theme - authentic iTerm2 colors
+    /// Monokai theme (classic vibrant)
     pub fn monokai() -> Self {
         Self {
-            active_border: Color::Rgb(157, 101, 255),     // Ansi 12 Bright Blue
-            inactive_border: Color::Rgb(52, 52, 52),      // Selection Color
-            searching_border: Color::Rgb(224, 213, 97),   // Ansi 11 Bright Yellow
-            selected_bg: Color::Rgb(52, 52, 52),          // Selection Color
-            selected_inactive_bg: Color::Rgb(26, 26, 26), // Background Color
-            visual_bg: Color::Rgb(88, 209, 235),          // Ansi 14 Bright Cyan
-            timer_active_bg: Color::Rgb(152, 224, 36),    // Ansi 10 Bright Green
-            row_alternate_bg: Color::Rgb(26, 26, 26),     // Background Color
-            edit_bg: Color::Rgb(52, 52, 52),              // Selection Color
-            primary_text: Color::Rgb(196, 197, 181),      // Foreground Color
-            secondary_text: Color::Rgb(196, 197, 181),    // Ansi 7 White
-            highlight_text: Color::Rgb(157, 101, 255),    // Ansi 12 Bright Blue
-            success: Color::Rgb(152, 224, 36),            // Ansi 10 Bright Green
-            warning: Color::Rgb(224, 213, 97),            // Ansi 11 Bright Yellow
-            error: Color::Rgb(244, 0, 95),                // Ansi 9 Bright Red
-            info: Color::Rgb(88, 209, 235),               // Ansi 14 Bright Cyan
-            timer_text: Color::Rgb(224, 213, 97),         // Ansi 11 Bright Yellow
-            badge: Color::Rgb(244, 0, 95),                // Ansi 13 Bright Magenta
+            active_border: Color::Rgb(102, 217, 239),     // cyan
+            inactive_border: Color::Rgb(73, 72, 62),      // darker gray
+            searching_border: Color::Rgb(230, 219, 116),  // yellow
+            selected_bg: Color::Rgb(73, 72, 62),          // dark gray
+            selected_inactive_bg: Color::Rgb(39, 40, 34), // background
+            visual_bg: Color::Rgb(102, 217, 239),         // cyan
+            timer_active_bg: Color::Rgb(166, 226, 46),    // green
+            row_alternate_bg: Color::Rgb(30, 31, 28),     // darker bg
+            edit_bg: Color::Rgb(98, 114, 164),            // blue
+            primary_text: Color::Rgb(248, 248, 242),      // foreground
+            secondary_text: Color::Rgb(117, 113, 94),     // comment
+            highlight_text: Color::Rgb(102, 217, 239),    // cyan
+            success: Color::Rgb(166, 226, 46),            // green
+            warning: Color::Rgb(230, 219, 116),           // yellow
+            error: Color::Rgb(249, 38, 114),              // red
+            info: Color::Rgb(102, 217, 239),              // cyan
+            timer_text: Color::Rgb(253, 151, 31),         // orange
+            badge: Color::Rgb(174, 129, 255),             // purple
         }
     }
 
-    /// Dracula theme - authentic iTerm2 colors
+    /// Dracula theme (purple/pink accents)
     pub fn dracula() -> Self {
         Self {
-            active_border: Color::Rgb(214, 172, 255),     // Ansi 12 Bright Blue
-            inactive_border: Color::Rgb(68, 71, 90),      // Selection Color
-            searching_border: Color::Rgb(255, 255, 165),  // Ansi 11 Bright Yellow
-            selected_bg: Color::Rgb(68, 71, 90),          // Selection Color
-            selected_inactive_bg: Color::Rgb(40, 42, 54), // Background Color
-            visual_bg: Color::Rgb(164, 255, 255),         // Ansi 14 Bright Cyan
-            timer_active_bg: Color::Rgb(105, 255, 148),   // Ansi 10 Bright Green
-            row_alternate_bg: Color::Rgb(40, 42, 54),     // Background Color
-            edit_bg: Color::Rgb(68, 71, 90),              // Selection Color
-            primary_text: Color::Rgb(248, 248, 242),      // Foreground Color
-            secondary_text: Color::Rgb(248, 248, 242),    // Ansi 7 White
-            highlight_text: Color::Rgb(214, 172, 255),    // Ansi 12 Bright Blue
-            success: Color::Rgb(105, 255, 148),           // Ansi 10 Bright Green
-            warning: Color::Rgb(255, 255, 165),           // Ansi 11 Bright Yellow
-            error: Color::Rgb(255, 110, 110),             // Ansi 9 Bright Red
-            info: Color::Rgb(164, 255, 255),              // Ansi 14 Bright Cyan
-            timer_text: Color::Rgb(255, 255, 165),        // Ansi 11 Bright Yellow
-            badge: Color::Rgb(255, 146, 223),             // Ansi 13 Bright Magenta
+            active_border: Color::Rgb(139, 233, 253),     // cyan
+            inactive_border: Color::Rgb(68, 71, 90),      // comment
+            searching_border: Color::Rgb(241, 250, 140),  // yellow
+            selected_bg: Color::Rgb(68, 71, 90),          // selection
+            selected_inactive_bg: Color::Rgb(40, 42, 54), // background
+            visual_bg: Color::Rgb(98, 114, 164),          // purple
+            timer_active_bg: Color::Rgb(80, 250, 123),    // green
+            row_alternate_bg: Color::Rgb(33, 34, 44),     // darker bg
+            edit_bg: Color::Rgb(68, 71, 90),              // selection
+            primary_text: Color::Rgb(248, 248, 242),      // foreground
+            secondary_text: Color::Rgb(98, 114, 164),     // comment
+            highlight_text: Color::Rgb(139, 233, 253),    // cyan
+            success: Color::Rgb(80, 250, 123),            // green
+            warning: Color::Rgb(241, 250, 140),           // yellow
+            error: Color::Rgb(255, 85, 85),               // red
+            info: Color::Rgb(139, 233, 253),              // cyan
+            timer_text: Color::Rgb(255, 184, 108),        // orange
+            badge: Color::Rgb(255, 121, 198),             // pink
         }
     }
 
-    /// Everforest Dark Hard theme - authentic iTerm2 colors
+    /// Everforest theme (green forest aesthetic)
     pub fn everforest() -> Self {
         Self {
-            active_border: Color::Rgb(58, 148, 197),      // Ansi 12 Bright Blue
-            inactive_border: Color::Rgb(76, 55, 67),      // Selection Color
-            searching_border: Color::Rgb(223, 160, 0),    // Ansi 11 Bright Yellow
-            selected_bg: Color::Rgb(76, 55, 67),          // Selection Color
-            selected_inactive_bg: Color::Rgb(30, 35, 38), // Background Color
-            visual_bg: Color::Rgb(53, 167, 124),          // Ansi 14 Bright Cyan
-            timer_active_bg: Color::Rgb(141, 161, 1),     // Ansi 10 Bright Green
-            row_alternate_bg: Color::Rgb(30, 35, 38),     // Background Color
-            edit_bg: Color::Rgb(76, 55, 67),              // Selection Color
-            primary_text: Color::Rgb(211, 198, 170),      // Foreground Color
-            secondary_text: Color::Rgb(242, 239, 223),    // Ansi 7 White
-            highlight_text: Color::Rgb(58, 148, 197),     // Ansi 12 Bright Blue
-            success: Color::Rgb(141, 161, 1),             // Ansi 10 Bright Green
-            warning: Color::Rgb(223, 160, 0),             // Ansi 11 Bright Yellow
-            error: Color::Rgb(248, 85, 82),               // Ansi 9 Bright Red
-            info: Color::Rgb(53, 167, 124),               // Ansi 14 Bright Cyan
-            timer_text: Color::Rgb(223, 160, 0),          // Ansi 11 Bright Yellow
-            badge: Color::Rgb(223, 105, 186),             // Ansi 13 Bright Magenta
+            active_border: Color::Rgb(131, 192, 146),     // green
+            inactive_border: Color::Rgb(83, 86, 77),      // bg3
+            searching_border: Color::Rgb(219, 188, 127),  // yellow
+            selected_bg: Color::Rgb(67, 72, 60),          // bg2
+            selected_inactive_bg: Color::Rgb(45, 49, 41), // bg1
+            visual_bg: Color::Rgb(123, 175, 153),         // aqua
+            timer_active_bg: Color::Rgb(131, 192, 146),   // green
+            row_alternate_bg: Color::Rgb(35, 38, 32),     // bg0
+            edit_bg: Color::Rgb(83, 86, 77),              // bg3
+            primary_text: Color::Rgb(211, 198, 170),      // fg
+            secondary_text: Color::Rgb(146, 142, 123),    // gray1
+            highlight_text: Color::Rgb(123, 175, 153),    // aqua
+            success: Color::Rgb(131, 192, 146),           // green
+            warning: Color::Rgb(219, 188, 127),           // yellow
+            error: Color::Rgb(230, 126, 128),             // red
+            info: Color::Rgb(123, 175, 153),              // aqua
+            timer_text: Color::Rgb(230, 152, 117),        // orange
+            badge: Color::Rgb(217, 143, 172),             // purple
         }
     }
 
