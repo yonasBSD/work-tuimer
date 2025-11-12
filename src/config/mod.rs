@@ -238,7 +238,7 @@ impl Theme {
             timer_active_bg: Color::Rgb(34, 139, 34),
             row_alternate_bg: Color::Rgb(25, 25, 35),
             edit_bg: Color::Rgb(22, 78, 99),
-            focus_bg: Color::Rgb(80, 60, 120),            // purple focus indicator
+            focus_bg: Color::Rgb(80, 60, 120), // purple focus indicator
             primary_text: Color::White,
             secondary_text: Color::Gray,
             highlight_text: Color::Cyan,
@@ -254,25 +254,25 @@ impl Theme {
     /// Kanagawa theme (dark navy blue aesthetic inspired by Hokusai's painting)
     pub fn kanagawa() -> Self {
         Self {
-            active_border: Color::Rgb(127, 180, 202),     // springBlue (brighter)
-            inactive_border: Color::Rgb(54, 59, 77),      // sumiInk4
-            searching_border: Color::Rgb(255, 160, 102),  // surimiOrange
-            selected_bg: Color::Rgb(42, 42, 55),          // sumiInk3 (slightly lighter for distinction)
+            active_border: Color::Rgb(127, 180, 202), // springBlue (brighter)
+            inactive_border: Color::Rgb(54, 59, 77),  // sumiInk4
+            searching_border: Color::Rgb(255, 160, 102), // surimiOrange
+            selected_bg: Color::Rgb(42, 42, 55),      // sumiInk3 (slightly lighter for distinction)
             selected_inactive_bg: Color::Rgb(31, 31, 40), // sumiInk1/2
-            visual_bg: Color::Rgb(45, 79, 103),           // waveBlue2 (darker for distinction)
-            timer_active_bg: Color::Rgb(152, 187, 106),   // springGreen (brighter)
-            row_alternate_bg: Color::Rgb(22, 25, 32),     // sumiInk1 (darker)
-            edit_bg: Color::Rgb(106, 149, 137),           // waveAqua1 (distinct teal, not blue!)
-            focus_bg: Color::Rgb(149, 127, 184),          // oniViolet (purple focus indicator)
-            primary_text: Color::Rgb(220, 215, 186),      // fujiWhite
-            secondary_text: Color::Rgb(114, 118, 129),    // fujiGray (comments)
-            highlight_text: Color::Rgb(230, 195, 132),    // carpYellow (warmer highlight)
-            success: Color::Rgb(152, 187, 106),           // springGreen
-            warning: Color::Rgb(255, 160, 102),           // surimiOrange
-            error: Color::Rgb(255, 93, 98),               // peachRed (brighter)
-            info: Color::Rgb(127, 180, 202),              // springBlue
-            timer_text: Color::Rgb(230, 195, 132),        // carpYellow
-            badge: Color::Rgb(149, 127, 184),             // oniViolet
+            visual_bg: Color::Rgb(45, 79, 103),       // waveBlue2 (darker for distinction)
+            timer_active_bg: Color::Rgb(152, 187, 106), // springGreen (brighter)
+            row_alternate_bg: Color::Rgb(22, 25, 32), // sumiInk1 (darker)
+            edit_bg: Color::Rgb(106, 149, 137),       // waveAqua1 (distinct teal, not blue!)
+            focus_bg: Color::Rgb(149, 127, 184),      // oniViolet (purple focus indicator)
+            primary_text: Color::Rgb(220, 215, 186),  // fujiWhite
+            secondary_text: Color::Rgb(114, 118, 129), // fujiGray (comments)
+            highlight_text: Color::Rgb(230, 195, 132), // carpYellow (warmer highlight)
+            success: Color::Rgb(152, 187, 106),       // springGreen
+            warning: Color::Rgb(255, 160, 102),       // surimiOrange
+            error: Color::Rgb(255, 93, 98),           // peachRed (brighter)
+            info: Color::Rgb(127, 180, 202),          // springBlue
+            timer_text: Color::Rgb(230, 195, 132),    // carpYellow
+            badge: Color::Rgb(149, 127, 184),         // oniViolet
         }
     }
 
@@ -329,25 +329,25 @@ impl Theme {
     /// Monokai theme (classic vibrant)
     pub fn monokai() -> Self {
         Self {
-            active_border: Color::Rgb(102, 217, 239),     // cyan (vibrant)
-            inactive_border: Color::Rgb(73, 72, 62),      // darker gray
-            searching_border: Color::Rgb(230, 219, 116),  // yellow
-            selected_bg: Color::Rgb(73, 72, 62),          // dark gray
+            active_border: Color::Rgb(102, 217, 239), // cyan (vibrant)
+            inactive_border: Color::Rgb(73, 72, 62),  // darker gray
+            searching_border: Color::Rgb(230, 219, 116), // yellow
+            selected_bg: Color::Rgb(73, 72, 62),      // dark gray
             selected_inactive_bg: Color::Rgb(39, 40, 34), // background
-            visual_bg: Color::Rgb(249, 38, 114),          // magenta (distinct!)
-            timer_active_bg: Color::Rgb(166, 226, 46),    // vibrant green
-            row_alternate_bg: Color::Rgb(30, 31, 28),     // darker bg
-            edit_bg: Color::Rgb(100, 85, 60),             // warm brown (distinct from selected_bg!)
-            focus_bg: Color::Rgb(174, 129, 255),          // purple (vibrant purple focus)
-            primary_text: Color::Rgb(248, 248, 242),      // foreground
-            secondary_text: Color::Rgb(117, 113, 94),     // comment gray
-            highlight_text: Color::Rgb(253, 151, 31),     // bright orange (not cyan!)
-            success: Color::Rgb(166, 226, 46),            // vibrant green
-            warning: Color::Rgb(230, 219, 116),           // yellow
-            error: Color::Rgb(249, 38, 114),              // magenta/pink
-            info: Color::Rgb(102, 217, 239),              // cyan
-            timer_text: Color::Rgb(253, 151, 31),         // orange
-            badge: Color::Rgb(174, 129, 255),             // purple
+            visual_bg: Color::Rgb(249, 38, 114),      // magenta (distinct!)
+            timer_active_bg: Color::Rgb(166, 226, 46), // vibrant green
+            row_alternate_bg: Color::Rgb(30, 31, 28), // darker bg
+            edit_bg: Color::Rgb(100, 85, 60),         // warm brown (distinct from selected_bg!)
+            focus_bg: Color::Rgb(174, 129, 255),      // purple (vibrant purple focus)
+            primary_text: Color::Rgb(248, 248, 242),  // foreground
+            secondary_text: Color::Rgb(117, 113, 94), // comment gray
+            highlight_text: Color::Rgb(253, 151, 31), // bright orange (not cyan!)
+            success: Color::Rgb(166, 226, 46),        // vibrant green
+            warning: Color::Rgb(230, 219, 116),       // yellow
+            error: Color::Rgb(249, 38, 114),          // magenta/pink
+            info: Color::Rgb(102, 217, 239),          // cyan
+            timer_text: Color::Rgb(253, 151, 31),     // orange
+            badge: Color::Rgb(174, 129, 255),         // purple
         }
     }
 
@@ -413,7 +413,7 @@ impl Theme {
             timer_active_bg: Color::Green,
             row_alternate_bg: Color::Reset,
             edit_bg: Color::Cyan,
-            focus_bg: Color::Magenta,                     // magenta/purple focus
+            focus_bg: Color::Magenta, // magenta/purple focus
             primary_text: Color::Reset,
             secondary_text: Color::DarkGray,
             highlight_text: Color::Cyan,
@@ -593,7 +593,7 @@ worklog_url = "{base_url}/browse/{ticket}?focusedWorklogId=-1"
         };
         let theme = theme_config.get_active_theme();
         // Verify it returns kanagawa theme (check one specific color)
-        assert!(matches!(theme.active_border, Color::Rgb(126, 156, 216)));
+        assert!(matches!(theme.active_border, Color::Rgb(127, 180, 202)));
     }
 
     #[test]
@@ -707,6 +707,7 @@ visual_bg = "70, 130, 180"
 timer_active_bg = "green"
 row_alternate_bg = "#16191f"
 edit_bg = "#223d50"
+focus_bg = "magenta"
 primary_text = "white"
 secondary_text = "gray"
 highlight_text = "cyan"
@@ -743,6 +744,7 @@ badge = "lightmagenta"
                 timer_active_bg: "green".to_string(),
                 row_alternate_bg: "#16191f".to_string(),
                 edit_bg: "cyan".to_string(),
+                focus_bg: "magenta".to_string(),
                 primary_text: "white".to_string(),
                 secondary_text: "gray".to_string(),
                 highlight_text: "cyan".to_string(),
@@ -790,6 +792,7 @@ badge = "lightmagenta"
             timer_active_bg: "green".to_string(),
             row_alternate_bg: "#000000".to_string(),
             edit_bg: "cyan".to_string(),
+            focus_bg: "magenta".to_string(),
             primary_text: "white".to_string(),
             secondary_text: "gray".to_string(),
             highlight_text: "cyan".to_string(),
@@ -825,6 +828,7 @@ badge = "lightmagenta"
                 timer_active_bg: "green".to_string(),
                 row_alternate_bg: "black".to_string(),
                 edit_bg: "blue".to_string(),
+                focus_bg: "magenta".to_string(),
                 primary_text: "white".to_string(),
                 secondary_text: "gray".to_string(),
                 highlight_text: "cyan".to_string(),
@@ -865,7 +869,7 @@ badge = "lightmagenta"
 
         // Verify each theme has different active_border colors (unique themes)
         assert!(matches!(default.active_border, Color::Cyan));
-        assert!(matches!(kanagawa.active_border, Color::Rgb(126, 156, 216)));
+        assert!(matches!(kanagawa.active_border, Color::Rgb(127, 180, 202)));
         assert!(matches!(
             catppuccin.active_border,
             Color::Rgb(137, 180, 250)
@@ -1037,6 +1041,7 @@ badge = "lightmagenta"
             timer_active_bg: "lightgreen".to_string(),   // named
             row_alternate_bg: "#111".to_string(),        // short hex
             edit_bg: "(50, 100, 150)".to_string(),       // rgb with parens
+            focus_bg: "magenta".to_string(),             // named
             primary_text: "white".to_string(),           // named
             secondary_text: "128, 128, 128".to_string(), // rgb
             highlight_text: "#0FF".to_string(),          // short hex cyan
@@ -1077,6 +1082,7 @@ visual_bg = "cyan"
 timer_active_bg = "green"
 row_alternate_bg = "black"
 edit_bg = "blue"
+focus_bg = "magenta"
 primary_text = "white"
 secondary_text = "gray"
 highlight_text = "cyan"
@@ -1097,6 +1103,7 @@ visual_bg = "cyan"
 timer_active_bg = "green"
 row_alternate_bg = "black"
 edit_bg = "blue"
+focus_bg = "magenta"
 primary_text = "white"
 secondary_text = "gray"
 highlight_text = "cyan"
@@ -1148,6 +1155,7 @@ badge = "magenta"
                 timer_active_bg: "green".to_string(),
                 row_alternate_bg: "black".to_string(),
                 edit_bg: "blue".to_string(),
+                focus_bg: "magenta".to_string(),
                 primary_text: "white".to_string(),
                 secondary_text: "gray".to_string(),
                 highlight_text: "cyan".to_string(),
