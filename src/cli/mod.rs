@@ -8,6 +8,7 @@ use std::time::Duration;
 #[derive(Parser)]
 #[command(name = "work-tuimer")]
 #[command(about = "Automatic time tracking with CLI commands and TUI", long_about = None)]
+#[command(version)]
 pub struct Cli {
     #[command(subcommand)]
     pub command: Commands,
@@ -240,5 +241,15 @@ mod tests {
         use time::macros::datetime;
         let dt = datetime!(2025-01-15 14:30:45 UTC);
         assert_eq!(format_time(dt), "14:30:45");
+    }
+
+    #[test]
+    fn test_cli_has_version() {
+        use clap::CommandFactory;
+        let cmd = Cli::command();
+        let version = cmd.get_version();
+        assert!(version.is_some(), "CLI should have version configured");
+        // Version comes from Cargo.toml
+        assert_eq!(version.unwrap(), env!("CARGO_PKG_VERSION"));
     }
 }

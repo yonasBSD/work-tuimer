@@ -121,6 +121,22 @@ This file tracks active development tasks for the WorkTimer project. Tasks are m
 
 ## Completed Tasks
 
+### Feature: Add --version Command + Bump to v0.3.0 - Issue #18 (2025-11-12)
+- [x] Create new branch feature/add-version-command
+- [x] Add `#[command(version)]` attribute to CLI struct in src/cli/mod.rs
+- [x] Add test `test_cli_has_version()` to verify version is configured
+- [x] Bump version from 0.1.0 to 0.3.0 in Cargo.toml
+- [x] Test `--version` and `-V` flags (both display "work-tuimer 0.3.0")
+- [x] Run all tests - 153 tests passing (added 1 new test)
+- **Context**: Implemented --version command as requested in GitHub Issue #18, preparing v0.3.0 release candidate
+- **Solution**: Added single line `#[command(version)]` to Cli struct, leveraging clap's built-in version support that reads from CARGO_PKG_VERSION
+- **Testing**: All 153 tests pass, both `--version` and `-V` work correctly, new test verifies version attribute is configured
+- **Files Modified**: src/cli/mod.rs (version attribute + test), Cargo.toml (version bump to 0.3.0)
+- **Branch**: feature/add-version-command
+- **Commits**: 
+  - e370a6e - "Add --version command to CLI (fixes #18)"
+  - 1f9972a - "Update TASKS.md with issue #18 completion"
+
 ### Bug Fix: CLI/TUI Session Synchronization & Auto-Save (2025-11-12)
 - [x] Add `PartialEq` derive to `TimerState` for state comparison
 - [x] Enhance `check_and_reload_if_modified()` to monitor active timer file changes
