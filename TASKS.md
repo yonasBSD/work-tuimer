@@ -121,6 +121,23 @@ This file tracks active development tasks for the WorkTimer project. Tasks are m
 
 ## Completed Tasks
 
+### Bug Fix: Timer Session Highlighting & Storage Test Fix (2025-11-12)
+- [x] Fix TUI timer session highlighting bug - changed comparison from task name to source_record_id
+- [x] Fix failing storage test `test_storage_manager_check_and_reload_before_tracking`
+- [x] Update `check_and_reload` method to handle first-time tracking correctly
+- [x] All 152 tests passing (152 unit tests + 11 integration tests)
+- **Context**: Fixed two issues from previous session:
+  1. **Highlighting Bug**: When starting timer on duplicate task names (e.g., "BO-2774" appearing twice), both records were highlighted instead of just the one with the active timer
+  2. **Storage Test Failure**: Test expected first call to `check_and_reload` to return `Some(data)` for untracked dates, but was returning `None`
+- **Root Cause**:
+  1. Highlighting compared `timer.task_name == record.name` (matched all records with same name) at `src/ui/render.rs:201-205`
+  2. Storage test: `check_and_reload` returned `None` when both current and last-known modification times were `None` (untracked file), instead of loading it
+- **Solution**:
+  1. Changed highlighting to compare `timer.source_record_id == Some(record.id)` for unique identification
+  2. Added explicit check for untracked dates: if `!is_tracked`, always load the file and start tracking
+- **Testing**: All 152 tests pass, no clippy errors (1 warning about History::new lacking Default impl)
+- **Files Modified**: src/ui/render.rs (1 line: highlighting fix from previous session), src/storage/mod.rs (11 lines: check_and_reload fix)
+
 ### Bug Fix: TUI File Synchronization - Auto-Reload External Changes (2025-11-08)
 - [x] Add `get_file_modified_time()` method to Storage to check file modification timestamps
 - [x] Add `last_file_modified: Option<SystemTime>` field to AppState to track last known file state

@@ -199,10 +199,11 @@ fn render_records(frame: &mut Frame, area: Rect, app: &AppState) {
                 matches!(app.mode, crate::ui::AppMode::Visual) && app.is_in_visual_selection(i);
 
             // Check if this record has an active timer running
+            // Compare by source_record_id to highlight only the specific record, not all with same name
             let has_active_timer = app
                 .active_timer
                 .as_ref()
-                .is_some_and(|timer| timer.task_name == record.name);
+                .is_some_and(|timer| timer.source_record_id == Some(record.id));
 
             // Enhanced styling with more vibrant colors
             let style = if is_in_visual {

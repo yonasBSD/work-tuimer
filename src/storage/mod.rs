@@ -49,15 +49,26 @@ impl StorageManager {
     /// Returns Some(DayData) if file was modified and reloaded, None if no change
     pub fn check_and_reload(&mut self, date: Date) -> Result<Option<DayData>> {
         let current_modified = self.storage.get_file_modified_time(&date);
-        let last_known = self.file_modified_times.get(&date).copied().flatten();
-
-        // If modification times differ, reload the file
-        if current_modified != last_known {
+        
+        // Check if we've tracked this date before
+        let is_tracked = self.file_modified_times.contains_key(&date);
+        
+        if !is_tracked {
+            // First time checking this date - load it and start tracking
             let data = self.storage.load(&date)?;
             self.file_modified_times.insert(date, current_modified);
             Ok(Some(data))
         } else {
-            Ok(None)
+            let last_known = self.file_modified_times.get(&date).copied().flatten();
+            
+            // If modification times differ, reload the file
+            if current_modified != last_known {
+                let data = self.storage.load(&date)?;
+                self.file_modified_times.insert(date, current_modified);
+                Ok(Some(data))
+            } else {
+                Ok(None)
+            }
         }
     }
 
