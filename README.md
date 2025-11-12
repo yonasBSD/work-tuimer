@@ -204,19 +204,24 @@ worklog_url = "{base_url}/browse/{ticket}?focusedWorklogId=-1"
 
 ## Theme Configuration (Optional)
 
-WorkTimer supports customizable color themes to personalize your UI experience. The application includes 7 pre-defined themes and supports custom theme definitions.
+WorkTimer supports customizable color themes to personalize your UI experience. The application includes 8 pre-defined themes and supports custom theme definitions.
 
-### Pre-defined Themes
+**This feature is completely optional** - the application works perfectly without any configuration.
 
-Choose from these built-in themes by adding to your config file at `~/.config/work-tuimer/config.toml`:
+### Quick Start
+
+1. **Choose a pre-defined theme**: Pick from 8 built-in themes (kanagawa, catppuccin, gruvbox, etc.)
+2. **Add to config**: Create `~/.config/work-tuimer/config.toml` with `[theme]` section
+3. **Restart the app**: Your new theme will be applied immediately
 
 ```toml
 [theme]
 active = "kanagawa"  # Options: default, kanagawa, catppuccin, gruvbox, monokai, dracula, everforest, terminal
 ```
 
-#### Available Themes
-- **default**: Current color scheme (cyan highlights, dark backgrounds)
+### Available Themes
+
+- **default**: Original cyan highlights with dark backgrounds
 - **kanagawa**: Dark navy blue aesthetic inspired by the Great Wave
 - **catppuccin**: Soothing pastel theme for comfortable viewing
 - **gruvbox**: Retro groove warm color palette
@@ -225,75 +230,7 @@ active = "kanagawa"  # Options: default, kanagawa, catppuccin, gruvbox, monokai,
 - **everforest**: Comfortable green forest color scheme
 - **terminal**: Uses your terminal's default colors
 
-### Custom Themes
-
-Create your own theme with custom colors. Add a `[theme.custom.mytheme]` section to your config:
-
-```toml
-[theme]
-active = "mytheme"  # Use your custom theme name
-
-[theme.custom.mytheme]
-# Border colors
-active_border = "#00ffff"        # Cyan (can use hex)
-inactive_border = "DarkGray"     # Can use named colors
-searching_border = "yellow"      # Lowercase also works
-
-# Background colors
-selected_bg = "(40, 40, 60)"     # Can use RGB tuples
-selected_inactive_bg = "#1e1e2d"
-visual_bg = "#4682b4"
-timer_active_bg = "#228b22"
-row_alternate_bg = "#191923"
-edit_bg = "#164e63"
-
-# Text colors
-primary_text = "White"
-secondary_text = "Gray"
-highlight_text = "Cyan"
-
-# Status colors
-success = "Green"
-warning = "Yellow"
-error = "LightRed"
-info = "Cyan"
-
-# Specific element colors
-timer_text = "Yellow"
-badge = "LightMagenta"
-```
-
-#### Color Format Options
-
-Colors can be specified in three formats:
-1. **Hex colors**: `"#RRGGBB"` or `"#RGB"` (e.g., `"#00ff00"`, `"#0f0"`)
-2. **RGB tuples**: `"(R, G, B)"` (e.g., `"(255, 128, 0)"`)
-3. **Named colors**: Standard terminal colors like `"Red"`, `"Blue"`, `"DarkGray"`, etc.
-
-### Theme Color Reference
-
-All themes use these semantic color names:
-
-| Color Name | Usage |
-|------------|-------|
-| `active_border` | Border color for focused elements |
-| `inactive_border` | Border color for unfocused elements |
-| `searching_border` | Border color during search/filter |
-| `selected_bg` | Background for selected items |
-| `selected_inactive_bg` | Background for selected items when unfocused |
-| `visual_bg` | Background in visual/multi-select mode |
-| `timer_active_bg` | Background for running timers |
-| `row_alternate_bg` | Alternating row background color |
-| `edit_bg` | Background for editable fields |
-| `primary_text` | Main text color |
-| `secondary_text` | Dimmed/secondary text |
-| `highlight_text` | Emphasized text (titles, headers) |
-| `success` | Success status (green actions) |
-| `warning` | Warning status (yellow alerts) |
-| `error` | Error status (red errors) |
-| `info` | Info status (blue information) |
-| `timer_text` | Active timer text color |
-| `badge` | Badge/tag text color |
+**📖 For detailed documentation, custom themes, color formats, and examples, see [Theme Configuration Guide](docs/THEMING.md)**
 
 ## Data Format
 

@@ -145,7 +145,9 @@ This file tracks active development tasks for the WorkTimer project. Tasks are m
 - **Color Parsing**: Supports 3 formats with fallback to white on invalid input
 - **Testing**: All 168 tests pass (15 new theme tests), cargo check passes with only 3 harmless unused field warnings
 - **Files Modified**: src/config/mod.rs (theme system + tests), src/ui/app_state.rs (theme field), src/ui/render.rs (117 color replacements), README.md (documentation)
+- **Branch**: feature/add-theming-option
 - **Issue**: https://github.com/Kamyil/work-tuimer/issues/6
+- **PR**: https://github.com/Kamyil/work-tuimer/pull/32
 
 ### Feature: Add --version Command + Bump to v0.3.0 - Issue #18 (2025-11-12)
 - [x] Create new branch feature/add-version-command
