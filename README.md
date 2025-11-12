@@ -1,7 +1,5 @@
-# WorkTimer TUI
-
-![WorkTimer TUI Example](work_tuimer_example.png)
-<img width="2984" height="1744" alt="image" src="https://github.com/user-attachments/assets/ce8becf0-ff3d-45cc-bde0-ba2d9ffc08d3" />
+# WorkTUImer
+![work-tuimer](https://github.com/user-attachments/assets/207f9b66-0b08-4e97-a471-a9f413a7369c)
 
 Live demo: https://x.com/KsenKamil/status/1985423210859368716
 
