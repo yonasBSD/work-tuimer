@@ -62,7 +62,7 @@ pub fn handle_command(cmd: Commands, storage: Storage) -> Result<()> {
     }
 }
 
-/// Start a new timer
+/// Start a new session
 fn handle_start(task: String, description: Option<String>, storage: Storage) -> Result<()> {
     let timer_manager = TimerManager::new(storage);
 
@@ -75,7 +75,7 @@ fn handle_start(task: String, description: Option<String>, storage: Storage) -> 
     let timer = timer_manager.start(task, description, None, None)?;
 
     let start_time = format_time(timer.start_time);
-    println!("✓ Timer started");
+    println!("✓ Session started");
     println!("  Task: {}", timer.task_name);
     if let Some(desc) = &timer.description {
         println!("  Description: {}", desc);
@@ -85,14 +85,14 @@ fn handle_start(task: String, description: Option<String>, storage: Storage) -> 
     Ok(())
 }
 
-/// Stop the running timer
+/// Stop the running session
 fn handle_stop(storage: Storage) -> Result<()> {
     let timer_manager = TimerManager::new(storage);
 
     // Load and validate timer exists
     let timer = timer_manager
         .status()?
-        .ok_or_else(|| anyhow::anyhow!("No timer is running"))?;
+        .ok_or_else(|| anyhow::anyhow!("No session is running"))?;
 
     let elapsed = timer_manager.get_elapsed_duration(&timer);
     let formatted_duration = format_duration(elapsed);
@@ -105,7 +105,7 @@ fn handle_stop(storage: Storage) -> Result<()> {
     // Format end time from the work record (HH:MM format)
     let end_time = format!("{:02}:{:02}:{:02}", record.end.hour, record.end.minute, 0);
 
-    println!("✓ Timer stopped");
+    println!("✓ Session stopped");
     println!("  Task: {}", timer.task_name);
     println!("  Duration: {}", formatted_duration);
     println!("  Started at: {}", start_time);
@@ -114,45 +114,45 @@ fn handle_stop(storage: Storage) -> Result<()> {
     Ok(())
 }
 
-/// Pause the running timer
+/// Pause the running session
 fn handle_pause(storage: Storage) -> Result<()> {
     let timer_manager = TimerManager::new(storage);
 
     let timer = timer_manager
         .status()?
-        .ok_or_else(|| anyhow::anyhow!("No timer is running"))?;
+        .ok_or_else(|| anyhow::anyhow!("No session is running"))?;
 
     let _paused_timer = timer_manager.pause()?;
     let elapsed = timer_manager.get_elapsed_duration(&timer);
     let formatted_duration = format_duration(elapsed);
 
-    println!("⏸ Timer paused");
+    println!("⏸ Session paused");
     println!("  Task: {}", timer.task_name);
     println!("  Elapsed: {}", formatted_duration);
 
     Ok(())
 }
 
-/// Resume the paused timer
+/// Resume the paused session
 fn handle_resume(storage: Storage) -> Result<()> {
     let timer_manager = TimerManager::new(storage);
 
     let timer = timer_manager
         .status()?
-        .ok_or_else(|| anyhow::anyhow!("No timer is running"))?;
+        .ok_or_else(|| anyhow::anyhow!("No session is running"))?;
 
     let _resumed_timer = timer_manager.resume()?;
     let elapsed = timer_manager.get_elapsed_duration(&timer);
     let formatted_duration = format_duration(elapsed);
 
-    println!("▶ Timer resumed");
+    println!("▶ Session resumed");
     println!("  Task: {}", timer.task_name);
     println!("  Total elapsed (before pause): {}", formatted_duration);
 
     Ok(())
 }
 
-/// Show status of running timer
+/// Show status of running session
 fn handle_status(storage: Storage) -> Result<()> {
     let timer_manager = TimerManager::new(storage);
 
@@ -162,7 +162,7 @@ fn handle_status(storage: Storage) -> Result<()> {
             let formatted_duration = format_duration(elapsed);
             let start_time = format_time(timer.start_time);
 
-            println!("⏱ Timer Status");
+            println!("⏱ Session Status");
             println!("  Task: {}", timer.task_name);
             println!(
                 "  Status: {}",
@@ -179,7 +179,7 @@ fn handle_status(storage: Storage) -> Result<()> {
             }
         }
         None => {
-            println!("No timer is currently running");
+            println!("No session is currently running");
         }
     }
 
