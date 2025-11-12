@@ -248,144 +248,144 @@ impl Theme {
     /// Kanagawa theme (dark navy blue aesthetic)
     pub fn kanagawa() -> Self {
         Self {
-            active_border: Color::Rgb(126, 156, 216), // springBlue
-            inactive_border: Color::Rgb(54, 59, 77),  // sumiInk4
-            searching_border: Color::Rgb(255, 160, 102), // surimiOrange
-            selected_bg: Color::Rgb(37, 43, 55),      // sumiInk3
+            active_border: Color::Rgb(126, 156, 216),     // springBlue
+            inactive_border: Color::Rgb(54, 59, 77),      // sumiInk4
+            searching_border: Color::Rgb(255, 160, 102),  // surimiOrange
+            selected_bg: Color::Rgb(37, 43, 55),          // sumiInk3
             selected_inactive_bg: Color::Rgb(30, 34, 44), // sumiInk2
-            visual_bg: Color::Rgb(57, 80, 112),       // waveBlue2
-            timer_active_bg: Color::Rgb(118, 151, 122), // springGreen
-            row_alternate_bg: Color::Rgb(22, 25, 32), // sumiInk1
-            edit_bg: Color::Rgb(34, 61, 80),          // waveBlue1
-            primary_text: Color::Rgb(220, 215, 186), // fujiWhite
-            secondary_text: Color::Rgb(114, 118, 129), // fujiGray
-            highlight_text: Color::Rgb(126, 156, 216), // springBlue
-            success: Color::Rgb(152, 187, 108),      // autumnGreen
-            warning: Color::Rgb(255, 160, 102),      // surimiOrange
-            error: Color::Rgb(227, 99, 102),         // peachRed
-            info: Color::Rgb(125, 208, 234),         // lightBlue
-            timer_text: Color::Rgb(255, 199, 119),   // carpYellow
-            badge: Color::Rgb(149, 127, 184),        // oniViolet
+            visual_bg: Color::Rgb(57, 80, 112),           // waveBlue2
+            timer_active_bg: Color::Rgb(118, 151, 122),   // springGreen
+            row_alternate_bg: Color::Rgb(22, 25, 32),     // sumiInk1
+            edit_bg: Color::Rgb(34, 61, 80),              // waveBlue1
+            primary_text: Color::Rgb(220, 215, 186),      // fujiWhite
+            secondary_text: Color::Rgb(114, 118, 129),    // fujiGray
+            highlight_text: Color::Rgb(126, 156, 216),    // springBlue
+            success: Color::Rgb(152, 187, 108),           // autumnGreen
+            warning: Color::Rgb(255, 160, 102),           // surimiOrange
+            error: Color::Rgb(227, 99, 102),              // peachRed
+            info: Color::Rgb(125, 208, 234),              // lightBlue
+            timer_text: Color::Rgb(255, 199, 119),        // carpYellow
+            badge: Color::Rgb(149, 127, 184),             // oniViolet
         }
     }
 
     /// Catppuccin Mocha theme (popular pastel theme)
     pub fn catppuccin() -> Self {
         Self {
-            active_border: Color::Rgb(137, 180, 250), // blue
-            inactive_border: Color::Rgb(69, 71, 90),  // surface1
-            searching_border: Color::Rgb(249, 226, 175), // yellow
-            selected_bg: Color::Rgb(49, 50, 68),      // surface0
+            active_border: Color::Rgb(137, 180, 250),     // blue
+            inactive_border: Color::Rgb(69, 71, 90),      // surface1
+            searching_border: Color::Rgb(249, 226, 175),  // yellow
+            selected_bg: Color::Rgb(49, 50, 68),          // surface0
             selected_inactive_bg: Color::Rgb(30, 30, 46), // base
-            visual_bg: Color::Rgb(116, 199, 236),     // sapphire
-            timer_active_bg: Color::Rgb(166, 227, 161), // green
-            row_alternate_bg: Color::Rgb(24, 24, 37), // mantle
-            edit_bg: Color::Rgb(137, 180, 250),       // blue (dimmed)
-            primary_text: Color::Rgb(205, 214, 244), // text
-            secondary_text: Color::Rgb(127, 132, 156), // overlay0
-            highlight_text: Color::Rgb(137, 180, 250), // blue
-            success: Color::Rgb(166, 227, 161),      // green
-            warning: Color::Rgb(249, 226, 175),      // yellow
-            error: Color::Rgb(243, 139, 168),        // red
-            info: Color::Rgb(137, 180, 250),         // blue
-            timer_text: Color::Rgb(245, 194, 231),   // pink
-            badge: Color::Rgb(203, 166, 247),        // mauve
+            visual_bg: Color::Rgb(116, 199, 236),         // sapphire
+            timer_active_bg: Color::Rgb(166, 227, 161),   // green
+            row_alternate_bg: Color::Rgb(24, 24, 37),     // mantle
+            edit_bg: Color::Rgb(137, 180, 250),           // blue (dimmed)
+            primary_text: Color::Rgb(205, 214, 244),      // text
+            secondary_text: Color::Rgb(127, 132, 156),    // overlay0
+            highlight_text: Color::Rgb(137, 180, 250),    // blue
+            success: Color::Rgb(166, 227, 161),           // green
+            warning: Color::Rgb(249, 226, 175),           // yellow
+            error: Color::Rgb(243, 139, 168),             // red
+            info: Color::Rgb(137, 180, 250),              // blue
+            timer_text: Color::Rgb(245, 194, 231),        // pink
+            badge: Color::Rgb(203, 166, 247),             // mauve
         }
     }
 
     /// Gruvbox theme (retro warm colors)
     pub fn gruvbox() -> Self {
         Self {
-            active_border: Color::Rgb(131, 165, 152), // aqua
-            inactive_border: Color::Rgb(60, 56, 54),  // bg2
-            searching_border: Color::Rgb(250, 189, 47), // yellow
-            selected_bg: Color::Rgb(60, 56, 54),      // bg2
+            active_border: Color::Rgb(131, 165, 152),     // aqua
+            inactive_border: Color::Rgb(60, 56, 54),      // bg2
+            searching_border: Color::Rgb(250, 189, 47),   // yellow
+            selected_bg: Color::Rgb(60, 56, 54),          // bg2
             selected_inactive_bg: Color::Rgb(40, 40, 40), // bg0
-            visual_bg: Color::Rgb(69, 133, 136),      // blue
-            timer_active_bg: Color::Rgb(152, 151, 26), // green
-            row_alternate_bg: Color::Rgb(29, 32, 33), // bg0_h
-            edit_bg: Color::Rgb(80, 73, 69),          // bg3
-            primary_text: Color::Rgb(235, 219, 178), // fg
-            secondary_text: Color::Rgb(146, 131, 116), // fg4
-            highlight_text: Color::Rgb(131, 165, 152), // aqua
-            success: Color::Rgb(184, 187, 38),       // green
-            warning: Color::Rgb(250, 189, 47),       // yellow
-            error: Color::Rgb(251, 73, 52),          // red
-            info: Color::Rgb(131, 165, 152),         // aqua
-            timer_text: Color::Rgb(254, 128, 25),    // orange
-            badge: Color::Rgb(211, 134, 155),        // purple
+            visual_bg: Color::Rgb(69, 133, 136),          // blue
+            timer_active_bg: Color::Rgb(152, 151, 26),    // green
+            row_alternate_bg: Color::Rgb(29, 32, 33),     // bg0_h
+            edit_bg: Color::Rgb(80, 73, 69),              // bg3
+            primary_text: Color::Rgb(235, 219, 178),      // fg
+            secondary_text: Color::Rgb(146, 131, 116),    // fg4
+            highlight_text: Color::Rgb(131, 165, 152),    // aqua
+            success: Color::Rgb(184, 187, 38),            // green
+            warning: Color::Rgb(250, 189, 47),            // yellow
+            error: Color::Rgb(251, 73, 52),               // red
+            info: Color::Rgb(131, 165, 152),              // aqua
+            timer_text: Color::Rgb(254, 128, 25),         // orange
+            badge: Color::Rgb(211, 134, 155),             // purple
         }
     }
 
     /// Monokai theme (classic vibrant)
     pub fn monokai() -> Self {
         Self {
-            active_border: Color::Rgb(102, 217, 239), // cyan
-            inactive_border: Color::Rgb(73, 72, 62),  // darker gray
-            searching_border: Color::Rgb(230, 219, 116), // yellow
-            selected_bg: Color::Rgb(73, 72, 62),      // dark gray
+            active_border: Color::Rgb(102, 217, 239),     // cyan
+            inactive_border: Color::Rgb(73, 72, 62),      // darker gray
+            searching_border: Color::Rgb(230, 219, 116),  // yellow
+            selected_bg: Color::Rgb(73, 72, 62),          // dark gray
             selected_inactive_bg: Color::Rgb(39, 40, 34), // background
-            visual_bg: Color::Rgb(102, 217, 239),     // cyan
-            timer_active_bg: Color::Rgb(166, 226, 46), // green
-            row_alternate_bg: Color::Rgb(30, 31, 28), // darker bg
-            edit_bg: Color::Rgb(98, 114, 164),        // blue
-            primary_text: Color::Rgb(248, 248, 242), // foreground
-            secondary_text: Color::Rgb(117, 113, 94), // comment
-            highlight_text: Color::Rgb(102, 217, 239), // cyan
-            success: Color::Rgb(166, 226, 46),       // green
-            warning: Color::Rgb(230, 219, 116),      // yellow
-            error: Color::Rgb(249, 38, 114),         // red
-            info: Color::Rgb(102, 217, 239),         // cyan
-            timer_text: Color::Rgb(253, 151, 31),    // orange
-            badge: Color::Rgb(174, 129, 255),        // purple
+            visual_bg: Color::Rgb(102, 217, 239),         // cyan
+            timer_active_bg: Color::Rgb(166, 226, 46),    // green
+            row_alternate_bg: Color::Rgb(30, 31, 28),     // darker bg
+            edit_bg: Color::Rgb(98, 114, 164),            // blue
+            primary_text: Color::Rgb(248, 248, 242),      // foreground
+            secondary_text: Color::Rgb(117, 113, 94),     // comment
+            highlight_text: Color::Rgb(102, 217, 239),    // cyan
+            success: Color::Rgb(166, 226, 46),            // green
+            warning: Color::Rgb(230, 219, 116),           // yellow
+            error: Color::Rgb(249, 38, 114),              // red
+            info: Color::Rgb(102, 217, 239),              // cyan
+            timer_text: Color::Rgb(253, 151, 31),         // orange
+            badge: Color::Rgb(174, 129, 255),             // purple
         }
     }
 
     /// Dracula theme (purple/pink accents)
     pub fn dracula() -> Self {
         Self {
-            active_border: Color::Rgb(139, 233, 253), // cyan
-            inactive_border: Color::Rgb(68, 71, 90),  // comment
-            searching_border: Color::Rgb(241, 250, 140), // yellow
-            selected_bg: Color::Rgb(68, 71, 90),      // selection
+            active_border: Color::Rgb(139, 233, 253),     // cyan
+            inactive_border: Color::Rgb(68, 71, 90),      // comment
+            searching_border: Color::Rgb(241, 250, 140),  // yellow
+            selected_bg: Color::Rgb(68, 71, 90),          // selection
             selected_inactive_bg: Color::Rgb(40, 42, 54), // background
-            visual_bg: Color::Rgb(98, 114, 164),      // purple
-            timer_active_bg: Color::Rgb(80, 250, 123), // green
-            row_alternate_bg: Color::Rgb(33, 34, 44), // darker bg
-            edit_bg: Color::Rgb(68, 71, 90),          // selection
-            primary_text: Color::Rgb(248, 248, 242), // foreground
-            secondary_text: Color::Rgb(98, 114, 164), // comment
-            highlight_text: Color::Rgb(139, 233, 253), // cyan
-            success: Color::Rgb(80, 250, 123),       // green
-            warning: Color::Rgb(241, 250, 140),      // yellow
-            error: Color::Rgb(255, 85, 85),          // red
-            info: Color::Rgb(139, 233, 253),         // cyan
-            timer_text: Color::Rgb(255, 184, 108),   // orange
-            badge: Color::Rgb(255, 121, 198),        // pink
+            visual_bg: Color::Rgb(98, 114, 164),          // purple
+            timer_active_bg: Color::Rgb(80, 250, 123),    // green
+            row_alternate_bg: Color::Rgb(33, 34, 44),     // darker bg
+            edit_bg: Color::Rgb(68, 71, 90),              // selection
+            primary_text: Color::Rgb(248, 248, 242),      // foreground
+            secondary_text: Color::Rgb(98, 114, 164),     // comment
+            highlight_text: Color::Rgb(139, 233, 253),    // cyan
+            success: Color::Rgb(80, 250, 123),            // green
+            warning: Color::Rgb(241, 250, 140),           // yellow
+            error: Color::Rgb(255, 85, 85),               // red
+            info: Color::Rgb(139, 233, 253),              // cyan
+            timer_text: Color::Rgb(255, 184, 108),        // orange
+            badge: Color::Rgb(255, 121, 198),             // pink
         }
     }
 
     /// Everforest theme (green forest aesthetic)
     pub fn everforest() -> Self {
         Self {
-            active_border: Color::Rgb(131, 192, 146), // green
-            inactive_border: Color::Rgb(83, 86, 77),  // bg3
-            searching_border: Color::Rgb(219, 188, 127), // yellow
-            selected_bg: Color::Rgb(67, 72, 60),      // bg2
+            active_border: Color::Rgb(131, 192, 146),     // green
+            inactive_border: Color::Rgb(83, 86, 77),      // bg3
+            searching_border: Color::Rgb(219, 188, 127),  // yellow
+            selected_bg: Color::Rgb(67, 72, 60),          // bg2
             selected_inactive_bg: Color::Rgb(45, 49, 41), // bg1
-            visual_bg: Color::Rgb(123, 175, 153),     // aqua
-            timer_active_bg: Color::Rgb(131, 192, 146), // green
-            row_alternate_bg: Color::Rgb(35, 38, 32), // bg0
-            edit_bg: Color::Rgb(83, 86, 77),          // bg3
-            primary_text: Color::Rgb(211, 198, 170), // fg
-            secondary_text: Color::Rgb(146, 142, 123), // gray1
-            highlight_text: Color::Rgb(123, 175, 153), // aqua
-            success: Color::Rgb(131, 192, 146),      // green
-            warning: Color::Rgb(219, 188, 127),      // yellow
-            error: Color::Rgb(230, 126, 128),        // red
-            info: Color::Rgb(123, 175, 153),         // aqua
-            timer_text: Color::Rgb(230, 152, 117),   // orange
-            badge: Color::Rgb(217, 143, 172),        // purple
+            visual_bg: Color::Rgb(123, 175, 153),         // aqua
+            timer_active_bg: Color::Rgb(131, 192, 146),   // green
+            row_alternate_bg: Color::Rgb(35, 38, 32),     // bg0
+            edit_bg: Color::Rgb(83, 86, 77),              // bg3
+            primary_text: Color::Rgb(211, 198, 170),      // fg
+            secondary_text: Color::Rgb(146, 142, 123),    // gray1
+            highlight_text: Color::Rgb(123, 175, 153),    // aqua
+            success: Color::Rgb(131, 192, 146),           // green
+            warning: Color::Rgb(219, 188, 127),           // yellow
+            error: Color::Rgb(230, 126, 128),             // red
+            info: Color::Rgb(123, 175, 153),              // aqua
+            timer_text: Color::Rgb(230, 152, 117),        // orange
+            badge: Color::Rgb(217, 143, 172),             // purple
         }
     }
 
@@ -486,14 +486,14 @@ fn parse_color(color_str: &str) -> Color {
         _ => {
             // Fallback: try to parse as RGB tuple "r,g,b"
             let parts: Vec<&str> = trimmed.split(',').map(|s| s.trim()).collect();
-            if parts.len() == 3 {
-                if let (Ok(r), Ok(g), Ok(b)) = (
+            if parts.len() == 3
+                && let (Ok(r), Ok(g), Ok(b)) = (
                     parts[0].parse::<u8>(),
                     parts[1].parse::<u8>(),
                     parts[2].parse::<u8>(),
-                ) {
-                    return Color::Rgb(r, g, b);
-                }
+                )
+            {
+                return Color::Rgb(r, g, b);
             }
             // Final fallback: return default white
             Color::White
@@ -850,11 +850,17 @@ badge = "lightmagenta"
         // Verify each theme has different active_border colors (unique themes)
         assert!(matches!(default.active_border, Color::Cyan));
         assert!(matches!(kanagawa.active_border, Color::Rgb(126, 156, 216)));
-        assert!(matches!(catppuccin.active_border, Color::Rgb(137, 180, 250)));
+        assert!(matches!(
+            catppuccin.active_border,
+            Color::Rgb(137, 180, 250)
+        ));
         assert!(matches!(gruvbox.active_border, Color::Rgb(131, 165, 152)));
         assert!(matches!(monokai.active_border, Color::Rgb(102, 217, 239)));
         assert!(matches!(dracula.active_border, Color::Rgb(139, 233, 253)));
-        assert!(matches!(everforest.active_border, Color::Rgb(131, 192, 146)));
+        assert!(matches!(
+            everforest.active_border,
+            Color::Rgb(131, 192, 146)
+        ));
         assert!(matches!(terminal.active_border, Color::Cyan));
     }
 
@@ -1006,7 +1012,7 @@ badge = "lightmagenta"
     #[test]
     fn test_custom_theme_colors_all_formats() {
         let custom_colors = CustomThemeColors {
-            active_border: "#FF0000".to_string(),       // hex
+            active_border: "#FF0000".to_string(),        // hex
             inactive_border: "darkgray".to_string(),     // named
             searching_border: "255, 255, 0".to_string(), // rgb
             selected_bg: "#00F".to_string(),             // short hex
@@ -1180,8 +1186,7 @@ badge = "magenta"
         assert!(serialized.contains("active"));
         assert!(serialized.contains("gruvbox"));
 
-        let deserialized: ThemeConfig =
-            toml::from_str(&serialized).expect("Failed to deserialize");
+        let deserialized: ThemeConfig = toml::from_str(&serialized).expect("Failed to deserialize");
         assert_eq!(deserialized.active, "gruvbox");
         assert!(deserialized.custom.is_empty());
     }
