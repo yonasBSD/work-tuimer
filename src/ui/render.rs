@@ -251,7 +251,7 @@ fn render_records(frame: &mut Frame, area: Rect, app: &AppState) {
                     crate::ui::EditField::Name => {
                         // Add cursor indicator to show user is in edit mode
                         let text_with_cursor = format!("{}▏", app.input_buffer);
-                        
+
                         // Extract and display ticket badge if present and config exists
                         let display = if app.config.has_integrations() {
                             if crate::integrations::extract_ticket_from_name(&app.input_buffer)
@@ -274,7 +274,7 @@ fn render_records(frame: &mut Frame, area: Rect, app: &AppState) {
                     crate::ui::EditField::Description => {
                         // Add cursor indicator to show user is in edit mode
                         let description_with_cursor = format!("{}▏", app.input_buffer);
-                        
+
                         // Extract and display ticket badge if present and config exists
                         let display = if app.config.has_integrations() {
                             if crate::integrations::extract_ticket_from_name(&record.name).is_some()
