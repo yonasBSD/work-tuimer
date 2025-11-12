@@ -85,11 +85,11 @@ This file tracks active development tasks for the WorkTimer project. Tasks are m
 - [ ] Allow editing template library
 - [ ] Support template with default durations
 
-#### Themes
-- [ ] Implement theme switching system
-- [ ] Create dark/light theme variants
+#### Themes (Issue #6)
+- [x] Design and implement theme system with pre-defined themes
+- [x] Create dark/light theme variants (7 pre-defined themes + terminal theme)
 - [ ] Auto-detect system theme preference
-- [ ] Allow custom color palette configuration
+- [x] Allow custom color palette configuration via config.toml
 
 ### Future/Research Tasks
 
@@ -120,6 +120,32 @@ This file tracks active development tasks for the WorkTimer project. Tasks are m
 ---
 
 ## Completed Tasks
+
+### Feature: Theming System - Issue #6 (2025-11-12)
+- [x] Design theme architecture with semantic color names (18 color fields)
+- [x] Implement 8 pre-defined themes (default, kanagawa, catppuccin, gruvbox, monokai, dracula, everforest, terminal)
+- [x] Add custom theme support via config.toml with 3 color format options (hex, RGB tuples, named colors)
+- [x] Replace all 117 hardcoded Color:: references in render.rs with theme colors
+- [x] Add theme configuration section to README.md with examples
+- [x] Add comprehensive test suite (15+ tests for theme loading, color parsing, TOML deserialization, fallback behavior)
+- **Context**: Implemented complete theming system allowing users to customize the TUI appearance through config.toml. Users can choose from 8 pre-defined themes or create custom themes using hex colors (#RRGGBB, #RGB), RGB tuples (R, G, B), or named colors (Red, Blue, etc.).
+- **Architecture**: 
+  - Config layer: ThemeConfig manages theme selection and custom theme storage
+  - Theme layer: Theme struct with 18 semantic color fields (borders, backgrounds, text, status, specific elements)
+  - UI layer: All render functions use theme colors from AppState
+- **Pre-defined Themes**:
+  1. `default` - Original blue/cyan theme
+  2. `kanagawa` - Dark navy aesthetic inspired by Japanese art
+  3. `catppuccin` - Popular pastel theme (Mocha variant)
+  4. `gruvbox` - Retro warm colors
+  5. `monokai` - Classic vibrant theme
+  6. `dracula` - Purple/pink accents
+  7. `everforest` - Green forest aesthetic
+  8. `terminal` - Uses terminal's native colors
+- **Color Parsing**: Supports 3 formats with fallback to white on invalid input
+- **Testing**: All 168 tests pass (15 new theme tests), cargo check passes with only 3 harmless unused field warnings
+- **Files Modified**: src/config/mod.rs (theme system + tests), src/ui/app_state.rs (theme field), src/ui/render.rs (117 color replacements), README.md (documentation)
+- **Issue**: https://github.com/Kamyil/work-tuimer/issues/6
 
 ### Feature: Add --version Command + Bump to v0.3.0 - Issue #18 (2025-11-12)
 - [x] Create new branch feature/add-version-command
