@@ -11,6 +11,18 @@ documentation = "https://github.com/Kamyil/work-tuimer#readme"
 readme = "README.md"
 keywords = ["tui", "time-tracking", "productivity", "terminal", "ratatui"]
 categories = ["command-line-utilities", "date-and-time"]
+exclude = [
+    ".github/",
+    ".DS_Store",
+    "data/",
+    "packaging/",
+    "*.png",
+    "shell.nix",
+    "justfile",
+    "AGENTS.md",
+    "TASKS.md",
+    "PACKAGING_GUIDE.md"
+]
 
 [lib]
 name = "work_tuimer"
