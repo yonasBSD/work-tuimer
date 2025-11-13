@@ -168,13 +168,11 @@ work-tuimer session stop
 - **CLI + TUI integration**: Start in CLI, stop in TUI, or vice versa
 - **Visual indicators**: Active sessions highlighted with ⏱ icon
 
-**📖 For detailed documentation, workflows, and troubleshooting, see [Timer Sessions Guide](docs/SESSIONS.md)**
+**For more info, check [Timer Sessions Guide](docs/SESSIONS.md)**
 
-## Issue Tracker Integration (Optional)
+## Issue Tracker Integration
 
 WorkTimer supports automatic ticket detection from task names and browser integration for **any** issue tracker (JIRA, Linear, GitHub Issues, GitLab, Azure DevOps, etc.). 
-
-**This feature is completely optional** - the application works perfectly without any configuration.
 
 ### Quick Start
 
@@ -198,37 +196,19 @@ browse_url = "{base_url}/browse/{ticket}"
 worklog_url = "{base_url}/browse/{ticket}?focusedWorklogId=-1"
 ```
 
-**📖 For detailed documentation, configuration examples, and multiple tracker setup, see [Issue Tracker Integration Guide](docs/ISSUE_TRACKER_INTEGRATION.md)**
+**For more info, check [Issue Tracker Integration Guide](docs/ISSUE_TRACKER_INTEGRATION.md)**
 
-## Theme Configuration (Optional)
+## Theme Configuration
 
 WorkTimer supports customizable color themes to personalize your UI experience. The application includes 8 pre-defined themes and supports custom theme definitions.
-
-**This feature is completely optional** - the application works perfectly without any configuration.
-
-### Quick Start
-
-1. **Choose a pre-defined theme**: Pick from 8 built-in themes (kanagawa, catppuccin, gruvbox, etc.)
-2. **Add to config**: Create `~/.config/work-tuimer/config.toml` with `[theme]` section
-3. **Restart the app**: Your new theme will be applied immediately
 
 ```toml
 [theme]
 active = "kanagawa"  # Options: default, kanagawa, catppuccin, gruvbox, monokai, dracula, everforest, terminal
 ```
+Available Themes: default, kanagawa, catppuccin, gruvbox, monokai, dracula, everforest, terminal
 
-### Available Themes
-
-- **default**: Original cyan highlights with dark backgrounds
-- **kanagawa**: Dark navy blue aesthetic inspired by the Great Wave
-- **catppuccin**: Soothing pastel theme for comfortable viewing
-- **gruvbox**: Retro groove warm color palette
-- **monokai**: Classic editor theme with vibrant colors
-- **dracula**: Dark theme with purple and pink accents
-- **everforest**: Comfortable green forest color scheme
-- **terminal**: Uses your terminal's default colors
-
-**📖 For detailed documentation, custom themes, color formats, and examples, see [Theme Configuration Guide](docs/THEMING.md)**
+**For more info, check [Theme Configuration Guide](docs/THEMING.md)**
 
 ## Data Format
 
