@@ -31,13 +31,13 @@ Built with Rust and ratatui for efficient time management.
 cargo install work-tuimer
 ```
 
-#### Homebrew (macOS/Linux)
+#### (!!! NOT READY YET !!!) Homebrew (macOS/Linux)
 
 ```sh
 brew install work-tuimer
 ```
 
-#### Arch Linux (AUR)
+#### (!!! NOT READY YET !!!) Arch Linux (AUR)
 
 ```sh
 # Using yay
