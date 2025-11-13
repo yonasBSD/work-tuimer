@@ -2,6 +2,50 @@
 
 This directory contains packaging files for various package managers.
 
+## Cargo (crates.io) - Recommended First Step!
+
+### Publishing to crates.io
+
+**Prerequisites:**
+- crates.io account (login via GitHub at https://crates.io)
+- API token from https://crates.io/me
+
+**Steps:**
+
+1. Login to crates.io (one-time setup):
+   ```bash
+   cargo login YOUR_API_TOKEN
+   ```
+
+2. Verify package is ready:
+   ```bash
+   cargo package --list
+   # Should show ~28 files
+   ```
+
+3. Test the package builds correctly:
+   ```bash
+   cargo package --no-verify
+   # or if outside nix-shell:
+   cargo package
+   ```
+
+4. Publish to crates.io:
+   ```bash
+   cargo publish
+   ```
+
+5. Done! Users can now install with:
+   ```bash
+   cargo install work-tuimer
+   ```
+
+**Notes:**
+- Once published, you CANNOT delete or modify a version (only yank)
+- Publishing is instant - no review process
+- Package appears at: https://crates.io/crates/work-tuimer
+- For future releases, just bump version in Cargo.toml and run `cargo publish`
+
 ## Homebrew (macOS/Linux)
 
 ### Testing Locally

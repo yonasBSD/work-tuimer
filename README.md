@@ -25,6 +25,12 @@ Built with Rust and ratatui for efficient time management.
 
 ### Package Managers
 
+#### Cargo (Rust)
+
+```sh
+cargo install work-tuimer
+```
+
 #### Homebrew (macOS/Linux)
 
 ```sh
