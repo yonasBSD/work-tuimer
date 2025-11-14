@@ -35,7 +35,7 @@ cargo install work-tuimer
 brew install work-tuimer
 ```
 
-Arch Linux (AUR)
+#### Arch Linux (AUR)
 LINK: https://aur.archlinux.org/packages/work-tuimer
 ```sh
 # Using yay
