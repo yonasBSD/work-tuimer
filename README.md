@@ -24,7 +24,7 @@ Built with Rust and ratatui for efficient time management.
 ### Package Managers
 
 #### Cargo (Rust)
-
+LINK: https://crates.io/crates/work-tuimer
 ```sh
 cargo install work-tuimer
 ```
@@ -35,8 +35,8 @@ cargo install work-tuimer
 brew install work-tuimer
 ```
 
-#### (!!! NOT READY YET !!!) Arch Linux (AUR)
-
+Arch Linux (AUR)
+LINK: https://aur.archlinux.org/packages/work-tuimer
 ```sh
 # Using yay
 yay -S work-tuimer
