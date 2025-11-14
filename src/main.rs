@@ -182,7 +182,11 @@ fn handle_key_event(app: &mut AppState, key: KeyEvent, storage: &mut storage::St
                 app.last_file_modified = storage.get_last_modified(&app.current_date);
             }
             KeyCode::Char('v') => app.enter_visual_mode(),
-            KeyCode::Char('t') => app.set_current_time_on_field(),
+            KeyCode::Char('t') => {
+                app.set_current_time_on_field();
+                let _ = storage.save(&app.day_data);
+                app.last_file_modified = storage.get_last_modified(&app.current_date);
+            }
             KeyCode::Char('u') => {
                 app.undo();
                 let _ = storage.save(&app.day_data);
@@ -217,7 +221,11 @@ fn handle_key_event(app: &mut AppState, key: KeyEvent, storage: &mut storage::St
             KeyCode::Esc => app.exit_visual_mode(),
             KeyCode::Up | KeyCode::Char('k') => app.move_selection_up(),
             KeyCode::Down | KeyCode::Char('j') => app.move_selection_down(),
-            KeyCode::Char('d') => app.delete_visual_selection(),
+            KeyCode::Char('d') => {
+                app.delete_visual_selection();
+                let _ = storage.save(&app.day_data);
+                app.last_file_modified = storage.get_last_modified(&app.current_date);
+            }
             _ => {}
         },
         ui::AppMode::CommandPalette => match key.code {
@@ -258,7 +266,11 @@ fn handle_key_event(app: &mut AppState, key: KeyEvent, storage: &mut storage::St
                 let filtered_tasks = app.get_filtered_task_names();
                 app.move_task_picker_down(filtered_tasks.len());
             }
-            KeyCode::Enter => app.select_task_from_picker(),
+            KeyCode::Enter => {
+                app.select_task_from_picker();
+                let _ = storage.save(&app.day_data);
+                app.last_file_modified = storage.get_last_modified(&app.current_date);
+            }
             KeyCode::Backspace => app.handle_task_picker_backspace(),
             KeyCode::Char(c) => app.handle_task_picker_char(c),
             _ => {}
@@ -296,7 +308,11 @@ fn execute_command_action(
             app.last_file_modified = storage.get_last_modified(&app.current_date);
         }
         CommandAction::Visual => app.enter_visual_mode(),
-        CommandAction::SetNow => app.set_current_time_on_field(),
+        CommandAction::SetNow => {
+            app.set_current_time_on_field();
+            let _ = storage.save(&app.day_data);
+            app.last_file_modified = storage.get_last_modified(&app.current_date);
+        }
         CommandAction::Undo => {
             app.undo();
             let _ = storage.save(&app.day_data);
