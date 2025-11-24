@@ -49,7 +49,8 @@ impl DayData {
         }
 
         let mut result: Vec<(String, u32)> = totals.into_iter().collect();
-        result.sort_by(|a, b| b.1.cmp(&a.1));
+        // Sort by duration (descending), then by task name (ascending) for stable ordering
+        result.sort_by(|a, b| b.1.cmp(&a.1).then_with(|| a.0.cmp(&b.0)));
         result
     }
 }
@@ -286,6 +287,34 @@ mod tests {
         assert_eq!(totals[0].0, "Long");
         assert_eq!(totals[1].0, "Medium");
         assert_eq!(totals[2].0, "Short");
+    }
+
+    #[test]
+    fn test_get_grouped_totals_stable_sort_on_tied_durations() {
+        let mut day = DayData::new(create_test_date());
+        // Create tasks with same duration to test stable sorting
+        day.add_record(create_test_record(1, "Zebra Task", 9, 11)); // 2 hours
+        day.add_record(create_test_record(2, "Alpha Task", 11, 13)); // 2 hours
+        day.add_record(create_test_record(3, "Beta Task", 13, 15)); // 2 hours
+
+        let totals = day.get_grouped_totals();
+
+        // All have same duration, should be sorted alphabetically by name
+        assert_eq!(totals.len(), 3);
+        assert_eq!(totals[0].0, "Alpha Task");
+        assert_eq!(totals[0].1, 120);
+        assert_eq!(totals[1].0, "Beta Task");
+        assert_eq!(totals[1].1, 120);
+        assert_eq!(totals[2].0, "Zebra Task");
+        assert_eq!(totals[2].1, 120);
+
+        // Test multiple times to ensure sort is stable (non-blinking)
+        for _ in 0..10 {
+            let totals_repeat = day.get_grouped_totals();
+            assert_eq!(totals_repeat[0].0, "Alpha Task");
+            assert_eq!(totals_repeat[1].0, "Beta Task");
+            assert_eq!(totals_repeat[2].0, "Zebra Task");
+        }
     }
 
     #[test]
