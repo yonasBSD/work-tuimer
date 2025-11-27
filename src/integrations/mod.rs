@@ -315,4 +315,96 @@ worklog_url = ""
         let ticket = extract_ticket_from_name(name);
         assert_eq!(ticket, Some("PROJ-123".to_string()));
     }
+
+    #[test]
+    fn test_build_url_with_query_params_in_browse_url() {
+        // Issue #42: URLs with query parameters in browse_url template
+        // e.g., Zentao-style URLs: {base_url}?m=my&f=work&mode=bug
+        let toml_str = r#"
+[integrations]
+default_tracker = "zentao"
+
+[integrations.trackers.zentao]
+enabled = true
+base_url = "http://domain/index.php"
+ticket_patterns = ["^BUG-\\d+$"]
+browse_url = "{base_url}?m=my&f=work&mode=bug&type=assignedTo"
+worklog_url = "{base_url}?m=bug&f=view&bugID={ticket}"
+        "#;
+        let config: Config = toml::from_str(toml_str).unwrap();
+
+        // Test browse URL with query params (no ticket placeholder in browse_url)
+        let url = build_url("BUG-123", "zentao", &config, false);
+        assert!(url.is_ok());
+        let url_str = url.unwrap();
+        assert_eq!(
+            url_str,
+            "http://domain/index.php?m=my&f=work&mode=bug&type=assignedTo"
+        );
+        // Verify URL contains all query parameters
+        assert!(url_str.contains("m=my"));
+        assert!(url_str.contains("f=work"));
+        assert!(url_str.contains("mode=bug"));
+        assert!(url_str.contains("type=assignedTo"));
+    }
+
+    #[test]
+    fn test_build_url_with_ticket_in_query_params() {
+        // Issue #42: worklog URLs that put ticket ID in query parameter
+        let toml_str = r#"
+[integrations]
+default_tracker = "zentao"
+
+[integrations.trackers.zentao]
+enabled = true
+base_url = "http://domain/index.php"
+ticket_patterns = ["^BUG-\\d+$"]
+browse_url = "{base_url}?m=my&f=work&mode=bug"
+worklog_url = "{base_url}?m=bug&f=view&bugID={ticket}"
+        "#;
+        let config: Config = toml::from_str(toml_str).unwrap();
+
+        // Test worklog URL with ticket in query string
+        let url = build_url("BUG-456", "zentao", &config, true);
+        assert!(url.is_ok());
+        let url_str = url.unwrap();
+        assert_eq!(
+            url_str,
+            "http://domain/index.php?m=bug&f=view&bugID=BUG-456"
+        );
+        // Verify ticket was substituted correctly
+        assert!(url_str.contains("bugID=BUG-456"));
+        assert!(url_str.contains("m=bug"));
+        assert!(url_str.contains("f=view"));
+    }
+
+    #[test]
+    fn test_build_url_complex_query_string() {
+        // Test URL with many & characters that could break Windows cmd
+        let toml_str = r#"
+[integrations]
+default_tracker = "tracker"
+
+[integrations.trackers.tracker]
+enabled = true
+base_url = "https://tracker.example.com"
+ticket_patterns = ["^ISSUE-\\d+$"]
+browse_url = "{base_url}/view?id={ticket}&action=show&tab=details&expand=true"
+worklog_url = ""
+        "#;
+        let config: Config = toml::from_str(toml_str).unwrap();
+
+        let url = build_url("ISSUE-789", "tracker", &config, false);
+        assert!(url.is_ok());
+        let url_str = url.unwrap();
+        assert_eq!(
+            url_str,
+            "https://tracker.example.com/view?id=ISSUE-789&action=show&tab=details&expand=true"
+        );
+        // Verify all parts are present
+        assert!(url_str.contains("id=ISSUE-789"));
+        assert!(url_str.contains("action=show"));
+        assert!(url_str.contains("tab=details"));
+        assert!(url_str.contains("expand=true"));
+    }
 }

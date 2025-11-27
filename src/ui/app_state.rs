@@ -792,19 +792,7 @@ impl AppState {
                 if let Some(tracker_name) = detect_tracker(&ticket_id, &self.config) {
                     match build_url(&ticket_id, &tracker_name, &self.config, false) {
                         Ok(url) => {
-                            // Open browser using platform-specific command
-                            let result = if cfg!(target_os = "macos") {
-                                std::process::Command::new("open").arg(&url).spawn()
-                            } else if cfg!(target_os = "windows") {
-                                std::process::Command::new("cmd")
-                                    .args(["/C", "start", &url])
-                                    .spawn()
-                            } else {
-                                // Linux/Unix
-                                std::process::Command::new("xdg-open").arg(&url).spawn()
-                            };
-
-                            if let Err(e) = result {
+                            if let Err(e) = open_url_in_browser(&url) {
                                 self.last_error_message =
                                     Some(format!("Failed to open browser: {}", e));
                             }
@@ -831,19 +819,7 @@ impl AppState {
                 if let Some(tracker_name) = detect_tracker(&ticket_id, &self.config) {
                     match build_url(&ticket_id, &tracker_name, &self.config, true) {
                         Ok(url) => {
-                            // Open browser using platform-specific command
-                            let result = if cfg!(target_os = "macos") {
-                                std::process::Command::new("open").arg(&url).spawn()
-                            } else if cfg!(target_os = "windows") {
-                                std::process::Command::new("cmd")
-                                    .args(["/C", "start", &url])
-                                    .spawn()
-                            } else {
-                                // Linux/Unix
-                                std::process::Command::new("xdg-open").arg(&url).spawn()
-                            };
-
-                            if let Err(e) = result {
+                            if let Err(e) = open_url_in_browser(&url) {
                                 self.last_error_message =
                                     Some(format!("Failed to open browser: {}", e));
                             }
@@ -1080,6 +1056,36 @@ impl AppState {
 
         changed
     }
+}
+
+/// Open a URL in the default browser using platform-specific commands.
+///
+/// On Windows, special care is taken to handle URLs with query parameters
+/// containing `&` characters. The `start` command requires an empty string
+/// as the window title argument before the URL, otherwise `&` is interpreted
+/// as a command separator by cmd.exe.
+fn open_url_in_browser(url: &str) -> std::io::Result<()> {
+    #[cfg(target_os = "macos")]
+    {
+        std::process::Command::new("open").arg(url).spawn()?;
+    }
+
+    #[cfg(target_os = "windows")]
+    {
+        // Windows cmd.exe treats & as a command separator, so we must quote the URL.
+        // Using empty "" as first arg to `start` sets window title, then quoted URL.
+        std::process::Command::new("cmd")
+            .args(["/C", "start", "", url])
+            .spawn()?;
+    }
+
+    #[cfg(not(any(target_os = "macos", target_os = "windows")))]
+    {
+        // Linux/Unix
+        std::process::Command::new("xdg-open").arg(url).spawn()?;
+    }
+
+    Ok(())
 }
 
 fn days_in_month(month: time::Month, year: i32) -> u8 {
