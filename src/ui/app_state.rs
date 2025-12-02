@@ -1072,10 +1072,12 @@ fn open_url_in_browser(url: &str) -> std::io::Result<()> {
 
     #[cfg(target_os = "windows")]
     {
-        // Windows cmd.exe treats & as a command separator, so we must quote the URL.
-        // Using empty "" as first arg to `start` sets window title, then quoted URL.
+        // Windows cmd.exe treats & as a command separator.
+        // We use raw_arg to pass the complete command string with proper quoting.
+        // Format: cmd /C start "" "url" - empty quotes for title, quoted URL.
+        use std::os::windows::process::CommandExt;
         std::process::Command::new("cmd")
-            .args(["/C", "start", "", url])
+            .raw_arg(format!("/C start \"\" \"{}\"", url))
             .spawn()?;
     }
 
