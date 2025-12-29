@@ -43,3 +43,12 @@ clap = { version = "4.4", features = ["derive"] }
 
 [dev-dependencies]
 tempfile = "3.8"
+
+[package.metadata.binstall]
+pkg-url = "{ repo }/releases/download/v{ version }/{ name }-{ target-family }-x86_64{archive-suffix}"
+
+[package.metadata.binstall.overrides.x86_64-apple-darwin]
+pkg-url = "{ repo }/releases/download/v{ version }/{ name }-macos-x86_64{archive-suffix}"
+
+[package.metadata.binstall.overrides.aarch64-apple-darwin]
+pkg-url = "{ repo }/releases/download/v{ version }/{ name }-macos-aarch64{archive-suffix}"
